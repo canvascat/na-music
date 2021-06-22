@@ -30,7 +30,9 @@ function createWindow() {
     height: 720,
     minWidth: 1080,
     minHeight: 720,
-    titleBarStyle: 'hidden',
+    // titleBarStyle: 'hidden',
+    // transparent: true,
+    frame: false,
     webPreferences: {
       preload: indexPreload,
       contextIsolation: true,
