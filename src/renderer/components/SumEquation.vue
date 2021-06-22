@@ -1,29 +1,20 @@
 <template>
-  <div style="margin: 10px">
-    <span class="card clickable" @click="one++">{{ one }}</span>
-    +
-    <span class="card clickable" @click="two++">{{ two }}</span>
-    =
-    <span class="card clickable" @click="one = 0; two = 0">{{ sum }}</span>
-  </div>
+  <n-space align="center" style="justify-content: center;">
+    <n-button @click="one++">{{ one }}</n-button> +
+    <n-button @click="two++">{{ two }}</n-button> =
+    <n-button @click="one = 0; two = 0">{{ sum }}</n-button>
+  </n-space>
 </template>
 
-<script lang=ts>
-import { defineComponent, ref } from 'vue'
+<script lang=ts setup>
+/* eslint-disable no-unused-vars */
+import { ref } from 'vue'
+import { NButton, NSpace } from 'naive-ui'
 import { useSum } from '../hooks'
 
-export default defineComponent({
-  setup() {
-    const one = ref(0)
-    const two = ref(0)
-    const sum = useSum(one, two)
-    return {
-      one,
-      two,
-      sum
-    }
-  }
-})
+const one = ref(0)
+const two = ref(0)
+const sum = useSum(one, two)
 </script>
 
 <style>
