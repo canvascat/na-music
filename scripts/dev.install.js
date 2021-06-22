@@ -3,7 +3,7 @@ const { createWriteStream } = require('fs-extra')
 const { pipeline } = require('stream')
 const extract = require('extract-zip')
 const { join } = require('path')
-const { unlinkSync, existsSync } = require('fs')
+const { unlinkSync, existsSync, readdir, writeFile } = require('fs')
 const { promisify } = require('util')
 
 async function getLatest () {
@@ -47,4 +47,23 @@ async function download (url, filePath) {
   return filePath
 }
 
+async function createApiJSON () {
+  const targetFile = join(__dirname, '../src/shared/api_routes.json')
+  const special = {
+    'daily_signin.js': '/daily_signin',
+    'fm_trash.js': '/fm_trash',
+    'personal_fm.js': '/personal_fm'
+  }
+  const API_MODULE_PATH = join(__dirname, '../node_modules/NeteaseCloudMusicApi/module')
+  const files = await promisify(readdir)(API_MODULE_PATH)
+  const modules = files.reverse().filter(file => file.endsWith('.js'))
+    .reduce((o, name) => {
+      const route = special[name] || `/${name.replace(/\.js$/i, '').replace(/_/g, '/')}`
+      o[route] = `NeteaseCloudMusicApi/module/${name}`
+      return o
+    }, Object.create(null))
+  await promisify(writeFile)(targetFile, JSON.stringify(modules, null, 2))
+}
+
 getLatest()
+createApiJSON()

@@ -3,3 +3,6 @@ node_modules
 .github
 extensions
 dist
+* copy.*
+api_routes.json
+*.log
