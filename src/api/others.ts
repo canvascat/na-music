@@ -1,5 +1,5 @@
-import request from '@/utils/request';
-import { mapTrackPlayableStatus } from '@/utils/common';
+import request from '@/utils/request'
+import { mapTrackPlayableStatus } from '@/utils/common'
 
 /**
  * 搜索
@@ -8,7 +8,7 @@ import { mapTrackPlayableStatus } from '@/utils/common';
  * - keywords : 关键词
  * - limit : 返回数量 , 默认为 30
  * - offset : 偏移数量，用于分页 , 如 : 如 :( 页数 -1)*30, 其中 30 为 limit 的值 , 默认为 0
- * - type: 搜索类型；默认为 1 即单曲 , 取值意义 : 1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合
+ * - type: 搜索类型；默认为 1 (1: 单曲, 10: 专辑, 100: 歌手, 1000: 歌单, 1002: 用户, 1004: MV, 1006: 歌词, 1009: 电台, 1014: 视频, 1018:综合)
  * - 调用例子 : /search?keywords=海阔天空 /cloudsearch?keywords=海阔天空(更全)
  * @param {Object} params
  * @param {string} params.keywords
@@ -16,24 +16,28 @@ import { mapTrackPlayableStatus } from '@/utils/common';
  * @param {number=} params.offset
  * @param {number=} params.type
  */
-export function search(params) {
+export function search (params) {
   return request.get('/search', { params }).then(data => {
-    if (data.result?.song !== undefined)
-      data.result.song.songs = mapTrackPlayableStatus(data.result.song.songs);
-    return data;
-  });
+    // TODO: 添加类型,根据type
+    // @ts-ignore
+    if (data.result?.song !== undefined) {
+      // @ts-ignore
+      data.result.song.songs = mapTrackPlayableStatus(data.result.song.songs)
+    }
+    return data
+  })
 }
 
-export function personalFM() {
-  const timestamp = Date.now();
-  return request.get('/personal_fm', { params: { timestamp } });
+export function personalFM () {
+  const timestamp = Date.now()
+  return request.get('/personal_fm', { params: { timestamp } })
 }
 
-export function fmTrash(id: number) {
-  const timestamp = Date.now();
+export function fmTrash (id: number) {
+  const timestamp = Date.now()
   return request({
     url: '/fm_trash',
     method: 'post',
-    params: { timestamp, id },
-  });
+    params: { timestamp, id }
+  })
 }

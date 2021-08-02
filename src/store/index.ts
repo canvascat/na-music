@@ -1,15 +1,16 @@
 import { createStore } from 'vuex'
-import state from './state'
-import mutations from './mutations'
-import actions from './actions'
+import { state } from './state'
+import { mutations } from './mutations'
+import { actions } from './actions'
 import { changeAppearance } from '@/utils/common'
 import Player from '@/utils/Player'
 // vuex 自定义插件
 import saveToLocalStorage from './plugins/localStorage'
+import type { State } from './type'
 
 const plugins = [saveToLocalStorage]
 
-const store = createStore({
+const store = createStore<State>({
   state,
   mutations,
   actions,

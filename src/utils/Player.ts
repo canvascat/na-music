@@ -1,19 +1,22 @@
-import { getTrackDetail, scrobble, getMP3 } from '@/api/track';
-import shuffle from 'lodash/shuffle';
-import { Howler, Howl } from 'howler';
-import { cacheTrackSource, getTrackSource } from '@/utils/db';
-import { getAlbum } from '@/api/album';
-import { getPlaylistDetail } from '@/api/playlist';
-import { getArtist } from '@/api/artist';
-import { personalFM, fmTrash } from '@/api/others';
-import store from '@/store';
-import { isAccountLoggedIn } from '@/utils/auth';
-import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm';
+import { getTrackDetail, scrobble, getMP3 } from '@/api/track'
+import shuffle from 'lodash/shuffle'
+import { Howler, Howl } from 'howler'
+import { cacheTrackSource, getTrackSource } from '@/utils/db'
+import { getAlbum } from '@/api/album'
+import { getPlaylistDetail } from '@/api/playlist'
+import { getArtist } from '@/api/artist'
+import { personalFM, fmTrash } from '@/api/others'
+import store from '@/store'
+import { isAccountLoggedIn } from '@/utils/auth'
+import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm'
+import { Song } from '@/api/types'
 
 const electron =
-  process.env.IS_ELECTRON === true ? window.require('electron') : null;
+  process.env.IS_ELECTRON === true ? window.require('electron') : null
 const ipcRenderer =
-  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null;
+  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null
+
+type TrackID = number | 'first'
 
 export default class {
   // 播放器状态
@@ -26,354 +29,380 @@ export default class {
   private _volumeBeforeMuted = 1; // 用于保存静音前的音量
 
   // 播放信息
-  private _list = []; // 播放列表
+  private _list: number[] = []; // 播放列表
   private _current = 0; // 当前播放歌曲在播放列表里的index
-  private _shuffledList = []; // 被随机打乱的播放列表，随机播放模式下会使用此播放列表
+  private _shuffledList: number[] = []; // 被随机打乱的播放列表，随机播放模式下会使用此播放列表
   private _shuffledCurrent = 0; // 当前播放歌曲在随机列表里面的index
   private _playlistSource = { type: 'album', id: 123 }; // 当前播放列表的信息
-  private _currentTrack: { id: number | string, name: string } = { id: 86827685, name: '' }; // 当前播放歌曲的详细信息
+  private _currentTrack: Song = {} as Song; // 当前播放歌曲的详细信息
   private _playNextList = []; // 当这个list不为空时，会优先播放这个list的歌
   private _isPersonalFM = false; // 是否是私人FM模式
   private _personalFMTrack = { id: 0 }; // 私人FM当前歌曲
   private _personalFMNextTrack = { id: 0 }; // 私人FM下一首歌曲信息（为了快速加载下一首）
 
   // howler (https://github.com/goldfire/howler.js)
-  private _howler = null;
-  constructor() {
+  private _howler: Howl = null;
+  constructor () {
     Object.defineProperty(this, '_howler', {
-      enumerable: false,
-    });
+      enumerable: false
+    })
     // init
-    this._init();
-    window.yesplaymusic = {};
-    window.yesplaymusic.player = this;
+    this._init()
+    Object.defineProperty(window, 'yesplaymusic', { value: { player: this } })
   }
 
-  get repeatMode() {
-    return this._repeatMode;
+  get repeatMode () {
+    return this._repeatMode
   }
-  set repeatMode(mode) {
-    if (this._isPersonalFM) return;
+
+  set repeatMode (mode) {
+    if (this._isPersonalFM) return
     if (!['off', 'on', 'one'].includes(mode)) {
-      console.warn("repeatMode: invalid args, must be 'on' | 'off' | 'one'");
-      return;
+      console.warn("repeatMode: invalid args, must be 'on' | 'off' | 'one'")
+      return
     }
-    this._repeatMode = mode;
+    this._repeatMode = mode
   }
 
-  get shuffle() {
-    return this._shuffle;
+  get shuffle () {
+    return this._shuffle
   }
-  set shuffle(shuffle) {
-    if (this._isPersonalFM) return;
+
+  set shuffle (shuffle) {
+    if (this._isPersonalFM) return
     if (shuffle !== true && shuffle !== false) {
-      console.warn('shuffle: invalid args, must be Boolean');
-      return;
+      console.warn('shuffle: invalid args, must be Boolean')
+      return
     }
-    this._shuffle = shuffle;
+    this._shuffle = shuffle
     if (shuffle) {
-      this._shuffleTheList();
+      this._shuffleTheList()
     }
   }
 
-  get volume() {
-    return this._volume;
-  }
-  set volume(volume) {
-    this._volume = volume;
-    Howler.volume(volume);
+  get volume () {
+    return this._volume
   }
 
-  get list() {
-    return this.shuffle ? this._shuffledList : this._list;
-  }
-  set list(list) {
-    this._list = list;
+  set volume (volume) {
+    this._volume = volume
+    Howler.volume(volume)
   }
 
-  get current() {
-    return this.shuffle ? this._shuffledCurrent : this._current;
+  get list () {
+    return this.shuffle ? this._shuffledList : this._list
   }
-  set current(current) {
+
+  set list (list) {
+    this._list = list
+  }
+
+  get current () {
+    return this.shuffle ? this._shuffledCurrent : this._current
+  }
+
+  set current (current) {
     if (this.shuffle) {
-      this._shuffledCurrent = current;
+      this._shuffledCurrent = current
     } else {
-      this._current = current;
+      this._current = current
     }
   }
 
-  get enabled() {
-    return this._enabled;
+  get enabled () {
+    return this._enabled
   }
-  get playing() {
-    return this._playing;
+
+  get playing () {
+    return this._playing
   }
-  get currentTrack() {
-    return this._currentTrack;
+
+  get currentTrack () {
+    return this._currentTrack
   }
-  get playlistSource() {
-    return this._playlistSource;
+
+  get playlistSource () {
+    return this._playlistSource
   }
-  get playNextList() {
-    return this._playNextList;
+
+  get playNextList () {
+    return this._playNextList
   }
-  get isPersonalFM() {
-    return this._isPersonalFM;
+
+  get isPersonalFM () {
+    return this._isPersonalFM
   }
-  get personalFMTrack() {
-    return this._personalFMTrack;
+
+  get personalFMTrack () {
+    return this._personalFMTrack
   }
-  get currentTrackDuration() {
-    const trackDuration = this._currentTrack.dt || 1000;
-    let duration = ~~(trackDuration / 1000);
-    return duration > 1 ? duration - 1 : duration;
+
+  get currentTrackDuration () {
+    const trackDuration = this._currentTrack.dt || 1000
+    const duration = ~~(trackDuration / 1000)
+    return duration > 1 ? duration - 1 : duration
   }
-  get progress() {
-    return this._progress;
+
+  get progress () {
+    return this._progress
   }
-  set progress(value) {
+
+  set progress (value) {
     if (this._howler) {
-      this._howler.seek(value);
+      this._howler.seek(value)
     }
   }
-  get isCurrentTrackLiked() {
-    return store.state.liked.songs.includes(this.currentTrack.id);
+
+  get isCurrentTrackLiked () {
+    return store.state.liked.songs.includes(this.currentTrack.id)
   }
 
-  private _init() {
-    this._loadSelfFromLocalStorage();
-    Howler.autoUnlock = false;
-    Howler.usingWebAudio = true;
-    Howler.volume(this.volume);
+  private _init () {
+    this._loadSelfFromLocalStorage()
+    Howler.autoUnlock = false
+    Howler.usingWebAudio = true
+    Howler.volume(this.volume)
 
     if (this._enabled) {
       // 恢复当前播放歌曲
       this._replaceCurrentTrack(this._currentTrack.id, false).then(() => {
-        this._howler?.seek(localStorage.getItem('playerCurrentTrackTime') ?? 0);
-      }); // update audio source and init howler
-      this._initMediaSession();
+        this._howler?.seek(+localStorage.getItem('playerCurrentTrackTime') || 0)
+      }) // update audio source and init howler
+      this._initMediaSession()
     }
 
-    this._setIntervals();
+    this._setIntervals()
 
     // 初始化私人FM
     if (this._personalFMTrack.id === 0 || this._personalFMNextTrack.id === 0) {
       personalFM().then(result => {
-        this._personalFMTrack = result.data[0];
-        this._personalFMNextTrack = result.data[1];
-        return this._personalFMTrack;
-      });
+        this._personalFMTrack = result.data[0]
+        this._personalFMNextTrack = result.data[1]
+        return this._personalFMTrack
+      })
     }
   }
-  private _setIntervals() {
+
+  private _setIntervals () {
     // 同步播放进度
     // TODO: 如果 _progress 在别的地方被改变了，这个定时器会覆盖之前改变的值，是bug
     setInterval(() => {
-      if (this._howler === null) return;
-      this._progress = this._howler.seek();
-      localStorage.setItem('playerCurrentTrackTime', (this._progress).toString());
-    }, 1000);
+      if (this._howler === null) return
+      this._progress = this._howler.seek() as number
+      localStorage.setItem('playerCurrentTrackTime', (this._progress).toString())
+    }, 1000)
   }
-  private _getNextTrack() {
+
+  private _getNextTrack () {
     if (this._playNextList.length > 0) {
-      let trackID = this._playNextList.shift();
-      return [trackID, this.current];
+      const trackID = this._playNextList.shift()
+      return [trackID, this.current]
     }
 
     // 当歌曲是列表最后一首 && 循环模式开启
     if (this.list.length === this.current + 1 && this.repeatMode === 'on') {
-      return [this.list[0], 0];
+      return [this.list[0], 0]
     }
 
     // 返回 [trackID, index]
-    return [this.list[this.current + 1], this.current + 1];
+    return [this.list[this.current + 1], this.current + 1]
   }
-  private _getPrevTrack() {
+
+  private _getPrevTrack () {
     // 当歌曲是列表第一首 && 循环模式开启
     if (this.current === 0 && this.repeatMode === 'on') {
-      return [this.list[this.list.length - 1], this.list.length - 1];
+      return [this.list[this.list.length - 1], this.list.length - 1]
     }
 
     // 返回 [trackID, index]
-    return [this.list[this.current - 1], this.current - 1];
+    return [this.list[this.current - 1], this.current - 1]
   }
-  private async _shuffleTheList(firstTrackID = this._currentTrack.id) {
-    let list = this._list.filter(tid => tid !== firstTrackID);
-    if (firstTrackID === 'first') list = this._list;
-    this._shuffledList = shuffle(list);
-    if (firstTrackID !== 'first') this._shuffledList.unshift(firstTrackID);
+
+  private async _shuffleTheList (firstTrackID: TrackID = this._currentTrack.id) {
+    let list = this._list.filter(tid => tid !== firstTrackID)
+    if (firstTrackID === 'first') list = this._list
+    this._shuffledList = shuffle(list)
+    if (firstTrackID !== 'first') this._shuffledList.unshift(firstTrackID)
   }
-  private async _scrobble(track, time, completed = false) {
+
+  private async _scrobble (track, time, completed = false) {
     console.debug(
       `[debug][Player.js] scrobble track 👉 ${track.name} by ${track.ar[0].name} 👉 time:${time} completed: ${completed}`
-    );
-    const trackDuration = ~~(track.dt / 1000);
-    time = completed ? trackDuration : ~~time;
+    )
+    const trackDuration = ~~(track.dt / 1000)
+    time = completed ? trackDuration : ~~time
     scrobble({
       id: track.id,
       sourceid: this.playlistSource.id,
-      time,
-    });
+      time
+    })
     if (
       store.state.lastfm.key !== undefined &&
       (time >= trackDuration / 2 || time >= 240)
     ) {
-      const timestamp = ~~(new Date().getTime() / 1000) - time;
+      const timestamp = ~~(new Date().getTime() / 1000) - time
       trackScrobble({
         artist: track.ar[0].name,
         track: track.name,
         timestamp,
         album: track.al.name,
         trackNumber: track.no,
-        duration: trackDuration,
-      });
+        duration: trackDuration
+      })
     }
   }
-  private _playAudioSource(source, autoplay = true) {
-    Howler.unload();
+
+  private _playAudioSource (source, autoplay = true) {
+    Howler.unload()
     this._howler = new Howl({
       src: [source],
       html5: true,
-      format: ['mp3', 'flac'],
-    });
+      format: ['mp3', 'flac']
+    })
     if (autoplay) {
-      this.play();
-      document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`;
+      this.play()
+      document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`
     }
-    this.setOutputDevice();
+    this.setOutputDevice()
     this._howler.once('end', () => {
-      this._nextTrackCallback();
-    });
+      this._nextTrackCallback()
+    })
   }
-  private _getAudioSourceFromCache(id) {
+
+  private _getAudioSourceFromCache (id) {
     return getTrackSource(id).then(t => {
-      if (!t) return null;
-      const source = URL.createObjectURL(new Blob([t.source]));
-      return source;
-    });
+      if (!t) return null
+      const source = URL.createObjectURL(new Blob([t.source]))
+      return source
+    })
   }
-  private _getAudioSourceFromNetease(track) {
+
+  private _getAudioSourceFromNetease (track) {
     if (isAccountLoggedIn()) {
       return getMP3(track.id).then(result => {
-        if (!result.data[0]) return null;
-        if (!result.data[0].url) return null;
-        if (result.data[0].freeTrialInfo !== null) return null; // 跳过只能试听的歌曲
-        const source = result.data[0].url.replace(/^http:/, 'https:');
+        if (!result.data[0]) return null
+        if (!result.data[0].url) return null
+        if (result.data[0].freeTrialInfo !== null) return null // 跳过只能试听的歌曲
+        const source = result.data[0].url.replace(/^http:/, 'https:')
         if (store.state.settings.automaticallyCacheSongs) {
-          cacheTrackSource(track, source, result.data[0].br);
+          cacheTrackSource(track, source, result.data[0].br)
         }
-        return source;
-      });
+        return source
+      })
     } else {
       return new Promise(resolve => {
-        resolve(`https://music.163.com/song/media/outer/url?id=${track.id}`);
-      });
+        resolve(`https://music.163.com/song/media/outer/url?id=${track.id}`)
+      })
     }
   }
-  private _getAudioSourceFromUnblockMusic(track) {
-    console.debug(`[debug][Player.js] _getAudioSourceFromUnblockMusic`);
+
+  private _getAudioSourceFromUnblockMusic (track) {
+    console.debug('[debug][Player.js] _getAudioSourceFromUnblockMusic')
     if (
       process.env.IS_ELECTRON !== true ||
       store.state.settings.enableUnblockNeteaseMusic === false
     ) {
-      return null;
+      return null
     }
-    const source = ipcRenderer.sendSync('unblock-music', track);
+    const source = ipcRenderer.sendSync('unblock-music', track)
     if (store.state.settings.automaticallyCacheSongs && source?.url) {
       // TODO: 将unblockMusic字样换成真正的来源（比如酷我咪咕等）
-      cacheTrackSource(track, source.url, 128000, 'unblockMusic');
+      cacheTrackSource(track, source.url, 128000, 'unblockMusic')
     }
-    return source?.url;
+    return source?.url
   }
-  private _getAudioSource(track) {
-    return this._getAudioSourceFromCache(String(track.id))
-      .then(source => {
-        return source ?? this._getAudioSourceFromNetease(track);
-      })
-      .then(source => {
-        return source ?? this._getAudioSourceFromUnblockMusic(track);
-      });
+
+  private async _getAudioSource (track: Song) {
+    let source = await this._getAudioSourceFromCache(String(track.id))
+    if (!source) source = await this._getAudioSourceFromNetease(track)
+    if (!source) source = await this._getAudioSourceFromUnblockMusic(track)
+    return source
   }
-  private _replaceCurrentTrack(
-    id,
+
+  private _replaceCurrentTrack (
+    id: number,
     autoplay = true,
     ifUnplayableThen = 'playNextTrack'
   ) {
     if (autoplay && this._currentTrack.name) {
-      this._scrobble(this.currentTrack, this._howler?.seek());
+      this._scrobble(this.currentTrack, this._howler?.seek())
     }
     return getTrackDetail(id).then(data => {
-      let track = data.songs[0];
-      this._currentTrack = track;
-      this._updateMediaSessionMetaData(track);
+      const track = data.songs[0]
+      this._currentTrack = track
+      this._updateMediaSessionMetaData(track)
       return this._getAudioSource(track).then(source => {
         if (source) {
-          this._playAudioSource(source, autoplay);
-          this._cacheNextTrack();
-          return source;
+          this._playAudioSource(source, autoplay)
+          this._cacheNextTrack()
+          return source
         } else {
-          store.dispatch('showToast', `无法播放 ${track.name}`);
+          store.dispatch('showToast', `无法播放 ${track.name}`)
           ifUnplayableThen === 'playNextTrack'
             ? this.playNextTrack()
-            : this.playPrevTrack();
+            : this.playPrevTrack()
         }
-      });
-    });
+      })
+    })
   }
-  private _cacheNextTrack() {
-    let nextTrackID = this._isPersonalFM
+
+  private _cacheNextTrack () {
+    const nextTrackID = this._isPersonalFM
       ? this._personalFMNextTrack.id
-      : this._getNextTrack()[0];
-    if (!nextTrackID) return;
-    if (this._personalFMTrack.id == nextTrackID) return;
+      : this._getNextTrack()[0]
+    if (!nextTrackID) return
+    if (this._personalFMTrack.id === nextTrackID) return
     getTrackDetail(nextTrackID).then(data => {
-      let track = data.songs[0];
-      this._getAudioSource(track);
-    });
+      const track = data.songs[0]
+      this._getAudioSource(track)
+    })
   }
-  private _loadSelfFromLocalStorage() {
-    const player = JSON.parse(localStorage.getItem('player'));
-    if (!player) return;
+
+  private _loadSelfFromLocalStorage () {
+    const player = JSON.parse(localStorage.getItem('player'))
+    if (!player) return
     for (const [key, value] of Object.entries(player)) {
-      this[key] = value;
+      this[key] = value
     }
   }
-  private _initMediaSession() {
+
+  private _initMediaSession () {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.setActionHandler('play', () => {
-        this.play();
-      });
+        this.play()
+      })
       navigator.mediaSession.setActionHandler('pause', () => {
-        this.pause();
-      });
+        this.pause()
+      })
       navigator.mediaSession.setActionHandler('previoustrack', () => {
-        this.playPrevTrack();
-      });
+        this.playPrevTrack()
+      })
       navigator.mediaSession.setActionHandler('nexttrack', () => {
-        this.playNextTrack();
-      });
+        this.playNextTrack()
+      })
       navigator.mediaSession.setActionHandler('stop', () => {
-        this.pause();
-      });
+        this.pause()
+      })
       navigator.mediaSession.setActionHandler('seekto', event => {
-        this.seek(event.seekTime);
-        this._updateMediaSessionPositionState();
-      });
+        this.seek(event.seekTime)
+        this._updateMediaSessionPositionState()
+      })
       navigator.mediaSession.setActionHandler('seekbackward', event => {
-        this.seek(this.seek() - (event.seekOffset || 10));
-        this._updateMediaSessionPositionState();
-      });
+        this.seek(this.seek() - (event.seekOffset || 10))
+        this._updateMediaSessionPositionState()
+      })
       navigator.mediaSession.setActionHandler('seekforward', event => {
-        this.seek(this.seek() + (event.seekOffset || 10));
-        this._updateMediaSessionPositionState();
-      });
+        this.seek(this.seek() + (event.seekOffset || 10))
+        this._updateMediaSessionPositionState()
+      })
     }
   }
-  private _updateMediaSessionMetaData(track) {
+
+  private _updateMediaSessionMetaData (track: Song) {
     if ('mediaSession' in navigator === false) {
-      return;
+      return
     }
-    let artists = track.ar.map(a => a.name);
+    const artists = track.ar.map(a => a.name)
     navigator.mediaSession.metadata = new window.MediaMetadata({
       title: track.name,
       artist: artists.join(','),
@@ -382,249 +411,271 @@ export default class {
         {
           src: track.al.picUrl + '?param=512y512',
           type: 'image/jpg',
-          sizes: '512x512',
-        },
-      ],
-    });
+          sizes: '512x512'
+        }
+      ]
+    })
   }
-  private _updateMediaSessionPositionState() {
+
+  private _updateMediaSessionPositionState () {
     if ('mediaSession' in navigator === false) {
-      return;
+      return
     }
     if ('setPositionState' in navigator.mediaSession) {
       navigator.mediaSession.setPositionState({
         duration: ~~(this.currentTrack.dt / 1000),
         playbackRate: 1.0,
-        position: this.seek(),
-      });
+        position: this.seek()
+      })
     }
-  }
-  private _nextTrackCallback() {
-    this._scrobble(this._currentTrack, 0, true);
-    if (!this.isPersonalFM && this.repeatMode === 'one') {
-      this._replaceCurrentTrack(this._currentTrack.id);
-    } else {
-      this.playNextTrack();
-    }
-  }
-  private _loadPersonalFMNextTrack() {
-    return personalFM().then(result => {
-      this._personalFMNextTrack = result.data[0];
-      this._cacheNextTrack(); // cache next track
-      return this._personalFMNextTrack;
-    });
-  }
-  private _playDiscordPresence(track, seekTime = 0) {
-    if (
-      process.env.IS_ELECTRON !== true ||
-      store.state.settings.enableDiscordRichPresence === false
-    ) {
-      return null;
-    }
-    let copyTrack = { ...track };
-    copyTrack.dt -= seekTime * 1000;
-    ipcRenderer.send('playDiscordPresence', copyTrack);
-  }
-  private _pauseDiscordPresence(track) {
-    if (
-      process.env.IS_ELECTRON !== true ||
-      store.state.settings.enableDiscordRichPresence === false
-    ) {
-      return null;
-    }
-    ipcRenderer.send('pauseDiscordPresence', track);
   }
 
-  currentTrackID() {
-    const { list, current } = this._getListAndCurrent();
-    return list[current];
+  private _nextTrackCallback () {
+    this._scrobble(this._currentTrack, 0, true)
+    if (!this.isPersonalFM && this.repeatMode === 'one') {
+      this._replaceCurrentTrack(this._currentTrack.id)
+    } else {
+      this.playNextTrack()
+    }
   }
-  appendTrack(trackID) {
-    this.list.append(trackID);
+
+  private _loadPersonalFMNextTrack () {
+    return personalFM().then(result => {
+      this._personalFMNextTrack = result.data[0]
+      this._cacheNextTrack() // cache next track
+      return this._personalFMNextTrack
+    })
   }
-  playNextTrack(isFM = false) {
+
+  private _playDiscordPresence (track, seekTime = 0) {
+    if (
+      process.env.IS_ELECTRON !== true ||
+      store.state.settings.enableDiscordRichPresence === false
+    ) {
+      return null
+    }
+    const copyTrack = { ...track }
+    copyTrack.dt -= seekTime * 1000
+    ipcRenderer.send('playDiscordPresence', copyTrack)
+  }
+
+  private _pauseDiscordPresence (track) {
+    if (
+      process.env.IS_ELECTRON !== true ||
+      store.state.settings.enableDiscordRichPresence === false
+    ) {
+      return null
+    }
+    ipcRenderer.send('pauseDiscordPresence', track)
+  }
+
+  // currentTrackID() {
+  //   const { list, current } = this._getListAndCurrent();
+  //   return list[current];
+  // }
+  // appendTrack(trackID: number) {
+  //   this.list.push(trackID);
+  // }
+  playNextTrack (isFM = false) {
     if (this._isPersonalFM || isFM === true) {
-      this._isPersonalFM = true;
-      this._personalFMTrack = this._personalFMNextTrack;
-      this._replaceCurrentTrack(this._personalFMTrack.id);
-      this._loadPersonalFMNextTrack();
-      return true;
+      this._isPersonalFM = true
+      this._personalFMTrack = this._personalFMNextTrack
+      this._replaceCurrentTrack(this._personalFMTrack.id)
+      this._loadPersonalFMNextTrack()
+      return true
     }
     // TODO: 切换歌曲时增加加载中的状态
-    const [trackID, index] = this._getNextTrack();
+    const [trackID, index] = this._getNextTrack()
     if (trackID === undefined) {
-      this._howler?.stop();
-      this._playing = false;
-      return false;
+      this._howler?.stop()
+      this._playing = false
+      return false
     }
-    this.current = index;
-    this._replaceCurrentTrack(trackID);
-    return true;
-  }
-  playPrevTrack() {
-    const [trackID, index] = this._getPrevTrack();
-    if (trackID === undefined) return false;
-    this.current = index;
-    this._replaceCurrentTrack(trackID, true, 'playPrevTrack');
-    return true;
-  }
-  saveSelfToLocalStorage() {
-    let player = {};
-    for (let [key, value] of Object.entries(this)) {
-      if (key === '_playing') continue;
-      player[key] = value;
-    }
-
-    localStorage.setItem('player', JSON.stringify(player));
+    this.current = index
+    this._replaceCurrentTrack(trackID)
+    return true
   }
 
-  pause() {
-    this._howler?.pause();
-    this._playing = false;
-    document.title = 'YesPlayMusic';
-    this._pauseDiscordPresence(this._currentTrack);
+  playPrevTrack () {
+    const [trackID, index] = this._getPrevTrack()
+    if (trackID === undefined) return false
+    this.current = index
+    this._replaceCurrentTrack(trackID, true, 'playPrevTrack')
+    return true
   }
-  play() {
-    if (this._howler?.playing()) return;
-    this._howler?.play();
-    this._playing = true;
-    document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`;
-    this._playDiscordPresence(this._currentTrack, this.seek());
+
+  saveSelfToLocalStorage () {
+    const player = {}
+    for (const [key, value] of Object.entries(this)) {
+      if (key === '_playing') continue
+      player[key] = value
+    }
+
+    localStorage.setItem('player', JSON.stringify(player))
+  }
+
+  pause () {
+    this._howler?.pause()
+    this._playing = false
+    document.title = 'YesPlayMusic'
+    this._pauseDiscordPresence(this._currentTrack)
+  }
+
+  play () {
+    if (this._howler?.playing()) return
+    this._howler?.play()
+    this._playing = true
+    document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`
+    this._playDiscordPresence(this._currentTrack, this.seek())
     if (store.state.lastfm.key !== undefined) {
       trackUpdateNowPlaying({
         artist: this.currentTrack.ar[0].name,
         track: this.currentTrack.name,
         album: this.currentTrack.al.name,
         trackNumber: this.currentTrack.no,
-        duration: ~~(this.currentTrack.dt / 1000),
-      });
+        duration: ~~(this.currentTrack.dt / 1000)
+      })
     }
-  }
-  playOrPause() {
-    if (this._howler?.playing()) {
-      this.pause();
-    } else {
-      this.play();
-    }
-  }
-  seek(time = null) {
-    if (time !== null) {
-      this._howler?.seek(time);
-      if (this._playing)
-        this._playDiscordPresence(this._currentTrack, this.seek());
-    }
-    return this._howler === null ? 0 : this._howler.seek();
-  }
-  mute() {
-    if (this.volume === 0) {
-      this.volume = this._volumeBeforeMuted;
-    } else {
-      this._volumeBeforeMuted = this.volume;
-      this.volume = 0;
-    }
-  }
-  setOutputDevice() {
-    if (this._howler?._sounds.length <= 0 || !this._howler?._sounds[0]._node) {
-      return;
-    }
-    this._howler?._sounds[0]._node.setSinkId(store.state.settings.outputDevice);
   }
 
-  replacePlaylist(
+  playOrPause () {
+    if (this._howler?.playing()) {
+      this.pause()
+    } else {
+      this.play()
+    }
+  }
+
+  seek (time = null) {
+    if (time !== null) {
+      this._howler?.seek(time)
+      if (this._playing) { this._playDiscordPresence(this._currentTrack, this.seek()) }
+    }
+    return this._howler === null ? 0 : this._howler.seek() as number
+  }
+
+  mute () {
+    if (this.volume === 0) {
+      this.volume = this._volumeBeforeMuted
+    } else {
+      this._volumeBeforeMuted = this.volume
+      this.volume = 0
+    }
+  }
+
+  setOutputDevice () {
+    // TODO: FIX TYPE
+    // @ts-ignore
+    const sounds: any[] = this._howler?._sounds
+    if (!sounds || sounds.length <= 0) return
+    if (sounds[0]._node) return
+    sounds[0]._node.setSinkId(store.state.settings.outputDevice)
+  }
+
+  replacePlaylist (
     trackIDs,
     playlistSourceID,
     playlistSourceType,
-    autoPlayTrackID = 'first'
+    autoPlayTrackID: TrackID = 'first'
   ) {
-    this._isPersonalFM = false;
-    if (!this._enabled) this._enabled = true;
-    this.list = trackIDs;
-    this.current = 0;
+    this._isPersonalFM = false
+    if (!this._enabled) this._enabled = true
+    this.list = trackIDs
+    this.current = 0
     this._playlistSource = {
       type: playlistSourceType,
-      id: playlistSourceID,
-    };
-    if (this.shuffle) this._shuffleTheList(autoPlayTrackID);
+      id: playlistSourceID
+    }
+    if (this.shuffle) this._shuffleTheList(autoPlayTrackID)
     if (autoPlayTrackID === 'first') {
-      this._replaceCurrentTrack(this.list[0]);
+      this._replaceCurrentTrack(this.list[0])
     } else {
-      this.current = trackIDs.indexOf(autoPlayTrackID);
-      this._replaceCurrentTrack(autoPlayTrackID);
+      this.current = trackIDs.indexOf(autoPlayTrackID)
+      this._replaceCurrentTrack(autoPlayTrackID)
     }
   }
-  playAlbumByID(id, trackID = 'first') {
+
+  playAlbumByID (id: number, trackID: TrackID = 'first') {
     getAlbum(id).then(data => {
-      let trackIDs = data.songs.map(t => t.id);
-      this.replacePlaylist(trackIDs, id, 'album', trackID);
-    });
+      const trackIDs = data.songs.map(t => t.id)
+      this.replacePlaylist(trackIDs, id, 'album', trackID)
+    })
   }
-  playPlaylistByID(id, trackID = 'first', noCache = false) {
+
+  playPlaylistByID (id: number, trackID: TrackID, noCache = false) {
     console.debug(
       `[debug][Player.js] playPlaylistByID 👉 id:${id} trackID:${trackID} noCache:${noCache}`
-    );
+    )
     getPlaylistDetail(id, noCache).then(data => {
-      let trackIDs = data.playlist.trackIds.map(t => t.id);
-      this.replacePlaylist(trackIDs, id, 'playlist', trackID);
-    });
+      const trackIDs = data.playlist.trackIds.map(t => t.id)
+      this.replacePlaylist(trackIDs, id, 'playlist', trackID)
+    })
   }
-  playArtistByID(id, trackID = 'first') {
+
+  playArtistByID (id: number, trackID: TrackID = 'first') {
     getArtist(id).then(data => {
-      let trackIDs = data.hotSongs.map(t => t.id);
-      this.replacePlaylist(trackIDs, id, 'artist', trackID);
-    });
+      const trackIDs = data.hotSongs.map(t => t.id)
+      this.replacePlaylist(trackIDs, id, 'artist', trackID)
+    })
   }
-  playTrackOnListByID(id, listName = 'default') {
+
+  playTrackOnListByID (id, listName = 'default') {
     if (listName === 'default') {
-      this._current = this._list.findIndex(t => t === id);
+      this._current = this._list.findIndex(t => t === id)
     }
-    this._replaceCurrentTrack(id);
+    this._replaceCurrentTrack(id)
   }
-  addTrackToPlayNext(trackID, playNow = false) {
-    this._playNextList.push(trackID);
-    if (playNow) this.playNextTrack();
+
+  addTrackToPlayNext (trackID, playNow = false) {
+    this._playNextList.push(trackID)
+    if (playNow) this.playNextTrack()
   }
-  playPersonalFM() {
-    this._isPersonalFM = true;
-    if (!this._enabled) this._enabled = true;
+
+  playPersonalFM () {
+    this._isPersonalFM = true
+    if (!this._enabled) this._enabled = true
     if (this._currentTrack.id !== this._personalFMTrack.id) {
       this._replaceCurrentTrack(this._personalFMTrack.id).then(() =>
         this.playOrPause()
-      );
+      )
     } else {
-      this.playOrPause();
+      this.playOrPause()
     }
   }
-  moveToFMTrash() {
-    this._isPersonalFM = true;
-    this.playNextTrack();
-    fmTrash(this._personalFMTrack.id);
+
+  moveToFMTrash () {
+    this._isPersonalFM = true
+    this.playNextTrack()
+    fmTrash(this._personalFMTrack.id)
   }
 
-  sendSelfToIpcMain() {
-    if (process.env.IS_ELECTRON !== true) return false;
+  sendSelfToIpcMain () {
+    if (process.env.IS_ELECTRON !== true) return false
     ipcRenderer.send('player', {
       playing: this.playing,
-      likedCurrentTrack: store.state.liked.songs.includes(this.currentTrack.id),
-    });
+      likedCurrentTrack: store.state.liked.songs.includes(this.currentTrack.id)
+    })
   }
 
-  switchRepeatMode() {
+  switchRepeatMode () {
     if (this._repeatMode === 'on') {
-      this.repeatMode = 'one';
+      this.repeatMode = 'one'
     } else if (this._repeatMode === 'one') {
-      this.repeatMode = 'off';
+      this.repeatMode = 'off'
     } else {
-      this.repeatMode = 'on';
+      this.repeatMode = 'on'
     }
   }
-  switchShuffle() {
-    this.shuffle = !this.shuffle;
+
+  switchShuffle () {
+    this.shuffle = !this.shuffle
   }
 
-  clearPlayNextList() {
-    this._playNextList = [];
+  clearPlayNextList () {
+    this._playNextList = []
   }
-  removeTrackFromQueue(index) {
-    this._playNextList.splice(index, 1);
+
+  removeTrackFromQueue (index: number) {
+    this._playNextList.splice(index, 1)
   }
 }

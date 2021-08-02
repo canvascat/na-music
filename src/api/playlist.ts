@@ -1,6 +1,6 @@
-import request from '@/utils/request';
-import { mapTrackPlayableStatus } from '@/utils/common';
-import type { RecommendPlayListResponse, PlaylistDetail } from './types';
+import request from '@/utils/request'
+import { mapTrackPlayableStatus } from '@/utils/common'
+import type { RecommendPlayListResponse, Privilege, PlaylistItem } from './types'
 
 /**
  * 推荐歌单
@@ -10,8 +10,8 @@ import type { RecommendPlayListResponse, PlaylistDetail } from './types';
  * @param {Object} params
  * @param {number=} params.limit
  */
-export function recommendPlaylist(params: { limit: number }) {
-  return request.get<any, RecommendPlayListResponse>('/personalized', { params });
+export function recommendPlaylist (params: { limit: number }) {
+  return request.get<any, RecommendPlayListResponse>('/personalized', { params })
 }
 /**
  * 获取每日推荐歌单
@@ -19,8 +19,8 @@ export function recommendPlaylist(params: { limit: number }) {
  * @param {Object} params
  * @param {number=} params.limit
  */
-export function dailyRecommendPlaylist(params) {
-  return request.get('/recommend/resource', { params });
+export function dailyRecommendPlaylist (params) {
+  return request.get('/recommend/resource', { params })
 }
 /**
  * 获取歌单详情
@@ -32,15 +32,18 @@ export function dailyRecommendPlaylist(params) {
  * @param {number} id - 3136952023
  * @param {boolean=} noCache
  */
-export async function getPlaylistDetail(id: number, noCache = false) {
-  const params = { id };
-  if (noCache) (params as any).timestamp = Date.now();
-  const data = await request.get<any, PlaylistDetail.RootObject>('/playlist/detail', { params });
+export async function getPlaylistDetail (id: number, noCache = false) {
+  const params = { id }
+  if (noCache) (params as any).timestamp = Date.now()
+  const data = await request.get<any, {
+    playlist: PlaylistItem
+    privileges: Privilege[]
+  }>('/playlist/detail', { params })
   if (data.playlist) {
     const { playlist, privileges = [] } = data
-    playlist.tracks = mapTrackPlayableStatus(playlist.tracks, privileges);
+    playlist.tracks = mapTrackPlayableStatus(playlist.tracks, privileges)
   }
-  return data;
+  return data
 }
 /**
  * 获取精品歌单
@@ -53,12 +56,12 @@ export async function getPlaylistDetail(id: number, noCache = false) {
  * @param {number=} params.limit
  * @param {number} params.before
  */
-export function highQualityPlaylist(params) {
+export function highQualityPlaylist (params) {
   return request({
     url: '/top/playlist/highquality',
     method: 'get',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -72,31 +75,31 @@ export function highQualityPlaylist(params) {
  * @param {string} params.cat
  * @param {number=} params.limit
  */
-export function topPlaylist(params) {
+export function topPlaylist (params) {
   return request({
     url: '/top/playlist',
     method: 'get',
-    params,
-  });
+    params
+  })
 }
 
 /**
  * 歌单分类
  * 说明 : 调用此接口,可获取歌单分类,包含 category 信息
  */
-export function playlistCatlist() {
+export function playlistCatlist () {
   return request({
     url: '/playlist/catlist',
-    method: 'get',
-  });
+    method: 'get'
+  })
 }
 
 /**
  * 所有榜单
  * 说明 : 调用此接口,可获取所有榜单 接口地址 : /toplist
  */
-export function toplists() {
-  return request.get('/toplist');
+export function toplists () {
+  return request.get('/toplist')
 }
 
 /**
@@ -108,9 +111,9 @@ export function toplists() {
  * @param {number} params.t
  * @param {number} params.id
  */
-export function subscribePlaylist(params) {
-  params.timestamp = Date.now();
-  return request.get('/playlist/subscribe', { params });
+export function subscribePlaylist (params) {
+  params.timestamp = Date.now()
+  return request.get('/playlist/subscribe', { params })
 }
 
 /**
@@ -119,8 +122,8 @@ export function subscribePlaylist(params) {
  * - id : 歌单id,可多个,用逗号隔开
  *  * @param {number} id
  */
-export function deletePlaylist(id: number) {
-  return request.get('/playlist/delete', { params: { id } });
+export function deletePlaylist (id: number) {
+  return request.get('/playlist/delete', { params: { id } })
 }
 
 /**
@@ -134,13 +137,13 @@ export function deletePlaylist(id: number) {
  * @param {number} params.privacy
  * @param {string} params.type
  */
-export function createPlaylist(params) {
-  params.timestamp = Date.now();
+export function createPlaylist (params) {
+  params.timestamp = Date.now()
   return request({
     url: '/playlist/create',
     method: 'post',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -152,13 +155,13 @@ export function createPlaylist(params) {
  * @param {string} params.op
  * @param {string} params.pid
  */
-export function addOrRemoveTrackFromPlaylist(params) {
-  params.timestamp = new Date().getTime();
+export function addOrRemoveTrackFromPlaylist (params) {
+  params.timestamp = new Date().getTime()
   return request({
     url: '/playlist/tracks',
     method: 'post',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -168,11 +171,11 @@ export function addOrRemoveTrackFromPlaylist(params) {
  * @param {string} params.op
  * @param {string} params.pid
  */
-export async function dailyRecommendTracks() {
+export async function dailyRecommendTracks () {
   const result = await request.get('/recommend/songs', { params: { timestamp: Date.now() } })
   result.data.dailySongs = mapTrackPlayableStatus(
     result.data.dailySongs,
     result.data.privileges
-  );
-  return result;
+  )
+  return result
 }

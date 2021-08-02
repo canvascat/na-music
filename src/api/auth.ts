@@ -1,4 +1,4 @@
-import request from '@/utils/request';
+import request from '@/utils/request'
 
 /**
  * 手机登录
@@ -12,12 +12,12 @@ import request from '@/utils/request';
  * @param {string=} params.countrycode
  * @param {string=} params.md5_password
  */
-export function loginWithPhone(params) {
+export function loginWithPhone (params) {
   return request({
     url: '/login/cellphone',
     method: 'post',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -30,25 +30,25 @@ export function loginWithPhone(params) {
  * @param {string} params.password
  * @param {string=} params.md5_password
  */
-export function loginWithEmail(params) {
+export function loginWithEmail (params) {
   return request({
     url: '/login',
     method: 'post',
-    params,
-  });
+    params
+  })
 }
 
 /**
  * 二维码key生成接口
  */
-export function loginQrCodeKey() {
+export function loginQrCodeKey () {
   return request({
     url: '/login/qr/key',
     method: 'get',
     params: {
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
@@ -59,15 +59,15 @@ export function loginQrCodeKey() {
  * @param {string} params.key
  * @param {string=} params.qrimg 传入后会额外返回二维码图片base64编码
  */
-export function loginQrCodeCreate(params) {
+export function loginQrCodeCreate (params) {
   return request({
     url: '/login/qr/create',
     method: 'get',
     params: {
       ...params,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
@@ -75,15 +75,15 @@ export function loginQrCodeCreate(params) {
  * 说明: 轮询此接口可获取二维码扫码状态,800为二维码过期,801为等待扫码,802为待确认,803为授权登录成功(803状态码下会返回cookies)
  * @param {string} key
  */
-export function loginQrCodeCheck(key) {
+export function loginQrCodeCheck (key) {
   return request({
     url: '/login/qr/check',
     method: 'get',
     params: {
       key,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
@@ -91,20 +91,20 @@ export function loginQrCodeCheck(key) {
  * 说明 : 调用此接口 , 可刷新登录状态
  * - 调用例子 : /login/refresh
  */
-export function refreshCookie() {
+export function refreshCookie () {
   return request({
     url: '/login/refresh',
-    method: 'post',
-  });
+    method: 'post'
+  })
 }
 
 /**
  * 退出登录
  * 说明 : 调用此接口 , 可退出登录
  */
-export function logout() {
+export function logout () {
   return request({
     url: '/logout',
-    method: 'post',
-  });
+    method: 'post'
+  })
 }

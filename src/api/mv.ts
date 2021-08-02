@@ -1,4 +1,4 @@
-import request from '@/utils/request';
+import request from '@/utils/request'
 
 /**
  * 获取 mv 数据
@@ -7,15 +7,15 @@ import request from '@/utils/request';
  * - 调用例子 : /mv/detail?mvid=5436712
  * @param {number} mvid mv 的 id
  */
-export function mvDetail(mvid) {
+export function mvDetail (mvid) {
   return request({
     url: '/mv/detail',
     method: 'get',
     params: {
       mvid,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
@@ -28,12 +28,12 @@ export function mvDetail(mvid) {
  * @param {number} params.id
  * @param {number=} params.r
  */
-export function mvUrl(params) {
+export function mvUrl (params) {
   return request({
     url: '/mv/url',
     method: 'get',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -41,12 +41,12 @@ export function mvUrl(params) {
  * 说明 : 调用此接口 , 传入 mvid 可获取相似 mv
  * @param {number} mvid
  */
-export function simiMv(mvid) {
+export function simiMv (mvid) {
   return request({
     url: '/simi/mv',
     method: 'get',
-    params: { mvid },
-  });
+    params: { mvid }
+  })
 }
 
 /**
@@ -59,11 +59,11 @@ export function simiMv(mvid) {
  * @param {number=} params.t
  */
 
-export function likeAMV(params) {
-  params.timestamp = new Date().getTime();
+export function likeAMV (params) {
+  params.timestamp = new Date().getTime()
   return request({
     url: '/mv/sub',
     method: 'post',
-    params,
-  });
+    params
+  })
 }

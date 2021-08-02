@@ -1,23 +1,22 @@
-import request from '@/utils/request';
-import { mapTrackPlayableStatus } from '@/utils/common';
+import request from '@/utils/request'
+import { mapTrackPlayableStatus } from '@/utils/common'
+import { Artist, Song } from './types'
 
 /**
  * 获取歌手单曲
  * 说明 : 调用此接口 , 传入歌手 id, 可获得歌手部分信息和热门歌曲
  * @param {number} id - 歌手 id, 可由搜索接口获得
  */
-export function getArtist(id) {
-  return request({
-    url: '/artists',
-    method: 'get',
-    params: {
-      id,
-      timestamp: new Date().getTime(),
-    },
-  }).then(data => {
-    data.hotSongs = mapTrackPlayableStatus(data.hotSongs);
-    return data;
-  });
+export async function getArtist (id: number) {
+  const timestamp = Date.now()
+  const data = await request.get<any, {
+    artist: Artist;
+    hotSongs: Song[];
+    more: boolean;
+    code: number;
+  }>('/artists', { params: { id, timestamp } })
+  data.hotSongs = mapTrackPlayableStatus(data.hotSongs)
+  return data
 }
 
 /**
@@ -31,12 +30,12 @@ export function getArtist(id) {
  * @param {number=} params.limit
  * @param {number=} params.offset
  */
-export function getArtistAlbum(params) {
+export function getArtistAlbum (params) {
   return request({
     url: '/artist/album',
     method: 'get',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -49,16 +48,10 @@ export function getArtistAlbum(params) {
  * 4: 日本
  * @param {number=} type
  */
-export function toplistOfArtists(type = null) {
-  let params = {};
-  if (type) {
-    params.type = type;
-  }
-  return request({
-    url: '/toplist/artist',
-    method: 'get',
-    params,
-  });
+export function toplistOfArtists (type?: number) {
+  const params = {}
+  if (type) (params as any).type = type
+  return request.get('/toplist/artist', { params })
 }
 /**
  * 获取歌手 mv
@@ -67,12 +60,12 @@ export function toplistOfArtists(type = null) {
  * @param {number} params.offset
  * @param {number} params.limit
  */
-export function artistMv(params) {
+export function artistMv (params) {
   return request({
     url: '/artist/mv',
     method: 'get',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -84,12 +77,12 @@ export function artistMv(params) {
  * @param {number} params.id
  * @param {number} params.t
  */
-export function followAArtist(params) {
+export function followAArtist (params) {
   return request({
     url: '/artist/sub',
     method: 'post',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -98,10 +91,10 @@ export function followAArtist(params) {
  * - id: 歌手 id
  * @param {number} id
  */
-export function similarArtists(id) {
+export function similarArtists (id) {
   return request({
     url: '/simi/artist',
     method: 'post',
-    params: { id },
-  });
+    params: { id }
+  })
 }

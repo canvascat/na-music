@@ -1,24 +1,24 @@
 export default {
   common: {
     play: 'OYNAT',
-    songs: 'Müzikler',
+    songs: 'Müzikler'
   },
   nav: {
     home: 'Anasayfa',
     explore: 'Keşfet',
     library: 'Kitaplık',
     search: 'Ara',
-    github: 'GitHub Repo',
+    github: 'GitHub Repo'
   },
   footer: {
-    settings: 'Ayarlar',
+    settings: 'Ayarlar'
   },
   home: {
     recommendPlaylist: 'Önerilen Çalma Listeier',
     recommendArtist: 'Önerilen Sanatçılar',
     newAlbum: 'Son Çıkan Albümler',
     seeMore: 'DAHA FAZLASI',
-    charts: 'Listeler',
+    charts: 'Listeler'
   },
   library: {
     sLibrary: "'in Kütüphanesi",
@@ -31,12 +31,12 @@ export default {
     newPlayList: 'Yeni Çalma Listesi',
     userProfileMenu: {
       settings: 'Ayarlar',
-      logout: 'Çıkış Yap',
-    },
+      logout: 'Çıkış Yap'
+    }
   },
   explore: {
     explore: 'Keşfet',
-    loadMore: 'Daha Fazlası',
+    loadMore: 'Daha Fazlası'
   },
   artist: {
     latestRelease: 'Son Çıkanlar',
@@ -49,15 +49,15 @@ export default {
     artist: 'Sanatçı',
     videos: 'Müzik Videoları',
     following: 'Takip Ediyor',
-    follow: 'Takip Et',
+    follow: 'Takip Et'
   },
   album: {
-    released: 'Yayınlandı',
+    released: 'Yayınlandı'
   },
   playlist: {
     playlist: 'Çalma Listeleri',
     updatedAt: 'Tarihinde Güncellendş',
-    search: 'Çalma Listesinde Ara',
+    search: 'Çalma Listesinde Ara'
   },
   login: {
     accessToAll: 'Tüm verilere eriş',
@@ -80,14 +80,14 @@ export default {
       Şifren MD5 şifreleme ile yerel olarak şifrelenir ve daha sonra NetEase Müzik API'sine gönderilir<br />
       YesPlayMusic, NetEase Music'in resmi websitesi değildir, lütfen hesap bilgilerinizi girmeden önce dikkatlice düşününüz. Aynı zamanda, Kendi NetEase Musix API'nızı host etmek için <a href="https://github.com/qier222/YesPlayMusic">YesPlayMusic'in GitHub Repo'suna</a> gidebilirsiniz.`,
     noticeElectron: `YesPlayMusic hesabınızın hiçbir bilgisini kaydetmeyeceğine dair söz veriyor<br />
-      Şifren MD5 şifreleme ile yerel olarak şifrelenir ve daha sonra NetEase Müzik API'sine gönderilir<br />`,
+      Şifren MD5 şifreleme ile yerel olarak şifrelenir ve daha sonra NetEase Müzik API'sine gönderilir<br />`
   },
   mv: {
-    moreVideo: 'Daha Fazla Video',
+    moreVideo: 'Daha Fazla Video'
   },
   next: {
     nowPlaying: 'Şuan çalıyor',
-    nextUp: 'Sıradaki',
+    nextUp: 'Sıradaki'
   },
   player: {
     like: 'Beğen',
@@ -99,10 +99,10 @@ export default {
     play: 'Oynat',
     pause: 'Durdur',
     mute: 'Sesi kapat',
-    nextUp: 'Sıradaki',
+    nextUp: 'Sıradaki'
   },
   modal: {
-    close: 'Kapat',
+    close: 'Kapat'
   },
   search: {
     artist: 'Sanatçılar',
@@ -111,7 +111,7 @@ export default {
     mv: 'Müzik Videoları',
     playlist: 'Çalma Listeleri',
     noResult: 'Sonuç Bulunamadı',
-    searchFor: 'Search for',
+    searchFor: 'Search for'
   },
   settings: {
     settings: 'Ayarlar',
@@ -122,18 +122,18 @@ export default {
       low: 'Düşük',
       medium: 'Orta',
       high: 'Yüksek',
-      lossless: 'Kaliteli',
+      lossless: 'Kaliteli'
     },
     cacheLimit: {
       text: 'Şarkılar Önbellek sınırı',
-      none: 'Yok',
+      none: 'Yok'
     },
     lyricFontSize: {
       text: 'Şarkı Sözleri Yazı Boyutu',
       small: 'Küçük',
       medium: 'Orta',
       large: 'Büyük(Varsayılan)',
-      xlarge: 'Çok-Büyük',
+      xlarge: 'Çok-Büyük'
     },
     deviceSelector: 'Ses Çıkış Cihazı',
     permissionRequired: 'Mikrofon izni gerekiyor',
@@ -141,7 +141,7 @@ export default {
       text: 'Görünüş',
       auto: 'Otomatik',
       light: 'Aydınlık',
-      dark: 'Karanlık',
+      dark: 'Karanlık'
     },
     automaticallyCacheSongs: 'Müzikleri otomatik çerezle',
     clearSongsCache: 'Müzik çerezlerini temizle',
@@ -155,17 +155,17 @@ export default {
       text: 'Şarkı Sözleri Arka Planını Göster',
       off: 'kapalı',
       on: 'açık',
-      dynamic: 'dinamik(Yüksek GPU kullanımı)',
-    },
+      dynamic: 'dinamik(Yüksek GPU kullanımı)'
+    }
   },
   contextMenu: {
     play: 'Oynat',
     addToQueue: 'Sonrakini Oynat',
     saveToMyLikedSongs: 'Beğendiğim Müziklere Kaydet',
-    removeFromMyLikedMüzikler: 'Beğendiğim Müziklerden Kaldır',
+    removeFromMyLikedMüzikler: 'Beğendiğim Müziklerden Kaldır'
   },
   toast: {
     savedToMyLikedSongs: 'Beğendiğim Müziklere Kaydet',
-    removedFromMyLikedSongs: 'Beğendiğim Müziklerden Kaldır',
-  },
-};
+    removedFromMyLikedSongs: 'Beğendiğim Müziklerden Kaldır'
+  }
+}

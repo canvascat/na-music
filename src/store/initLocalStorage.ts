@@ -1,12 +1,12 @@
-import { playlistCategories } from '@/utils/staticData';
-import shortcuts from '@/utils/shortcuts';
+import { playlistCategories } from '@/utils/staticData'
+import shortcuts from '@/utils/shortcuts'
 
-console.debug('[debug][initLocalStorage.js]');
+console.debug('[debug][initLocalStorage.js]')
 const enabledPlaylistCategories = playlistCategories
   .filter(c => c.enable)
-  .map(c => c.name);
+  .map(c => c.name)
 
-let localStorage = {
+const localStorage = {
   player: {},
   settings: {
     lang: null,
@@ -30,20 +30,20 @@ let localStorage = {
     proxyConfig: {
       protocol: 'noProxy',
       server: '',
-      port: null,
+      port: null
     },
-    shortcuts: shortcuts,
+    shortcuts: shortcuts
   },
   data: {
     user: {},
     likedSongPlaylistID: 0,
     lastRefreshCookieDate: 0,
-    loginMode: null,
-  },
-};
-
-if (process.env.IS_ELECTRON === true) {
-  localStorage.settings.automaticallyCacheSongs = true;
+    loginMode: null
+  }
 }
 
-export default localStorage;
+if (process.env.IS_ELECTRON === true) {
+  localStorage.settings.automaticallyCacheSongs = true
+}
+
+export default localStorage

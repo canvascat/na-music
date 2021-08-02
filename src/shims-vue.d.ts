@@ -8,3 +8,6 @@ declare module '*.vue' {
 interface Navigator {
   mediaSession
 }
+interface Window {
+  MediaMetadata
+}

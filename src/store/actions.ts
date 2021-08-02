@@ -1,8 +1,6 @@
-// import store, { state, dispatch, commit } from "@/store";
 import { isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth'
 import { likeATrack, getTrackDetail } from '@/api/track'
 import { getPlaylistDetail } from '@/api/playlist'
-
 import {
   userPlaylist,
   userLikedSongsIDs,
@@ -12,8 +10,10 @@ import {
   cloudDisk,
   userAccount
 } from '@/api/user'
+import type { ActionTree } from 'vuex'
+import type { State } from './type'
 
-export default {
+export const actions: ActionTree<State, State> = {
   showToast ({ state, commit }, text) {
     if (state.toast.timer !== null) {
       clearTimeout(state.toast.timer)
@@ -36,8 +36,7 @@ export default {
       dispatch('showToast', '此操作需要登录网易云账号')
       return
     }
-    let like = true
-    if (state.liked.songs.includes(id)) like = false
+    const like = !state.liked.songs.includes(id)
     likeATrack({ id, like }).then(() => {
       if (like === false) {
         commit('updateLikedXXX', {
@@ -55,68 +54,49 @@ export default {
       dispatch('fetchLikedSongsWithDetails')
     })
   },
-  fetchLikedSongs: ({ state, commit }) => {
+  async fetchLikedSongs ({ state, commit }) {
     if (!isLooseLoggedIn()) return
     if (isAccountLoggedIn()) {
-      return userLikedSongsIDs({ uid: state.data.user.userId }).then(result => {
-        if (result.ids) {
-          commit('updateLikedXXX', {
-            name: 'songs',
-            data: result.ids
-          })
-        }
-      })
+      const result = await userLikedSongsIDs(state.data.user.userId)
+      const data = result.ids
+      data && commit('updateLikedXXX', { name: 'songs', data })
     } else {
       // TODO:搜索ID登录的用户
     }
   },
-  fetchLikedSongsWithDetails: ({ state, commit }) => {
-    return getPlaylistDetail(state.data.likedSongPlaylistID, true).then(
-      result => {
-        if (result.playlist?.trackIds?.length === 0) {
-          return new Promise(resolve => {
-            resolve()
-          })
-        }
-        return getTrackDetail(
-          result.playlist.trackIds
-            .slice(0, 12)
-            .map(t => t.id)
-            .join(',')
-        ).then(result => {
-          commit('updateLikedXXX', {
-            name: 'songsWithDetails',
-            data: result.songs
-          })
-        })
-      }
-    )
+  async fetchLikedSongsWithDetails ({ state, commit }) {
+    const result = await getPlaylistDetail(state.data.likedSongPlaylistID, true)
+    if (result.playlist?.trackIds?.length === 0) return
+    const ids = result.playlist.trackIds.slice(0, 12).map(t => t.id).join(',')
+    const details = await getTrackDetail(ids)
+    commit('updateLikedXXX', {
+      name: 'songsWithDetails',
+      data: details.songs
+    })
   },
-  fetchLikedPlaylist: ({ state, commit }) => {
+  async fetchLikedPlaylist ({ state, commit }) {
     if (!isLooseLoggedIn()) return
     if (isAccountLoggedIn()) {
-      return userPlaylist({
+      const result = await userPlaylist({
         uid: state.data.user.userId,
         limit: 2000, // 最多只加载2000个歌单（等有用户反馈问题再修）
         timestamp: new Date().getTime()
-      }).then(result => {
-        if (result.playlist) {
-          commit('updateLikedXXX', {
-            name: 'playlists',
-            data: result.playlist
-          })
-          // 更新用户”喜欢的歌曲“歌单ID
-          commit('updateData', {
-            key: 'likedSongPlaylistID',
-            value: result.playlist[0].id
-          })
-        }
+      })
+      if (!result.playlist) return
+      commit('updateLikedXXX', {
+        name: 'playlists',
+        data: result.playlist
+      })
+      // 更新用户”喜欢的歌曲“歌单ID
+      commit('updateData', {
+        key: 'likedSongPlaylistID',
+        value: result.playlist[0].id
       })
     } else {
       // TODO:搜索ID登录的用户
     }
   },
-  fetchLikedAlbums: ({ commit }) => {
+  fetchLikedAlbums ({ commit }) {
     if (!isAccountLoggedIn()) return
     return likedAlbums({ limit: 2000 }).then(result => {
       if (result.data) {
@@ -127,7 +107,7 @@ export default {
       }
     })
   },
-  fetchLikedArtists: ({ commit }) => {
+  fetchLikedArtists ({ commit }) {
     if (!isAccountLoggedIn()) return
     return likedArtists({ limit: 2000 }).then(result => {
       if (result.data) {
@@ -149,7 +129,7 @@ export default {
       }
     })
   },
-  fetchCloudDisk: ({ commit }) => {
+  fetchCloudDisk ({ commit }) {
     if (!isAccountLoggedIn()) return
     return cloudDisk().then(result => {
       if (result.data) {
@@ -160,12 +140,10 @@ export default {
       }
     })
   },
-  fetchUserProfile: ({ commit }) => {
+  async fetchUserProfile ({ commit }) {
     if (!isAccountLoggedIn()) return
-    return userAccount().then(result => {
-      if (result.code === 200) {
-        commit('updateData', { key: 'user', value: result.profile })
-      }
-    })
+    const { code, profile } = await userAccount()
+    if (code !== 200) return
+    commit('updateData', { key: 'user', value: profile })
   }
 }

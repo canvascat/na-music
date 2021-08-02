@@ -1,4 +1,5 @@
-import request from '@/utils/request';
+import request from '@/utils/request'
+import { Account, PlaylistItem, Profile } from './types'
 
 /**
  * 获取用户详情
@@ -6,29 +7,27 @@ import request from '@/utils/request';
  * - uid : 用户 id
  * @param {number} uid
  */
-export function userDetail(uid) {
+export function userDetail (uid) {
   return request({
     url: '/user/detail',
     method: 'get',
     params: {
       uid,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
  * 获取账号详情
  * 说明 : 登录后调用此接口 ,可获取用户账号信息
  */
-export function userAccount() {
-  return request({
-    url: '/user/account',
-    method: 'get',
-    params: {
-      timestamp: new Date().getTime(),
-    },
-  });
+export function userAccount () {
+  return request.get<any, {
+    code: number;
+    account: Account;
+    profile: Profile;
+  }>('/user/account', { params: { timestamp: Date.now() } })
 }
 
 /**
@@ -42,12 +41,13 @@ export function userAccount() {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-export function userPlaylist(params) {
-  return request({
-    url: '/user/playlist',
-    method: 'get',
-    params,
-  });
+export function userPlaylist (params) {
+  return request.get<any, {
+    version: string;
+    more: boolean;
+    playlist: PlaylistItem[];
+    code: number;
+  }>('/user/playlist', { params })
 }
 
 /**
@@ -56,15 +56,9 @@ export function userPlaylist(params) {
  * - uid: 用户 id
  * @param {number} uid
  */
-export function userLikedSongsIDs(uid) {
-  return request({
-    url: '/likelist',
-    method: 'get',
-    params: {
-      uid,
-      timestamp: new Date().getTime(),
-    },
-  });
+export function userLikedSongsIDs (uid: number) {
+  const timestamp = Date.now()
+  return request.get<any, {ids: number[]}>('/likelist', { params: { uid, timestamp } })
 }
 
 /**
@@ -73,15 +67,15 @@ export function userLikedSongsIDs(uid) {
  * -  type: 签到类型 , 默认 0, 其中 0 为安卓端签到 ,1 为 web/PC 签到
  * @param {number} type
  */
-export function dailySignin(type = 0) {
+export function dailySignin (type = 0) {
   return request({
     url: '/daily_signin',
     method: 'post',
     params: {
       type,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
@@ -93,64 +87,59 @@ export function dailySignin(type = 0) {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-export function likedAlbums(params) {
-  return request({
-    url: '/album/sublist',
-    method: 'get',
-    params: {
-      limit: params.limit,
-      timestamp: new Date().getTime(),
-    },
-  });
+export function likedAlbums (params) {
+  const timestamp = Date.now()
+  const { limit } = params
+  return request('/album/sublist', { params: { limit, timestamp } })
 }
 
 /**
  * 获取收藏的歌手（需要登录）
  * 说明 : 调用此接口可获取到用户收藏的歌手
  */
-export function likedArtists(params) {
+export function likedArtists (params) {
   return request({
     url: '/artist/sublist',
     method: 'get',
     params: {
       limit: params.limit,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
  * 获取收藏的MV（需要登录）
  * 说明 : 调用此接口可获取到用户收藏的MV
  */
-export function likedMVs(params) {
+export function likedMVs (params) {
   return request({
     url: '/mv/sublist',
     method: 'get',
     params: {
       limit: params.limit,
-      timestamp: new Date().getTime(),
-    },
-  });
+      timestamp: new Date().getTime()
+    }
+  })
 }
 
 /**
  * 上传歌曲到云盘（需要登录）
  */
-export function uploadSong(file) {
-  let formData = new FormData();
-  formData.append('songFile', file);
+export function uploadSong (file) {
+  const formData = new FormData()
+  formData.append('songFile', file)
   return request({
     url: '/cloud',
     method: 'post',
     params: {
-      timestamp: new Date().getTime(),
+      timestamp: new Date().getTime()
     },
     data: formData,
     headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+      'Content-Type': 'multipart/form-data'
+    }
+  })
 }
 
 /**
@@ -162,40 +151,36 @@ export function uploadSong(file) {
  * @param {number} params.limit
  * @param {number=} params.offset
  */
-export function cloudDisk(params = {}) {
-  params.timestamp = new Date().getTime();
-  return request({
-    url: '/user/cloud',
-    method: 'get',
-    params,
-  });
+export function cloudDisk (params = {}) {
+  const timestamp = Date.now()
+  return request.get('/user/cloud', { params: { ...params, timestamp } })
 }
 
 /**
  * 获取云盘歌曲详情（需要登录）
  */
-export function cloudDiskTrackDetail(id) {
+export function cloudDiskTrackDetail (id) {
   return request({
     url: '/user/cloud/detail',
     method: 'get',
     params: {
       timestamp: new Date().getTime(),
-      id,
-    },
-  });
+      id
+    }
+  })
 }
 
 /**
  * 删除云盘歌曲（需要登录）
  * @param {Array} id
  */
-export function cloudDiskTrackDelete(id) {
+export function cloudDiskTrackDelete (id) {
   return request({
     url: '/user/cloud/del',
     method: 'get',
     params: {
       timestamp: new Date().getTime(),
-      id,
-    },
-  });
+      id
+    }
+  })
 }

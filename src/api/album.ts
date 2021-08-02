@@ -1,22 +1,24 @@
-import request from '@/utils/request';
-import { mapTrackPlayableStatus } from '@/utils/common';
-import { cacheAlbum, getAlbumFromCache } from '@/utils/db';
+import request from '@/utils/request'
+import { mapTrackPlayableStatus } from '@/utils/common'
+import { cacheAlbum, getAlbumFromCache } from '@/utils/db'
+import { Album, Song } from './types'
 
 /**
  * 获取专辑内容
  * 说明 : 调用此接口 , 传入专辑 id, 可获得专辑内容
  */
-export async function getAlbum(id: number) {
-  async function fetchLatest(id: number) {
-    const data = await request.get('/album', { params: { id } });
-    cacheAlbum(id, data);
-    data.songs = mapTrackPlayableStatus(data.songs);
-    return data;
-  }
-  await fetchLatest(id);
-
-  const result = await getAlbumFromCache(id);
-  return result ?? await fetchLatest(id);
+export async function getAlbum (id: number) {
+  const album = await getAlbumFromCache(id)
+  if (album) return album
+  const data = await request.get<any, {
+    // resourceState: boolean;
+    songs: Song[];
+    // code: number;
+    album: Album;
+  }>('/album', { params: { id } })
+  cacheAlbum(id, data)
+  data.songs = mapTrackPlayableStatus(data.songs)
+  return data
 }
 
 /**
@@ -30,12 +32,12 @@ export async function getAlbum(id: number) {
  * @param {number=} params.offset
  * @param {string} params.area
  */
-export function newAlbums(params) {
+export function newAlbums (params) {
   return request({
     url: '/album/new',
     method: 'get',
-    params,
-  });
+    params
+  })
 }
 
 /**
@@ -44,12 +46,12 @@ export function newAlbums(params) {
  * - id - 专辑id
  * @param {number} id
  */
-export function albumDynamicDetail(id) {
+export function albumDynamicDetail (id) {
   return request({
     url: '/album/detail/dynamic',
     method: 'get',
-    params: { id, timestamp: new Date().getTime() },
-  });
+    params: { id, timestamp: new Date().getTime() }
+  })
 }
 
 /**
@@ -61,10 +63,10 @@ export function albumDynamicDetail(id) {
  * @param {number} params.id
  * @param {number} params.t
  */
-export function likeAAlbum(params) {
+export function likeAAlbum (params) {
   return request({
     url: '/album/sub',
     method: 'post',
-    params,
-  });
+    params
+  })
 }

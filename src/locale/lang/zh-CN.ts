@@ -1,21 +1,21 @@
 export default {
   common: {
     play: '播放',
-    songs: '首歌',
+    songs: '首歌'
   },
   nav: {
     home: '首页',
     explore: '发现',
     library: '音乐库',
     search: '搜索',
-    github: 'GitHub 仓库',
+    github: 'GitHub 仓库'
   },
   home: {
     recommendPlaylist: '推荐歌单',
     recommendArtist: '推荐艺人',
     newAlbum: '新专速递',
     seeMore: '查看全部',
-    charts: '排行榜',
+    charts: '排行榜'
   },
   library: {
     sLibrary: '的音乐库',
@@ -28,12 +28,12 @@ export default {
     newPlayList: '新建歌单',
     userProfileMenu: {
       settings: '设置',
-      logout: '登出',
-    },
+      logout: '登出'
+    }
   },
   explore: {
     explore: '发现',
-    loadMore: '加载更多',
+    loadMore: '加载更多'
   },
   artist: {
     latestRelease: '最新发布',
@@ -49,16 +49,16 @@ export default {
     following: '正在关注',
     follow: '关注',
     similarArtists: '相似艺人',
-    artistDesc: '艺术家介绍',
+    artistDesc: '艺术家介绍'
   },
   album: {
     released: '发行于',
-    albumDesc: '专辑介绍',
+    albumDesc: '专辑介绍'
   },
   playlist: {
     playlist: '歌单',
     updatedAt: '最后更新于',
-    search: '搜索歌单音乐',
+    search: '搜索歌单音乐'
   },
   login: {
     accessToAll: '可访问全部数据',
@@ -85,14 +85,14 @@ export default {
       >
       自行构建并使用自托管的网易云 API。`,
     noticeElectron: `你的密码会在本地进行 MD5 加密后再传输到网易云 API。<br />
-      YesPlayMusic 不会传输你的账号数据到任何非网易云音乐官方的服务器。<br />`,
+      YesPlayMusic 不会传输你的账号数据到任何非网易云音乐官方的服务器。<br />`
   },
   mv: {
-    moreVideo: '更多视频',
+    moreVideo: '更多视频'
   },
   next: {
     nowPlaying: '正在播放',
-    nextUp: '即将播放',
+    nextUp: '即将播放'
   },
   player: {
     like: '喜欢',
@@ -104,10 +104,10 @@ export default {
     play: '播放',
     pause: '暂停',
     mute: '静音',
-    nextUp: '播放列表',
+    nextUp: '播放列表'
   },
   modal: {
-    close: '关闭',
+    close: '关闭'
   },
   search: {
     artist: '艺人',
@@ -116,7 +116,7 @@ export default {
     mv: '视频',
     playlist: '歌单',
     noResult: '暂无结果',
-    searchFor: '搜索',
+    searchFor: '搜索'
   },
   settings: {
     settings: '设置',
@@ -127,18 +127,18 @@ export default {
       low: '普通',
       medium: '较高',
       high: '极高',
-      lossless: '无损',
+      lossless: '无损'
     },
     cacheLimit: {
       text: '歌曲缓存上限',
-      none: '无限制',
+      none: '无限制'
     },
     lyricFontSize: {
       text: '歌词字体大小',
       small: '小',
       medium: '中',
       large: '大（默认）',
-      xlarge: '超大',
+      xlarge: '超大'
     },
     deviceSelector: '音频输出设备',
     permissionRequired: '需要麦克风权限',
@@ -146,7 +146,7 @@ export default {
       text: '外观',
       auto: '自动',
       light: '浅色',
-      dark: '深色',
+      dark: '深色'
     },
     automaticallyCacheSongs: '自动缓存歌曲',
     clearSongsCache: '清除歌曲缓存',
@@ -161,8 +161,8 @@ export default {
       text: '显示歌词背景',
       off: '关闭',
       on: '打开',
-      dynamic: '动态（GPU 占用较高）',
-    },
+      dynamic: '动态（GPU 占用较高）'
+    }
   },
   contextMenu: {
     play: '播放',
@@ -176,7 +176,7 @@ export default {
     copyUrl: '复制链接',
     allPlaylists: '全部歌单',
     minePlaylists: '创建的歌单',
-    likedPlaylists: '收藏的歌单',
+    likedPlaylists: '收藏的歌单'
   },
   toast: {
     savedToPlaylist: '已添加到歌单',
@@ -185,6 +185,6 @@ export default {
     removedFromMyLikedSongs: '已从喜欢的音乐中删除',
     copied: '已复制',
     copyFailed: '复制失败：',
-    needToLogin: '此操作需要登录网易云帐号',
-  },
-};
+    needToLogin: '此操作需要登录网易云帐号'
+  }
+}
