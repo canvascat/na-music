@@ -16,7 +16,7 @@ export async function getAlbum (id: number) {
     // code: number;
     album: Album;
   }>('/album', { params: { id } })
-  cacheAlbum(id, data)
+  await cacheAlbum(id, data)
   data.songs = mapTrackPlayableStatus(data.songs)
   return data
 }
