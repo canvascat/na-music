@@ -12,7 +12,7 @@
           -
           {{ mv.data.name }}
           <div class="like-button">
-            <button-icon @click.native="likeMV">
+            <button-icon @click="likeMV">
               <svg-icon v-if="mv.subed" icon-class="heart-solid"></svg-icon>
               <svg-icon v-else icon-class="heart"></svg-icon>
             </button-icon>

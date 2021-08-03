@@ -1,9 +1,9 @@
 <template>
   <div class="login">
     <div class="section-1">
-      <img src="/img/logos/yesplaymusic.png" />
+      <img src="/img/logos/yesplaymusic.png"  alt="yesplaymusic"/>
       <svg-icon icon-class="x"></svg-icon>
-      <img src="/img/logos/netease-music.png" />
+      <img src="/img/logos/netease-music.png"  alt="netease-music"/>
     </div>
     <div class="section-2">
       <div
@@ -39,29 +39,29 @@
 </template>
 
 <script>
-import NProgress from 'nprogress';
+import NProgress from 'nprogress'
 
-import SvgIcon from '@/components/SvgIcon.vue';
+import SvgIcon from '@/components/SvgIcon.vue'
 
 export default {
   name: 'Login',
   components: {
-    SvgIcon,
+    SvgIcon
   },
-  data() {
+  data () {
     return {
-      activeCard: 0,
-    };
+      activeCard: 0
+    }
   },
-  created() {
-    NProgress.done();
+  created () {
+    NProgress.done()
   },
   methods: {
-    goTo(path) {
-      this.$router.push({ path: '/login/' + path });
-    },
-  },
-};
+    goTo (path) {
+      this.$router.push({ path: '/login/' + path })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

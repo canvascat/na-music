@@ -128,7 +128,7 @@ export default defineComponent({
         this.newReleasesAlbum.items = data.albums
       })
 
-      const toplistOfArtistsAreaTable = {
+      const topListOfArtistsAreaTable = {
         all: null,
         zh: 1,
         ea: 2,
@@ -136,7 +136,7 @@ export default defineComponent({
         kr: 3
       }
       toplistOfArtists(
-        toplistOfArtistsAreaTable[this.settings.musicLanguage ?? 'all']
+        topListOfArtistsAreaTable[this.settings.musicLanguage ?? 'all']
       ).then(data => {
         const indexs = []
         while (indexs.length < 6) {

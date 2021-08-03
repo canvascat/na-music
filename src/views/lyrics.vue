@@ -47,21 +47,21 @@
                 <div class="title" :title="currentTrack.name">
                   <router-link
                     :to="`/${player.playlistSource.type}/${player.playlistSource.id}`"
-                    @click.native="toggleLyrics"
+                    @click="toggleLyrics"
                     >{{ currentTrack.name }}
                   </router-link>
                 </div>
                 <div class="subtitle">
                   <router-link
                     :to="`/artist/${artist.id}`"
-                    @click.native="toggleLyrics"
+                    @click="toggleLyrics"
                     >{{ artist.name }}
                   </router-link>
                   -
                   <router-link
                     :to="`/album/${album.id}`"
                     :title="album.name"
-                    @click.native="toggleLyrics"
+                    @click="toggleLyrics"
                     >{{ album.name }}
                   </router-link>
                 </div>
@@ -69,7 +69,7 @@
               <div class="buttons">
                 <button-icon
                   :title="$t('player.like')"
-                  @click.native="likeATrack(player.currentTrack.id)"
+                  @click="likeATrack(player.currentTrack.id)"
                 >
                   <svg-icon
                     :icon-class="
@@ -77,7 +77,7 @@
                     "
                   />
                 </button-icon>
-                <!-- <button-icon @click.native="openMenu" title="Menu"
+                <!-- <button-icon @click="openMenu" title="Menu"
                   ><svg-icon icon-class="more"
                 /></button-icon> -->
               </div>
@@ -110,7 +110,7 @@
                     : $t('player.repeat')
                 "
                 :class="{ active: player.repeatMode !== 'off' }"
-                @click.native="player.switchRepeatMode"
+                @click="player.switchRepeatMode"
               >
                 <svg-icon
                   v-show="player.repeatMode !== 'one'"
@@ -125,27 +125,27 @@
                 <button-icon
                   v-show="!player.isPersonalFM"
                   :title="$t('player.previous')"
-                  @click.native="player.playPrevTrack"
+                  @click="player.playPrevTrack"
                 >
                   <svg-icon icon-class="previous" />
                 </button-icon>
                 <button-icon
                   v-show="player.isPersonalFM"
                   title="不喜欢"
-                  @click.native="player.moveToFMTrash"
+                  @click="player.moveToFMTrash"
                 >
                   <svg-icon icon-class="thumbs-down" />
                 </button-icon>
                 <button-icon
                   id="play"
                   :title="$t(player.playing ? 'player.pause' : 'player.play')"
-                  @click.native="player.playOrPause"
+                  @click="player.playOrPause"
                 >
                   <svg-icon :icon-class="player.playing ? 'pause' : 'play'" />
                 </button-icon>
                 <button-icon
                   :title="$t('player.next')"
-                  @click.native="player.playNextTrack"
+                  @click="player.playNextTrack"
                 >
                   <svg-icon icon-class="next" />
                 </button-icon>
@@ -154,7 +154,7 @@
                 v-show="!player.isPersonalFM"
                 :title="$t('player.shuffle')"
                 :class="{ active: player.shuffle }"
-                @click.native="player.switchShuffle"
+                @click="player.switchShuffle"
               >
                 <svg-icon icon-class="shuffle" />
               </button-icon>

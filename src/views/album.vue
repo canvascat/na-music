@@ -11,7 +11,7 @@
         type="album"
         :cover-hover="false"
         :play-button-size="18"
-        @click.right.native="openMenu"
+        @click.right="openMenu"
       />
       <div class="info">
         <div class="title" @click.right="openMenu"> {{ title }}</div>
@@ -44,7 +44,7 @@
         <div class="buttons" style="margin-top: 32px">
           <ButtonTwoTone
             icon-class="play"
-            @click.native="playAlbumByID(album.id)"
+            @click="playAlbumByID(album.id)"
           >
             {{ $t('common.play') }}
           </ButtonTwoTone>
@@ -57,7 +57,7 @@
             :background-color="
               dynamicDetail.isSub ? 'var(--color-secondary-bg)' : ''
             "
-            @click.native="likeAlbum"
+            @click="likeAlbum"
           >
           </ButtonTwoTone>
           <ButtonTwoTone
@@ -65,7 +65,7 @@
             :icon-button="true"
             :horizontal-padding="0"
             color="grey"
-            @click.native="openMenu"
+            @click="openMenu"
           >
           </ButtonTwoTone>
         </div>

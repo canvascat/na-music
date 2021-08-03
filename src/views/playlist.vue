@@ -6,7 +6,7 @@
     >
       <Cover
         :id="playlist.id"
-        :image-url="playlist.coverImgUrl | resizeImage(1024)"
+        :image-url="resizeImage(playlist.coverImgUrl, 1024)"
         :show-play-button="true"
         :always-show-shadow="true"
         :click-cover-to-play="true"
@@ -14,7 +14,7 @@
         type="playlist"
         :cover-hover="false"
         :play-button-size="18"
-        @click.right.native="openMenu"
+        @click.right="openMenu"
       />
       <div class="info">
         <div class="title" @click.right="openMenu"
@@ -53,7 +53,7 @@
           {{ playlist.description }}
         </div>
         <div class="buttons">
-          <ButtonTwoTone icon-class="play" @click.native="playPlaylistByID()">
+          <ButtonTwoTone icon-class="play" @click="playPlaylistByID()">
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone
@@ -66,7 +66,7 @@
             :background-color="
               playlist.subscribed ? 'var(--color-secondary-bg)' : ''
             "
-            @click.native="likePlaylist"
+            @click="likePlaylist"
           >
           </ButtonTwoTone>
           <ButtonTwoTone
@@ -74,7 +74,7 @@
             :icon-button="true"
             :horizontal-padding="0"
             color="grey"
-            @click.native="openMenu"
+            @click="openMenu"
           >
           </ButtonTwoTone>
         </div>
@@ -101,7 +101,7 @@
         :class="specialPlaylistInfo.gradient"
         @click.right="openMenu"
       >
-        <!-- <img :src="playlist.coverImgUrl | resizeImage" /> -->
+        <!-- <img :src="resizeImage(playlist.coverImgUrl)" /> -->
         {{ specialPlaylistInfo.name }}
       </div>
       <div class="subtitle"
@@ -113,7 +113,7 @@
           class="play-button"
           icon-class="play"
           color="grey"
-          @click.native="playPlaylistByID()"
+          @click="playPlaylistByID()"
         >
           {{ $t('common.play') }}
         </ButtonTwoTone>
@@ -127,7 +127,7 @@
           :background-color="
             playlist.subscribed ? 'var(--color-secondary-bg)' : ''
           "
-          @click.native="likePlaylist"
+          @click="likePlaylist"
         >
         </ButtonTwoTone>
         <ButtonTwoTone
@@ -135,7 +135,7 @@
           :icon-button="true"
           :horizontal-padding="0"
           color="grey"
-          @click.native="openMenu"
+          @click="openMenu"
         >
         </ButtonTwoTone>
       </div>
@@ -143,7 +143,7 @@
 
     <div v-if="isLikeSongsPage" class="user-info">
       <h1>
-        <img class="avatar" :src="data.user.avatarUrl | resizeImage" />{{
+        <img class="avatar" :src="resizeImage(data.user.avatarUrl)"  alt="avatar"/>{{
           data.user.nickname
         }}{{ $t('library.sLikedSongs') }}
       </h1>
@@ -179,7 +179,7 @@
         v-show="hasMore"
         color="grey"
         :loading="loadingMore"
-        @click.native="loadMore(100)"
+        @click="loadMore(100)"
         >{{ $t('explore.loadMore') }}</ButtonTwoTone
       >
     </div>
@@ -219,138 +219,139 @@
   </div>
 </template>
 
-<script>
-import { mapMutations, mapActions, mapState } from 'vuex';
-import NProgress from 'nprogress';
+<script lang="ts">
+import { defineComponent } from 'vue'
+import { mapMutations, mapActions, mapState } from 'vuex'
+import NProgress from 'nprogress'
 import {
   getPlaylistDetail,
   subscribePlaylist,
-  deletePlaylist,
-} from '@/api/playlist';
-import { getTrackDetail } from '@/api/track';
-import { isAccountLoggedIn } from '@/utils/auth';
-import nativeAlert from '@/utils/nativeAlert';
-import locale from '@/locale';
+  deletePlaylist
+} from '@/api/playlist'
+import { getTrackDetail } from '@/api/track'
+import { isAccountLoggedIn } from '@/utils/auth'
+import locale from '@/locale'
 
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
-import ContextMenu from '@/components/ContextMenu.vue';
-import TrackList from '@/components/TrackList.vue';
-import Cover from '@/components/Cover.vue';
-import Modal from '@/components/Modal.vue';
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
+import ContextMenu from '@/components/ContextMenu.vue'
+import TrackList from '@/components/TrackList.vue'
+import Cover from '@/components/Cover.vue'
+import Modal from '@/components/Modal.vue'
+import { resizeImage } from '@/utils/filters'
 
 const specialPlaylist = {
   2829816518: {
     name: '欧美私人订制',
-    gradient: 'gradient-pink-purple-blue',
+    gradient: 'gradient-pink-purple-blue'
   },
   2890490211: {
     name: '助眠鸟鸣声',
-    gradient: 'gradient-green',
+    gradient: 'gradient-green'
   },
   5089855855: {
     name: '夜的胡思乱想',
-    gradient: 'gradient-moonstone-blue',
+    gradient: 'gradient-moonstone-blue'
   },
   2888212971: {
     name: '全球百大DJ',
-    gradient: 'gradient-orange-red',
+    gradient: 'gradient-orange-red'
   },
   2829733864: {
     name: '睡眠伴侣',
-    gradient: 'gradient-midnight-blue',
+    gradient: 'gradient-midnight-blue'
   },
   2829844572: {
     name: '洗澡时听的歌',
-    gradient: 'gradient-yellow',
+    gradient: 'gradient-yellow'
   },
   2920647537: {
     name: '还是会想你',
-    gradient: 'gradient-dark-blue-midnight-blue',
+    gradient: 'gradient-dark-blue-midnight-blue'
   },
   2890501416: {
     name: '助眠白噪声',
-    gradient: 'gradient-sky-blue',
+    gradient: 'gradient-sky-blue'
   },
   5217150082: {
     name: '摇滚唱片行',
-    gradient: 'gradient-yellow-red',
+    gradient: 'gradient-yellow-red'
   },
   2829961453: {
     name: '古风音乐大赏',
-    gradient: 'gradient-fog',
+    gradient: 'gradient-fog'
   },
   4923261701: {
     name: 'Trance',
-    gradient: 'gradient-light-red-light-blue ',
+    gradient: 'gradient-light-red-light-blue '
   },
   5212729721: {
     name: '欧美点唱机',
-    gradient: 'gradient-indigo-pink-yellow',
+    gradient: 'gradient-indigo-pink-yellow'
   },
   3103434282: {
     name: '甜蜜少女心',
-    gradient: 'gradient-pink',
+    gradient: 'gradient-pink'
   },
   2829896389: {
     name: '日系私人订制',
-    gradient: 'gradient-yellow-pink',
+    gradient: 'gradient-yellow-pink'
   },
   2829779628: {
     name: '运动随身听',
-    gradient: 'gradient-orange-red',
+    gradient: 'gradient-orange-red'
   },
   2860654884: {
     name: '独立女声精选',
-    gradient: 'gradient-sharp-blue',
+    gradient: 'gradient-sharp-blue'
   },
   898150: {
     name: '浪漫婚礼专用',
-    gradient: 'gradient-pink',
+    gradient: 'gradient-pink'
   },
   2638104052: {
     name: '牛奶泡泡浴',
-    gradient: 'gradient-fog',
+    gradient: 'gradient-fog'
   },
   5317236517: {
     name: '后朋克精选',
-    gradient: 'gradient-pink-purple-blue',
+    gradient: 'gradient-pink-purple-blue'
   },
   2821115454: {
     name: '一周原创发现',
-    gradient: 'gradient-blue-purple',
+    gradient: 'gradient-blue-purple'
   },
   3136952023: {
     name: '私人雷达',
-    gradient: 'gradient-radar',
-  },
-};
+    gradient: 'gradient-radar'
+  }
+}
 
-export default {
+export default defineComponent({
   name: 'Playlist',
   components: {
     Cover,
     ButtonTwoTone,
     TrackList,
     Modal,
-    ContextMenu,
+    ContextMenu
   },
   directives: {
     focus: {
       inserted: function (el) {
-        el.focus();
-      },
-    },
+        el.focus()
+      }
+    }
   },
-  data() {
+  data () {
     return {
       show: false,
       playlist: {
         id: 0,
         coverImgUrl: '',
         creator: {
-          userId: '',
+          userId: ''
         },
-        trackIds: [],
+        trackIds: []
       },
       showFullDescription: false,
       tracks: [],
@@ -362,24 +363,24 @@ export default {
       inputSearchKeyWords: '', // 搜索框中正在输入的关键字
       inputFocus: false,
       debounceTimeout: null,
-      searchInputWidth: '0px', // 搜索框宽度
-    };
+      searchInputWidth: '0px' // 搜索框宽度
+    }
   },
   computed: {
     ...mapState(['player', 'data']),
-    isLikeSongsPage() {
-      return this.$route.name === 'likedSongs';
+    isLikeSongsPage () {
+      return this.$route.name === 'likedSongs'
     },
-    specialPlaylistInfo() {
-      return specialPlaylist[this.playlist.id];
+    specialPlaylistInfo () {
+      return specialPlaylist[this.playlist.id]
     },
-    isUserOwnPlaylist() {
+    isUserOwnPlaylist () {
       return (
         this.playlist.creator.userId === this.data.user.userId &&
         this.playlist.id !== this.data.likedSongPlaylistID
-      );
+      )
     },
-    filteredTracks() {
+    filteredTracks () {
       return this.tracks.filter(
         track =>
           (track.name &&
@@ -397,149 +398,151 @@ export default {
                 .toLowerCase()
                 .includes(this.searchKeyWords.toLowerCase())
           )
-      );
-    },
+      )
+    }
   },
-  created() {
+  created () {
     if (this.$route.name === 'likedSongs') {
-      this.loadData(this.data.likedSongPlaylistID);
+      this.loadData(this.data.likedSongPlaylistID)
     } else {
-      this.loadData(this.$route.params.id);
+      this.loadData(this.$route.params.id)
     }
     setTimeout(() => {
-      if (!this.show) NProgress.start();
-    }, 1000);
+      if (!this.show) NProgress.start()
+    }, 1000)
   },
   methods: {
+    resizeImage,
     ...mapMutations(['appendTrackToPlayerList']),
     ...mapActions(['playFirstTrackOnList', 'playTrackOnListByID', 'showToast']),
-    playPlaylistByID(trackID = 'first') {
-      let trackIDs = this.playlist.trackIds.map(t => t.id);
+    playPlaylistByID (trackID = 'first') {
+      const trackIDs = this.playlist.trackIds.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
         this.playlist.id,
         'playlist',
         trackID
-      );
+      )
     },
-    likePlaylist(toast = false) {
+    likePlaylist (toast = false) {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(locale.t('toast.needToLogin'))
+        return
       }
       subscribePlaylist({
         id: this.playlist.id,
-        t: this.playlist.subscribed ? 2 : 1,
+        t: this.playlist.subscribed ? 2 : 1
       }).then(data => {
         if (data.code === 200) {
-          this.playlist.subscribed = !this.playlist.subscribed;
-          if (toast === true)
+          this.playlist.subscribed = !this.playlist.subscribed
+          if (toast === true) {
             this.showToast(
               this.playlist.subscribed ? '已保存到音乐库' : '已从音乐库删除'
-            );
+            )
+          }
         }
         getPlaylistDetail(this.id, true).then(data => {
-          this.playlist = data.playlist;
-        });
-      });
+          this.playlist = data.playlist
+        })
+      })
     },
-    loadData(id, next = undefined) {
-      this.id = id;
+    loadData (id, next = undefined) {
+      this.id = id
       getPlaylistDetail(this.id, true)
         .then(data => {
-          this.playlist = data.playlist;
-          this.tracks = data.playlist.tracks;
-          NProgress.done();
-          if (next !== undefined) next();
-          this.show = true;
-          this.lastLoadedTrackIndex = data.playlist.tracks.length - 1;
-          return data;
+          this.playlist = data.playlist
+          this.tracks = data.playlist.tracks
+          NProgress.done()
+          if (next !== undefined) next()
+          this.show = true
+          this.lastLoadedTrackIndex = data.playlist.tracks.length - 1
+          return data
         })
         .then(() => {
           if (this.playlist.trackCount > this.tracks.length) {
-            this.loadingMore = true;
-            this.loadMore();
+            this.loadingMore = true
+            this.loadMore()
           }
-        });
+        })
     },
-    loadMore(loadNum = 100) {
+    loadMore (loadNum = 100) {
       let trackIDs = this.playlist.trackIds.filter((t, index) => {
         if (
           index > this.lastLoadedTrackIndex &&
           index <= this.lastLoadedTrackIndex + loadNum
         ) {
-          return t;
+          return t
         }
-      });
-      trackIDs = trackIDs.map(t => t.id);
+      })
+      trackIDs = trackIDs.map(t => t.id)
       getTrackDetail(trackIDs.join(',')).then(data => {
-        this.tracks.push(...data.songs);
-        this.lastLoadedTrackIndex += trackIDs.length;
-        this.loadingMore = false;
+        this.tracks.push(...data.songs)
+        this.lastLoadedTrackIndex += trackIDs.length
+        this.loadingMore = false
         if (this.lastLoadedTrackIndex + 1 === this.playlist.trackIds.length) {
-          this.hasMore = false;
+          this.hasMore = false
         } else {
-          this.hasMore = true;
+          this.hasMore = true
         }
-      });
+      })
     },
-    openMenu(e) {
-      this.$refs.playlistMenu.openMenu(e);
+    openMenu (e) {
+      this.$refs.playlistMenu.openMenu(e)
     },
-    deletePlaylist() {
+    deletePlaylist () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(locale.t('toast.needToLogin'))
+        return
       }
-      let confirmation = confirm(`确定要删除歌单 ${this.playlist.name}？`);
+      const confirmation = confirm(`确定要删除歌单 ${this.playlist.name}？`)
       if (confirmation === true) {
         deletePlaylist(this.playlist.id).then(data => {
           if (data.code === 200) {
-            nativeAlert(`已删除歌单 ${this.playlist.name}`);
-            this.$router.go(-1);
+            alert(`已删除歌单 ${this.playlist.name}`)
+            this.$router.go(-1)
           } else {
-            nativeAlert('发生错误');
+            alert('发生错误')
           }
-        });
+        })
       }
     },
-    editPlaylist() {
-      nativeAlert('此功能开发中');
+    editPlaylist () {
+      alert('此功能开发中')
     },
-    searchInPlaylist() {
+    searchInPlaylist () {
       this.displaySearchInPlaylist =
-        !this.displaySearchInPlaylist || this.isLikeSongsPage;
-      if (this.displaySearchInPlaylist == false) {
-        this.searchKeyWords = '';
-        this.inputSearchKeyWords = '';
+        !this.displaySearchInPlaylist || this.isLikeSongsPage
+      if (this.displaySearchInPlaylist === false) {
+        this.searchKeyWords = ''
+        this.inputSearchKeyWords = ''
       } else {
-        this.searchInputWidth = '172px';
-        this.loadMore(500);
+        this.searchInputWidth = '172px'
+        this.loadMore(500)
       }
     },
-    removeTrack(trackID) {
+    removeTrack (trackID) {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(locale.t('toast.needToLogin'))
+        return
       }
-      this.tracks = this.tracks.filter(t => t.id !== trackID);
+      this.tracks = this.tracks.filter(t => t.id !== trackID)
     },
-    inputDebounce() {
-      if (this.debounceTimeout) clearTimeout(this.debounceTimeout);
+    inputDebounce () {
+      if (this.debounceTimeout) clearTimeout(this.debounceTimeout)
       this.debounceTimeout = setTimeout(() => {
-        this.searchKeyWords = this.inputSearchKeyWords;
-      }, 600);
+        this.searchKeyWords = this.inputSearchKeyWords
+      }, 600)
     },
-    toggleFullDescription() {
-      this.showFullDescription = !this.showFullDescription;
+    toggleFullDescription () {
+      this.showFullDescription = !this.showFullDescription
       if (this.showFullDescription) {
-        this.$store.commit('enableScrolling', false);
+        this.$store.commit('enableScrolling', false)
       } else {
-        this.$store.commit('enableScrolling', true);
+        this.$store.commit('enableScrolling', true)
       }
-    },
-  },
-};
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped>

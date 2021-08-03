@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login-container">
       <div class="section-1">
-        <img src="/img/logos/netease-music.png" />
+        <img src="/img/logos/netease-music.png"  alt="netease-music"/>
       </div>
       <div class="title">{{ $t('login.loginText') }}</div>
       <div class="section-2">
@@ -67,7 +67,7 @@
           </div>
         </div>
 
-        <div v-show="mode == 'qrCode'">
+        <div v-show="mode === 'qrCode'">
           <div v-show="qrCodeImage" class="qr-code-container">
             <img :src="qrCodeImage" />
           </div>
@@ -107,22 +107,22 @@
 </template>
 
 <script>
-import QRCode from 'qrcode';
-import md5 from 'crypto-js/md5';
-import NProgress from 'nprogress';
-import { mapMutations } from 'vuex';
-import { setCookies } from '@/utils/auth';
-import nativeAlert from '@/utils/nativeAlert';
+import { defineComponent } from 'vue'
+import QRCode from 'qrcode'
+import md5 from 'crypto-js/md5'
+import NProgress from 'nprogress'
+import { mapMutations } from 'vuex'
+import { setCookies } from '@/utils/auth'
 import {
   loginWithPhone,
   loginWithEmail,
   loginQrCodeKey,
-  loginQrCodeCheck,
-} from '@/api/auth';
+  loginQrCodeCheck
+} from '@/api/auth'
 
-export default {
+export default defineComponent({
   name: 'Login',
-  data() {
+  data () {
     return {
       processing: false,
       mode: 'qrCode',
@@ -135,101 +135,101 @@ export default {
       qrCodeKey: '',
       qrCodeImage: '',
       qrCodeCheckInterval: null,
-      qrCodeInformation: '打开网易云音乐APP扫码登录',
-    };
+      qrCodeInformation: '打开网易云音乐APP扫码登录'
+    }
   },
   computed: {
-    isElectron() {
-      return process.env.IS_ELECTRON;
-    },
-  },
-  created() {
-    if (['phone', 'email', 'qrCode'].includes(this.$route.query.mode)) {
-      this.mode = this.$route.query.mode;
+    isElectron () {
+      return process.env.IS_ELECTRON
     }
-    this.getQrCodeKey();
   },
-  beforeDestroy() {
-    clearInterval(this.qrCodeCheckInterval);
+  created () {
+    if (['phone', 'email', 'qrCode'].includes(this.$route.query.mode)) {
+      this.mode = this.$route.query.mode
+    }
+    this.getQrCodeKey()
+  },
+  beforeUnmount () {
+    clearInterval(this.qrCodeCheckInterval)
   },
   methods: {
     ...mapMutations(['updateData']),
-    validatePhone() {
+    validatePhone () {
       if (
         this.countryCode === '' ||
         this.phone === '' ||
         this.password === ''
       ) {
-        nativeAlert('国家区号或手机号不正确');
-        this.processing = false;
-        return false;
+        alert('国家区号或手机号不正确')
+        this.processing = false
+        return false
       }
-      return true;
+      return true
     },
-    validateEmail() {
-      const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    validateEmail () {
+      const emailReg = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       if (
         this.email === '' ||
         this.password === '' ||
         !emailReg.test(this.email)
       ) {
-        nativeAlert('邮箱不正确');
-        return false;
+        alert('邮箱不正确')
+        return false
       }
-      return true;
+      return true
     },
-    login() {
+    login () {
       if (this.mode === 'phone') {
-        this.processing = this.validatePhone();
-        if (!this.processing) return;
+        this.processing = this.validatePhone()
+        if (!this.processing) return
         loginWithPhone({
           countrycode: this.countryCode.replace('+', '').replace(/\s/g, ''),
           phone: this.phoneNumber.replace(/\s/g, ''),
           password: 'fakePassword',
-          md5_password: md5(this.password).toString(),
+          md5_password: md5(this.password).toString()
         })
           .then(this.handleLoginResponse)
           .catch(error => {
-            this.processing = false;
-            nativeAlert(`发生错误，请检查你的账号密码是否正确\n${error}`);
-          });
+            this.processing = false
+            alert(`发生错误，请检查你的账号密码是否正确\n${error}`)
+          })
       } else {
-        this.processing = this.validateEmail();
-        if (!this.processing) return;
+        this.processing = this.validateEmail()
+        if (!this.processing) return
         loginWithEmail({
           email: this.email.replace(/\s/g, ''),
           password: 'fakePassword',
-          md5_password: md5(this.password).toString(),
+          md5_password: md5(this.password).toString()
         })
           .then(this.handleLoginResponse)
           .catch(error => {
-            this.processing = false;
-            nativeAlert(`发生错误，请检查你的账号密码是否正确\n${error}`);
-          });
+            this.processing = false
+            alert(`发生错误，请检查你的账号密码是否正确\n${error}`)
+          })
       }
     },
-    handleLoginResponse(data) {
+    handleLoginResponse (data) {
       if (!data) {
-        this.processing = false;
-        return;
+        this.processing = false
+        return
       }
       if (data.code === 200) {
-        setCookies(data.cookie);
-        this.updateData({ key: 'loginMode', value: 'account' });
+        setCookies(data.cookie)
+        this.updateData({ key: 'loginMode', value: 'account' })
         this.$store.dispatch('fetchUserProfile').then(() => {
           this.$store.dispatch('fetchLikedPlaylist').then(() => {
-            this.$router.push({ path: '/library' });
-          });
-        });
+            this.$router.push({ path: '/library' })
+          })
+        })
       } else {
-        this.processing = false;
-        nativeAlert(data.msg ?? data.message ?? '账号或密码错误，请检查');
+        this.processing = false
+        alert(data.msg ?? data.message ?? '账号或密码错误，请检查')
       }
     },
-    getQrCodeKey() {
+    getQrCodeKey () {
       return loginQrCodeKey().then(result => {
         if (result.code === 200) {
-          this.qrCodeKey = result.data.unikey;
+          this.qrCodeKey = result.data.unikey
           QRCode.toDataURL(
             `https://music.163.com/login?codekey=${this.qrCodeKey}`,
             {
@@ -237,43 +237,43 @@ export default {
               margin: 0,
               color: {
                 dark: '#335eea',
-                light: '#00000000',
-              },
+                light: '#00000000'
+              }
             }
           )
             .then(url => {
-              this.qrCodeImage = url;
+              this.qrCodeImage = url
             })
             .catch(err => {
-              console.error(err);
+              console.error(err)
             })
             .finally(() => {
-              NProgress.done();
-            });
+              NProgress.done()
+            })
         }
-        this.checkQrCodeLogin();
-      });
+        this.checkQrCodeLogin()
+      })
     },
-    checkQrCodeLogin() {
+    checkQrCodeLogin () {
       this.qrCodeCheckInterval = setInterval(() => {
-        if (this.qrCodeKey === '') return;
+        if (this.qrCodeKey === '') return
         loginQrCodeCheck(this.qrCodeKey).then(result => {
           if (result.code === 800) {
-            this.getQrCodeKey(); // 重新生成QrCode
-            this.qrCodeInformation = '二维码已失效，请重新扫码';
+            this.getQrCodeKey() // 重新生成QrCode
+            this.qrCodeInformation = '二维码已失效，请重新扫码'
           } else if (result.code === 802) {
-            this.qrCodeInformation = '扫描成功，请在手机上确认登录';
+            this.qrCodeInformation = '扫描成功，请在手机上确认登录'
           } else if (result.code === 803) {
-            clearInterval(this.qrCodeCheckInterval);
-            this.qrCodeInformation = '登录成功，请稍等...';
-            result.code = 200;
-            this.handleLoginResponse(result);
+            clearInterval(this.qrCodeCheckInterval)
+            this.qrCodeInformation = '登录成功，请稍等...'
+            result.code = 200
+            this.handleLoginResponse(result)
           }
-        });
-      }, 1000);
-    },
-  },
-};
+        })
+      }, 1000)
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped>

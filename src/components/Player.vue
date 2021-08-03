@@ -47,7 +47,7 @@
           <div class="like-button">
             <button-icon
               :title="$t('player.like')"
-              @click.native="likeATrack(player.currentTrack.id)"
+              @click="likeATrack(player.currentTrack.id)"
             >
               <svg-icon
                 v-show="!player.isCurrentTrackLiked"
@@ -68,25 +68,25 @@
           <button-icon
             v-show="!player.isPersonalFM"
             :title="$t('player.previous')"
-            @click.native="player.playPrevTrack"
+            @click="player.playPrevTrack"
             ><svg-icon icon-class="previous"
           /></button-icon>
           <button-icon
             v-show="player.isPersonalFM"
             title="不喜欢"
-            @click.native="player.moveToFMTrash"
+            @click="player.moveToFMTrash"
             ><svg-icon icon-class="thumbs-down"
           /></button-icon>
           <button-icon
             class="play"
             :title="$t(player.playing ? 'player.pause' : 'player.play')"
-            @click.native="player.playOrPause"
+            @click="player.playOrPause"
           >
             <svg-icon :icon-class="player.playing ? 'pause' : 'play'"
           /></button-icon>
           <button-icon
             :title="$t('player.next')"
-            @click.native="player.playNextTrack"
+            @click="player.playNextTrack"
             ><svg-icon icon-class="next"
           /></button-icon>
         </div>
@@ -101,7 +101,7 @@
               active: $route.name === 'next',
               disabled: player.isPersonalFM,
             }"
-            @click.native="goToNextTracksPage"
+            @click="goToNextTracksPage"
             ><svg-icon icon-class="list"
           /></button-icon>
           <button-icon
@@ -114,7 +114,7 @@
                 ? $t('player.repeatTrack')
                 : $t('player.repeat')
             "
-            @click.native="player.switchRepeatMode"
+            @click="player.switchRepeatMode"
           >
             <svg-icon
               v-show="player.repeatMode !== 'one'"
@@ -128,11 +128,11 @@
           <button-icon
             :class="{ active: player.shuffle, disabled: player.isPersonalFM }"
             :title="$t('player.shuffle')"
-            @click.native="player.switchShuffle"
+            @click="player.switchShuffle"
             ><svg-icon icon-class="shuffle"
           /></button-icon>
           <div class="volume-control">
-            <button-icon :title="$t('player.mute')" @click.native="player.mute">
+            <button-icon :title="$t('player.mute')" @click="player.mute">
               <svg-icon v-show="volume > 0.5" icon-class="volume" />
               <svg-icon v-show="volume === 0" icon-class="volume-mute" />
               <svg-icon
@@ -158,7 +158,7 @@
             class="lyrics-button"
             title="歌词"
             style="margin-left: 12px"
-            @click.native="toggleLyrics"
+            @click="toggleLyrics"
             ><svg-icon icon-class="arrow-up"
           /></button-icon>
         </div>

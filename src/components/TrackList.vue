@@ -60,8 +60,8 @@
         :key="itemKey === 'id' ? track.id : `${track.id}${index}`"
         :track-prop="track"
         :highlight-playing-track="highlightPlayingTrack"
-        @dblclick.native="playThisList(track.id || track.songId)"
-        @click.right.native="openMenu($event, track, index)"
+        @dblclick="playThisList(track.id || track.songId)"
+        @click.right="openMenu($event, track, index)"
       />
     </div>
   </div>

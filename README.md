@@ -1,8 +1,11 @@
 # music-next
 
 ## TODO
+https://v3.cn.vuejs.org/guide/migration/array-refs.html#%E8%BF%81%E7%A7%BB%E7%AD%96%E7%95%A5
+
 + store type
 + api type
++ - filters
 
 ## Project setup
 ```bash

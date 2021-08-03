@@ -31,7 +31,7 @@
             :class="{ active: user.nickname === activeUser.nickname }"
             @click="activeUser = user"
           >
-            <img class="head" :src="user.avatarUrl | resizeImage" />
+            <img class="head" :src="user.avatarUrl | resizeImage"  alt="head"/>
             <div class="nickname">
               {{ user.nickname }}
             </div>
@@ -40,7 +40,7 @@
       </div>
       <ButtonTwoTone
         v-show="activeUser.nickname !== undefined"
-        @click.native="confirm"
+        @click="confirm"
       >
         {{ $t('login.confirm') }}
       </ButtonTwoTone>
@@ -49,57 +49,58 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
-import NProgress from 'nprogress';
-import { search } from '@/api/others';
-import { userPlaylist } from '@/api/user';
-import { throttle } from '@/utils/common';
+import { defineComponent } from 'vue'
+import { mapMutations } from 'vuex'
+import NProgress from 'nprogress'
+import { search } from '@/api/others'
+import { userPlaylist } from '@/api/user'
+import { throttle } from '@/utils/common'
 
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 
-export default {
+export default defineComponent({
   name: 'LoginUsername',
   components: {
-    ButtonTwoTone,
+    ButtonTwoTone
   },
-  data() {
+  data () {
     return {
       keyword: '',
       result: [],
-      activeUser: {},
-    };
+      activeUser: {}
+    }
   },
-  created() {
-    NProgress.done();
+  created () {
+    NProgress.done()
   },
   methods: {
     ...mapMutations(['updateData']),
-    search() {
-      if (!this.keyword) return;
+    search () {
+      if (!this.keyword) return
       search({ keywords: this.keyword, limit: 9, type: 1002 }).then(data => {
-        this.result = data.result.userprofiles;
-        this.activeUser = this.result[0];
-      });
+        this.result = data.result.userprofiles
+        this.activeUser = this.result[0]
+      })
     },
-    confirm() {
-      this.updateData({ key: 'user', value: this.activeUser });
-      this.updateData({ key: 'loginMode', value: 'username' });
+    confirm () {
+      this.updateData({ key: 'user', value: this.activeUser })
+      this.updateData({ key: 'loginMode', value: 'username' })
       userPlaylist({
         uid: this.activeUser.userId,
-        limit: 1,
+        limit: 1
       }).then(data => {
         this.updateData({
           key: 'likedSongPlaylistID',
-          value: data.playlist[0].id,
-        });
-        this.$router.push({ path: '/library' });
-      });
+          value: data.playlist[0].id
+        })
+        this.$router.push({ path: '/library' })
+      })
     },
     throttleSearch: throttle(function () {
-      this.search();
-    }, 500),
-  },
-};
+      this.search()
+    }, 500)
+  }
+})
 </script>
 
 <style lang="scss" scoped>
