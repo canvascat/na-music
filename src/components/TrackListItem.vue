@@ -11,7 +11,7 @@
       v-if="!isAlbum"
       :src="imgUrl"
       :class="{ hover: focus }"
-      @click="goToAlbum"
+      @click="goToAlbum" alt="album"
     />
     <div v-if="showOrderNumber" class="no">
       <button v-show="focus && track.playable && !isPlaying" @click="playTrack">
@@ -69,22 +69,23 @@
         <svg-icon
           icon-class="heart"
           :style="{
-            visibility: focus && !isLiked ? 'visible' : 'hidden',
+            visibility: focus && !isLiked ? 'visible' : 'hidden'
           }"
         ></svg-icon>
         <svg-icon v-show="isLiked" icon-class="heart-solid"></svg-icon>
       </button>
     </div>
     <div v-if="showTrackTime" class="time">
-      {{ track.dt | formatTime }}
+      {{ formatTime(track.dt) }}
     </div>
   </div>
 </template>
 
 <script>
-import ArtistsInLine from '@/components/ArtistsInLine.vue';
-import ExplicitSymbol from '@/components/ExplicitSymbol.vue';
-import { mapState } from 'vuex';
+import ArtistsInLine from '@/components/ArtistsInLine.vue'
+import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
+import { mapState } from 'vuex'
+import { formatTime } from '@/utils/filters'
 
 export default {
   name: 'TrackListItem',
@@ -94,109 +95,108 @@ export default {
     trackProp: Object,
     highlightPlayingTrack: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
 
-  data() {
-    return { hover: false, trackStyle: {} };
+  data () {
+    return { hover: false, trackStyle: {} }
   },
 
   computed: {
     ...mapState(['settings']),
-    track() {
+    track () {
       return this.type === 'cloudDisk'
         ? this.trackProp.simpleSong
-        : this.trackProp;
+        : this.trackProp
     },
-    imgUrl() {
-      let image =
+    imgUrl () {
+      const image =
         this.track?.al?.picUrl ??
         this.track?.album?.picUrl ??
-        'https://p2.music.126.net/UeTuwE7pvjBpypWLudqukA==/3132508627578625.jpg';
-      return image + '?param=224y224';
+        'https://p2.music.126.net/UeTuwE7pvjBpypWLudqukA==/3132508627578625.jpg'
+      return image + '?param=224y224'
     },
-    artists() {
-      if (this.track.ar !== undefined) return this.track.ar;
-      if (this.track.artists !== undefined) return this.track.artists;
-      return [];
+    artists () {
+      if (this.track.ar !== undefined) return this.track.ar
+      if (this.track.artists !== undefined) return this.track.artists
+      return []
     },
-    album() {
-      return this.track.album || this.track.al || this.track?.simpleSong?.al;
+    album () {
+      return this.track.album || this.track.al || this.track?.simpleSong?.al
     },
-    translate() {
-      let t;
-      if (this.track?.tns?.length > 0) t = this.track.tns[0];
-      else t = this.track.alia[0];
-      return t;
+    translate () {
+      let t
+      if (this.track?.tns?.length > 0) t = this.track.tns[0]
+      else t = this.track.alia[0]
+      return t
     },
-    type() {
-      return this.$parent.type;
+    type () {
+      return this.$parent.type
     },
-    isAlbum() {
-      return this.type === 'album';
+    isAlbum () {
+      return this.type === 'album'
     },
-    isTranslate() {
-      return this.track?.tns?.length > 0 || this.track.alia?.length > 0;
+    isTranslate () {
+      return this.track?.tns?.length > 0 || this.track.alia?.length > 0
     },
-    isPlaylist() {
-      return this.type === 'playlist';
+    isPlaylist () {
+      return this.type === 'playlist'
     },
-    isLiked() {
-      return this.$parent.liked.songs.includes(this.track?.id);
+    isLiked () {
+      return this.$parent.liked.songs.includes(this.track?.id)
     },
-    isPlaying() {
-      return this.$store.state.player.currentTrack.id === this.track?.id;
+    isPlaying () {
+      return this.$store.state.player.currentTrack.id === this.track?.id
     },
-    trackClass() {
-      let trackClass = [this.type];
-      if (!this.track.playable && this.showUnavailableSongInGreyStyle)
-        trackClass.push('disable');
-      if (this.isPlaying && this.highlightPlayingTrack)
-        trackClass.push('playing');
-      if (this.focus) trackClass.push('focus');
-      return trackClass;
+    trackClass () {
+      const trackClass = [this.type]
+      if (!this.track.playable && this.showUnavailableSongInGreyStyle) { trackClass.push('disable') }
+      if (this.isPlaying && this.highlightPlayingTrack) { trackClass.push('playing') }
+      if (this.focus) trackClass.push('focus')
+      return trackClass
     },
-    isMenuOpened() {
-      return this.$parent.rightClickedTrack.id === this.track.id ? true : false;
+    isMenuOpened () {
+      return this.$parent.rightClickedTrack.id === this.track.id
     },
-    focus() {
+    focus () {
       return (
         (this.hover && this.$parent.rightClickedTrack.id === 0) ||
         this.isMenuOpened
-      );
+      )
     },
-    showUnavailableSongInGreyStyle() {
+    showUnavailableSongInGreyStyle () {
       return process.env.IS_ELECTRON
         ? !this.$store.state.settings.enableUnblockNeteaseMusic
-        : true;
+        : true
     },
-    showLikeButton() {
-      return this.type !== 'tracklist' && this.type !== 'cloudDisk';
+    showLikeButton () {
+      return this.type !== 'tracklist' && this.type !== 'cloudDisk'
     },
-    showOrderNumber() {
-      return this.type === 'album';
+    showOrderNumber () {
+      return this.type === 'album'
     },
-    showAlbumName() {
-      return this.type !== 'album' && this.type !== 'tracklist';
+    showAlbumName () {
+      return this.type !== 'album' && this.type !== 'tracklist'
     },
-    showTrackTime() {
-      return this.type !== 'tracklist';
-    },
+    showTrackTime () {
+      return this.type !== 'tracklist'
+    }
   },
 
   methods: {
-    goToAlbum() {
-      this.$router.push({ path: '/album/' + this.track.al.id });
+    formatTime,
+    goToAlbum () {
+      this.$router.push({ path: '/album/' + this.track.al.id })
     },
-    playTrack() {
-      this.$parent.playThisList(this.track.id);
+    playTrack () {
+      this.$parent.playThisList(this.track.id)
     },
-    likeThisSong() {
-      this.$parent.likeATrack(this.track.id);
-    },
-  },
-};
+    likeThisSong () {
+      this.$parent.likeATrack(this.track.id)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -267,7 +267,7 @@ button {
   }
 
   img.hover {
-    filter: drop-shadow(100 200 0 black);
+    filter: drop-shadow(100px 200px 0 black);
   }
 
   .title-and-artist {

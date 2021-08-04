@@ -40,16 +40,15 @@
 </template>
 
 <script>
-import { getTrackDetail } from '@/api/track';
-import { search } from '@/api/others';
-import locale from '@/locale';
-import { camelCase } from 'change-case';
-import NProgress from 'nprogress';
+import { getTrackDetail } from '@/api/track'
+import { search } from '@/api/others'
+import { camelize } from '@vue/shared'
+import NProgress from 'nprogress'
 
-import TrackList from '@/components/TrackList.vue';
-import MvRow from '@/components/MvRow.vue';
-import CoverRow from '@/components/CoverRow.vue';
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
+import TrackList from '@/components/TrackList.vue'
+import MvRow from '@/components/MvRow.vue'
+import CoverRow from '@/components/CoverRow.vue'
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 
 export default {
   name: 'Search',
@@ -57,84 +56,84 @@ export default {
     TrackList,
     MvRow,
     CoverRow,
-    ButtonTwoTone,
+    ButtonTwoTone
   },
-  data() {
-    return { show: false, result: [], hasMore: true };
+  data () {
+    return { show: false, result: [], hasMore: true }
   },
   computed: {
-    keywords() {
-      return this.$route.params.keywords;
+    keywords () {
+      return this.$route.params.keywords
     },
-    type() {
-      return camelCase(this.$route.params.type);
+    type () {
+      return camelize(this.$route.params.type)
     },
-    typeNameTable() {
+    typeNameTable () {
       return {
-        musicVideos: locale.t('search.mv'),
-        tracks: locale.t('search.song'),
-        albums: locale.t('search.album'),
-        artists: locale.t('search.artist'),
-        playlists: locale.t('search.playlist'),
-      };
-    },
+        musicVideos: this.$t('search.mv'),
+        tracks: this.$t('search.song'),
+        albums: this.$t('search.album'),
+        artists: this.$t('search.artist'),
+        playlists: this.$t('search.playlist')
+      }
+    }
   },
-  created() {
-    this.fetchData();
+  created () {
+    this.fetchData()
   },
   methods: {
-    fetchData() {
+    fetchData () {
       const typeTable = {
         musicVideos: 1004,
         tracks: 1,
         albums: 10,
         artists: 100,
-        playlists: 1000,
-      };
+        playlists: 1000
+      }
       return search({
         keywords: this.keywords,
         type: typeTable[this.type],
-        offset: this.result.length,
+        offset: this.result.length
       }).then(result => {
-        result = result.result;
-        this.hasMore = result.hasMore ?? true;
+        result = result.result
+        this.hasMore = result.hasMore ?? true
         switch (this.type) {
           case 'musicVideos':
-            this.result.push(...result.mvs);
+            this.result.push(...result.mvs)
             if (result.mvCount <= this.result.length) {
-              this.hasMore = false;
+              this.hasMore = false
             }
-            break;
+            break
           case 'artists':
-            this.result.push(...result.artists);
-            break;
+            this.result.push(...result.artists)
+            break
           case 'albums':
-            this.result.push(...result.albums);
+            this.result.push(...result.albums)
             if (result.albumCount <= this.result.length) {
-              this.hasMore = false;
+              this.hasMore = false
             }
-            break;
+            break
           case 'tracks':
-            this.result.push(...result.songs);
-            this.getTracksDetail();
-            break;
+            this.result.push(...result.songs)
+            this.getTracksDetail()
+            break
           case 'playlists':
-            this.result.push(...result.playlists);
-            break;
+            this.result.push(...result.playlists)
+            break
         }
-        NProgress.done();
-        this.show = true;
-      });
+        NProgress.done()
+        this.show = true
+      })
     },
-    getTracksDetail() {
-      const trackIDs = this.result.map(t => t.id);
-      if (trackIDs.length === 0) return;
+    getTracksDetail () {
+      const trackIDs = this.result.map(t => t.id)
+      if (trackIDs.length === 0) return
       getTrackDetail(trackIDs.join(',')).then(result => {
-        this.result = result.songs;
-      });
-    },
-  },
-};
+        this.result = result.songs
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

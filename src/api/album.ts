@@ -33,11 +33,7 @@ export async function getAlbum (id: number) {
  * @param {string} params.area
  */
 export function newAlbums (params) {
-  return request({
-    url: '/album/new',
-    method: 'get',
-    params
-  })
+  return request.get<any, any>('/album/new', { params })
 }
 
 /**
@@ -64,9 +60,6 @@ export function albumDynamicDetail (id) {
  * @param {number} params.t
  */
 export function likeAAlbum (params) {
-  return request({
-    url: '/album/sub',
-    method: 'post',
-    params
-  })
+  // TODO: ADD TYPE
+  return request.post<any, any>('/album/sub', {}, { params })
 }

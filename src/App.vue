@@ -7,10 +7,12 @@
       :style="{ overflow: enableScrolling ? 'auto' : 'hidden' }"
       @scroll="handleScroll"
     >
-      <keep-alive>
-        <router-view v-if="keepAlive"></router-view>
-      </keep-alive>
-      <router-view v-if="!keepAlive"></router-view>
+      <router-view v-if="keepAlive" v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+      <router-view v-else></router-view>
     </main>
     <transition name="slide-up">
       <Player v-if="enablePlayer" v-show="showPlayer" ref="player" />

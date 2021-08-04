@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import { isLooseLoggedIn, isAccountLoggedIn } from '@/utils/auth'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: () => import('@/views/home.vue'),
+    component: () => import('@/views/Home.vue'),
     meta: {
       keepAlive: true,
       savePosition: true
@@ -133,7 +133,7 @@ const routes: RouteRecordRaw[] = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_BASE_URL),
+  history: createWebHashHistory(),
   routes
 })
 
@@ -155,11 +155,7 @@ router.beforeEach((to, from, next) => {
     if (isLooseLoggedIn()) {
       next()
     } else {
-      if (process.env.IS_ELECTRON === true) {
-        next({ path: '/login/account' })
-      } else {
-        next({ path: '/login' })
-      }
+      next({ path: '/login' })
     }
   } else {
     next()

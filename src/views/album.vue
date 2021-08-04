@@ -3,7 +3,7 @@
     <div class="playlist-info">
       <Cover
         :id="album.id"
-        :image-url="album.picUrl | resizeImage(1024)"
+        :image-url="resizeImage(album.picUrl, 1024)"
         :show-play-button="true"
         :always-show-shadow="true"
         :click-cover-to-play="true"
@@ -20,7 +20,7 @@
         }}</div>
         <div class="artist">
           <span v-if="album.artist.id !== 104700">
-            <span>{{ album.type | formatAlbumType(album) }} by </span
+            <span>{{ formatAlbumType(album.type, album) }} by </span
             ><router-link :to="`/artist/${album.artist.id}`">{{
               album.artist.name
             }}</router-link></span
@@ -31,12 +31,12 @@
           <span v-if="album.mark === 1056768" class="explicit-symbol"
             ><ExplicitSymbol
           /></span>
-          <span :title="album.publishTime | formatDate">{{
+          <span :title="formatDate(album.publishTime)">{{
             new Date(album.publishTime).getFullYear()
           }}</span>
           <span> · {{ album.size }} {{ $t('common.songs') }}</span
           >,
-          {{ albumTime | formatTime('Human') }}
+          {{ formatTime(albumTime, 'Human') }}
         </div>
         <div class="description" @click="toggleFullDescription">
           {{ album.description }}
@@ -81,7 +81,7 @@
       <div class="album-time"></div>
       <div class="release-date">
         {{ $t('album.released') }}
-        {{ album.publishTime | formatDate('MMMM D, YYYY') }}
+        {{ formatDate(album.publishTime, 'MMMM D, YYYY') }}
       </div>
       <div v-if="album.company !== null" class="copyright">
         © {{ album.company }}
@@ -128,23 +128,23 @@
   </div>
 </template>
 
-<script>
-import { mapMutations, mapActions, mapState } from 'vuex';
-import { getArtistAlbum } from '@/api/artist';
-import { getTrackDetail } from '@/api/track';
-import { getAlbum, albumDynamicDetail, likeAAlbum } from '@/api/album';
-import locale from '@/locale';
-import { splitSoundtrackAlbumTitle, splitAlbumTitle } from '@/utils/common';
-import NProgress from 'nprogress';
-import { isAccountLoggedIn } from '@/utils/auth';
+<script lang="ts">
+import { mapActions, mapState } from 'vuex'
+import NProgress from 'nprogress'
+import { getArtistAlbum } from '@/api/artist'
+import { getTrackDetail } from '@/api/track'
+import { getAlbum, albumDynamicDetail, likeAAlbum } from '@/api/album'
+import { splitSoundtrackAlbumTitle, splitAlbumTitle } from '@/utils/common'
+import { isAccountLoggedIn } from '@/utils/auth'
+import { resizeImage, formatAlbumType, formatDate, formatTime } from '@/utils/filters'
 
-import ExplicitSymbol from '@/components/ExplicitSymbol.vue';
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
-import ContextMenu from '@/components/ContextMenu.vue';
-import TrackList from '@/components/TrackList.vue';
-import CoverRow from '@/components/CoverRow.vue';
-import Cover from '@/components/Cover.vue';
-import Modal from '@/components/Modal.vue';
+import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
+import ContextMenu from '@/components/ContextMenu.vue'
+import TrackList from '@/components/TrackList.vue'
+import CoverRow from '@/components/CoverRow.vue'
+import Cover from '@/components/Cover.vue'
+import Modal from '@/components/Modal.vue'
 
 export default {
   name: 'Album',
@@ -155,149 +155,153 @@ export default {
     ExplicitSymbol,
     CoverRow,
     Modal,
-    ContextMenu,
+    ContextMenu
   },
-  beforeRouteUpdate(to, from, next) {
-    this.show = false;
-    this.loadData(to.params.id);
-    next();
+  beforeRouteUpdate (to, from, next) {
+    this.show = false
+    this.loadData(to.params.id)
+    next()
   },
-  data() {
+  data () {
     return {
       show: false,
       album: {
         id: 0,
         picUrl: '',
         artist: {
-          id: 0,
-        },
+          id: 0
+        }
       },
       tracks: [],
       showFullDescription: false,
       moreAlbums: [],
       dynamicDetail: {},
       subtitle: '',
-      title: '',
-    };
+      title: ''
+    }
   },
   computed: {
     ...mapState(['player', 'data']),
-    albumTime() {
-      let time = 0;
-      this.tracks.map(t => (time = time + t.dt));
-      return time;
+    albumTime () {
+      let time = 0
+      this.tracks.map(t => (time = time + t.dt))
+      return time
     },
-    filteredMoreAlbums() {
-      let moreAlbums = this.moreAlbums.filter(a => a.id !== this.album.id);
-      let realAlbums = moreAlbums.filter(a => a.type === '专辑');
-      let eps = moreAlbums.filter(
+    filteredMoreAlbums () {
+      const moreAlbums = this.moreAlbums.filter(a => a.id !== this.album.id)
+      const realAlbums = moreAlbums.filter(a => a.type === '专辑')
+      const eps = moreAlbums.filter(
         a => a.type === 'EP' || (a.type === 'EP/Single' && a.size > 1)
-      );
-      let restItems = moreAlbums.filter(
+      )
+      const restItems = moreAlbums.filter(
         a =>
           realAlbums.find(a1 => a1.id === a.id) === undefined &&
           eps.find(a1 => a1.id === a.id) === undefined
-      );
+      )
       if (realAlbums.length === 0) {
-        return [...realAlbums, ...eps, ...restItems].slice(0, 5);
+        return [...realAlbums, ...eps, ...restItems].slice(0, 5)
       } else {
-        return [...realAlbums, ...restItems].slice(0, 5);
+        return [...realAlbums, ...restItems].slice(0, 5)
       }
-    },
+    }
   },
-  created() {
-    this.loadData(this.$route.params.id);
+  created () {
+    this.loadData(this.$route.params.id)
   },
   methods: {
-    ...mapMutations(['appendTrackToPlayerList']),
-    ...mapActions(['playFirstTrackOnList', 'playTrackOnListByID', 'showToast']),
-    playAlbumByID(id, trackID = 'first') {
-      this.$store.state.player.playAlbumByID(id, trackID);
+    resizeImage,
+    formatDate,
+    formatTime,
+    formatAlbumType,
+    ...mapActions(['showToast']),
+    playAlbumByID (id, trackID = 'first') {
+      this.$store.state.player.playAlbumByID(id, trackID)
     },
-    likeAlbum(toast = false) {
+    likeAlbum (toast = false) {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(this.$t('toast.needToLogin'))
+        return
       }
       likeAAlbum({
         id: this.album.id,
-        t: this.dynamicDetail.isSub ? 0 : 1,
+        t: this.dynamicDetail.isSub ? 0 : 1
       })
         .then(data => {
           if (data.code === 200) {
-            this.dynamicDetail.isSub = !this.dynamicDetail.isSub;
-            if (toast === true)
+            this.dynamicDetail.isSub = !this.dynamicDetail.isSub
+            if (toast === true) {
               this.showToast(
                 this.dynamicDetail.isSub ? '已保存到音乐库' : '已从音乐库删除'
-              );
+              )
+            }
           }
         })
         .catch(error => {
-          this.showToast(`${error.response.data.message || error}`);
-        });
+          this.showToast(`${error.response.data.message || error}`)
+        })
     },
-    formatTitle() {
-      let splitTitle = splitSoundtrackAlbumTitle(this.album.name);
-      let splitTitle2 = splitAlbumTitle(splitTitle.title);
-      this.title = splitTitle2.title;
+    formatTitle () {
+      const splitTitle = splitSoundtrackAlbumTitle(this.album.name)
+      const splitTitle2 = splitAlbumTitle(splitTitle.title)
+      this.title = splitTitle2.title
       if (splitTitle.subtitle !== '' && splitTitle2.subtitle !== '') {
-        this.subtitle = splitTitle.subtitle + ' · ' + splitTitle2.subtitle;
+        this.subtitle = splitTitle.subtitle + ' · ' + splitTitle2.subtitle
       } else {
         this.subtitle =
           splitTitle.subtitle === ''
             ? splitTitle2.subtitle
-            : splitTitle.subtitle;
+            : splitTitle.subtitle
       }
     },
-    loadData(id) {
+    loadData (id) {
       setTimeout(() => {
-        if (!this.show) NProgress.start();
-      }, 1000);
+        if (!this.show) NProgress.start()
+      }, 1000)
       getAlbum(id).then(data => {
-        this.album = data.album;
-        this.tracks = data.songs;
-        this.formatTitle();
-        NProgress.done();
-        this.show = true;
+        this.album = data.album
+        this.tracks = data.songs
+        this.formatTitle()
+        NProgress.done()
+        this.show = true
 
         // to get explicit mark
-        let trackIDs = this.tracks.map(t => t.id);
+        const trackIDs = this.tracks.map(t => t.id)
         getTrackDetail(trackIDs.join(',')).then(data => {
-          this.tracks = data.songs;
-        });
+          this.tracks = data.songs
+        })
 
         // get more album by this artist
         getArtistAlbum({ id: this.album.artist.id, limit: 100 }).then(data => {
-          this.moreAlbums = data.hotAlbums;
-        });
-      });
+          this.moreAlbums = data.hotAlbums
+        })
+      })
       albumDynamicDetail(id).then(data => {
-        this.dynamicDetail = data;
-      });
+        this.dynamicDetail = data
+      })
     },
-    toggleFullDescription() {
-      this.showFullDescription = !this.showFullDescription;
+    toggleFullDescription () {
+      this.showFullDescription = !this.showFullDescription
       if (this.showFullDescription) {
-        this.$store.commit('enableScrolling', false);
+        this.$store.commit('enableScrolling', false)
       } else {
-        this.$store.commit('enableScrolling', true);
+        this.$store.commit('enableScrolling', true)
       }
     },
-    openMenu(e) {
-      this.$refs.albumMenu.openMenu(e);
+    openMenu (e) {
+      this.$refs.albumMenu.openMenu(e)
     },
-    copyUrl(id) {
-      let showToast = this.showToast;
+    copyUrl (id) {
+      const showToast = this.showToast
       this.$copyText('https://music.163.com/#/album?id=' + id)
-        .then(function () {
-          showToast(locale.t('toast.copied'));
+        .then(() => {
+          showToast(this.$t('toast.copied'))
         })
         .catch(error => {
-          showToast(`${locale.t('toast.copyFailed')}${error}`);
-        });
-    },
-  },
-};
+          showToast(`${this.$t('toast.copyFailed')}${error}`)
+        })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

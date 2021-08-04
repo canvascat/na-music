@@ -4,8 +4,8 @@
 
 <script>
 export default {
-  name: 'ButtonIcon',
-};
+  name: 'ButtonIcon'
+}
 </script>
 
 <style lang="scss" scoped>

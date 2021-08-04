@@ -16,7 +16,7 @@
           ><svg-icon icon-class="play" />
         </button>
       </div>
-      <img :src="imageUrl" :style="imageStyles" />
+      <img :src="imageUrl" :style="imageStyles"  alt="cover"/>
       <transition v-if="coverHover || alwaysShowShadow" name="fade">
         <div
           v-show="focus || alwaysShowShadow"
@@ -41,51 +41,51 @@ export default {
     alwaysShowShadow: { type: Boolean, default: false },
     clickCoverToPlay: { type: Boolean, default: false },
     shadowMargin: { type: Number, default: 12 },
-    radius: { type: Number, default: 12 },
+    radius: { type: Number, default: 12 }
   },
-  data() {
+  data () {
     return {
-      focus: false,
-    };
+      focus: false
+    }
   },
   computed: {
-    imageStyles() {
-      let styles = {};
+    imageStyles () {
+      const styles = {}
       if (this.fixedSize !== 0) {
-        styles.width = this.fixedSize + 'px';
-        styles.height = this.fixedSize + 'px';
+        styles.width = this.fixedSize + 'px'
+        styles.height = this.fixedSize + 'px'
       }
-      if (this.type === 'artist') styles.borderRadius = '50%';
-      return styles;
+      if (this.type === 'artist') styles.borderRadius = '50%'
+      return styles
     },
-    playButtonStyles() {
-      let styles = {};
-      styles.width = this.playButtonSize + '%';
-      styles.height = this.playButtonSize + '%';
-      return styles;
+    playButtonStyles () {
+      const styles = {}
+      styles.width = this.playButtonSize + '%'
+      styles.height = this.playButtonSize + '%'
+      return styles
     },
-    shadowStyles() {
-      let styles = {};
-      styles.backgroundImage = `url(${this.imageUrl})`;
-      if (this.type === 'artist') styles.borderRadius = '50%';
-      return styles;
-    },
+    shadowStyles () {
+      const styles = {}
+      styles.backgroundImage = `url(${this.imageUrl})`
+      if (this.type === 'artist') styles.borderRadius = '50%'
+      return styles
+    }
   },
   methods: {
-    play() {
-      const player = this.$store.state.player;
+    play () {
+      const player = this.$store.state.player
       const playActions = {
         album: player.playAlbumByID,
         playlist: player.playPlaylistByID,
-        artist: player.playArtistByID,
-      };
-      playActions[this.type].bind(player)(this.id);
+        artist: player.playArtistByID
+      }
+      playActions[this.type].bind(player)(this.id)
     },
-    goTo() {
-      this.$router.push({ name: this.type, params: { id: this.id } });
-    },
-  },
-};
+    goTo () {
+      this.$router.push({ name: this.type, params: { id: this.id } })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -2,7 +2,7 @@
   <div v-show="show" class="artist-page">
     <div class="artist-info">
       <div class="head">
-        <img :src="artist.img1v1Url | resizeImage(1024)" />
+        <img :src="resizeImage(artist.img1v1Url, 1024)" alt="cover"/>
       </div>
       <div>
         <div class="name">{{ artist.name }}</div>
@@ -48,7 +48,7 @@
         <div class="container">
           <Cover
             :id="latestRelease.id"
-            :image-url="latestRelease.picUrl | resizeImage"
+            :image-url="resizeImage(latestRelease.picUrl)"
             type="album"
             :fixed-size="128"
             :play-button-size="30"
@@ -60,10 +60,10 @@
               }}</router-link>
             </div>
             <div class="date">
-              {{ latestRelease.publishTime | formatDate }}
+              {{ formatDate(latestRelease.publishTime) }}
             </div>
             <div class="type">
-              {{ latestRelease.type | formatAlbumType(latestRelease) }} ·
+              {{ formatAlbumType(latestRelease.type, latestRelease) }} ·
               {{ latestRelease.size }} {{ $t('common.songs') }}
             </div>
           </div>
@@ -75,7 +75,7 @@
             @mouseleave="mvHover = false"
             @click="goToMv(latestMV.id)"
           >
-            <img :src="latestMV.coverUrl" />
+            <img :src="latestMV.coverUrl"  alt="mv"/>
             <transition name="fade">
               <div
                 v-show="mvHover"
@@ -93,7 +93,7 @@
               }}</router-link>
             </div>
             <div class="date">
-              {{ latestMV.publishTime | formatDate }}
+              {{ formatDate(latestMV.publishTime) }}
             </div>
             <div class="type">{{ $t('artist.latestMV') }}</div>
           </div>
@@ -174,25 +174,25 @@
 </template>
 
 <script>
-import { mapMutations, mapActions, mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex'
 import {
   getArtist,
   getArtistAlbum,
   artistMv,
   followAArtist,
-  similarArtists,
-} from '@/api/artist';
-import locale from '@/locale';
-import { isAccountLoggedIn } from '@/utils/auth';
-import NProgress from 'nprogress';
+  similarArtists
+} from '@/api/artist'
+import { isAccountLoggedIn } from '@/utils/auth'
+import NProgress from 'nprogress'
+import { formatAlbumType, formatDate, resizeImage } from '@/utils/filters'
 
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
-import ContextMenu from '@/components/ContextMenu.vue';
-import TrackList from '@/components/TrackList.vue';
-import CoverRow from '@/components/CoverRow.vue';
-import Cover from '@/components/Cover.vue';
-import MvRow from '@/components/MvRow.vue';
-import Modal from '@/components/Modal.vue';
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
+import ContextMenu from '@/components/ContextMenu.vue'
+import TrackList from '@/components/TrackList.vue'
+import CoverRow from '@/components/CoverRow.vue'
+import Cover from '@/components/Cover.vue'
+import MvRow from '@/components/MvRow.vue'
+import Modal from '@/components/Modal.vue'
 
 export default {
   name: 'Artist',
@@ -203,19 +203,19 @@ export default {
     CoverRow,
     MvRow,
     Modal,
-    ContextMenu,
+    ContextMenu
   },
-  beforeRouteUpdate(to, from, next) {
+  beforeRouteUpdate (to, from, next) {
     this.artist.img1v1Url =
-      'https://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg';
-    this.loadData(to.params.id, next);
+      'https://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg'
+    this.loadData(to.params.id, next)
   },
-  data() {
+  data () {
     return {
       show: false,
       artist: {
         img1v1Url:
-          'https://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg',
+          'https://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg'
       },
       popularTracks: [],
       albumsData: [],
@@ -225,130 +225,132 @@ export default {
         id: 0,
         name: '',
         type: '',
-        size: '',
+        size: ''
       },
       showMorePopTracks: false,
       showFullDescription: false,
       mvs: [],
       hasMoreMV: false,
       similarArtists: [],
-      mvHover: false,
-    };
+      mvHover: false
+    }
   },
   computed: {
     ...mapState(['player']),
-    albums() {
-      return this.albumsData.filter(a => a.type === '专辑');
+    albums () {
+      return this.albumsData.filter(a => a.type === '专辑')
     },
-    eps() {
+    eps () {
       return this.albumsData.filter(a =>
         ['EP/Single', 'EP', 'Single'].includes(a.type)
-      );
+      )
     },
-    latestMV() {
-      const mv = this.mvs[0] || {};
+    latestMV () {
+      const mv = this.mvs[0] || {}
       return {
         id: mv.id || mv.vid,
         name: mv.name || mv.title,
         coverUrl: `${mv.imgurl16v9 || mv.cover || mv.coverUrl}?param=464y260`,
-        publishTime: mv.publishTime,
-      };
-    },
+        publishTime: mv.publishTime
+      }
+    }
   },
-  activated() {
+  activated () {
     if (this.artist?.id?.toString() !== this.$route.params.id) {
-      this.loadData(this.$route.params.id);
+      this.loadData(this.$route.params.id)
     } else {
-      this.$parent.$refs.scrollbar.restorePosition();
+      this.$parent.$refs.scrollbar.restorePosition()
     }
   },
   methods: {
-    ...mapMutations(['appendTrackToPlayerList']),
-    ...mapActions(['playFirstTrackOnList', 'playTrackOnListByID', 'showToast']),
-    loadData(id, next = undefined) {
+    formatAlbumType,
+    formatDate,
+    resizeImage,
+    ...mapActions(['showToast']),
+    loadData (id, next = undefined) {
       setTimeout(() => {
-        if (!this.show) NProgress.start();
-      }, 1000);
-      this.show = false;
-      this.$parent.$refs.main.scrollTo({ top: 0 });
+        if (!this.show) NProgress.start()
+      }, 1000)
+      this.show = false
+      this.$parent.$refs.main.scrollTo({ top: 0 })
       getArtist(id).then(data => {
-        this.artist = data.artist;
-        this.popularTracks = data.hotSongs;
-        if (next !== undefined) next();
-        NProgress.done();
-        this.show = true;
-      });
+        this.artist = data.artist
+        this.popularTracks = data.hotSongs
+        if (next !== undefined) next()
+        NProgress.done()
+        this.show = true
+      })
       getArtistAlbum({ id: id, limit: 200 }).then(data => {
-        this.albumsData = data.hotAlbums;
-        this.latestRelease = data.hotAlbums[0];
-      });
+        this.albumsData = data.hotAlbums
+        this.latestRelease = data.hotAlbums[0]
+      })
       artistMv({ id }).then(data => {
-        this.mvs = data.mvs;
-        this.hasMoreMV = data.hasMore;
-      });
+        this.mvs = data.mvs
+        this.hasMoreMV = data.hasMore
+      })
       similarArtists(id).then(data => {
-        this.similarArtists = data.artists;
-      });
+        this.similarArtists = data.artists
+      })
     },
-    goToAlbum(id) {
+    goToAlbum (id) {
       this.$router.push({
         name: 'album',
-        params: { id },
-      });
+        params: { id }
+      })
     },
-    goToMv(id) {
-      this.$router.push({ path: '/mv/' + id });
+    goToMv (id) {
+      this.$router.push({ path: '/mv/' + id })
     },
-    playPopularSongs(trackID = 'first') {
-      let trackIDs = this.popularTracks.map(t => t.id);
+    playPopularSongs (trackID = 'first') {
+      const trackIDs = this.popularTracks.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
         this.artist.id,
         'artist',
         trackID
-      );
+      )
     },
-    followArtist() {
+    followArtist () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(this.$t('toast.needToLogin'))
+        return
       }
       followAArtist({
         id: this.artist.id,
-        t: this.artist.followed ? 0 : 1,
+        t: this.artist.followed ? 0 : 1
       }).then(data => {
-        if (data.code === 200) this.artist.followed = !this.artist.followed;
-      });
+        if (data.code === 200) this.artist.followed = !this.artist.followed
+      })
     },
-    scrollTo(div, block = 'center') {
+    scrollTo (div, block = 'center') {
       document.getElementById(div).scrollIntoView({
         behavior: 'smooth',
-        block,
-      });
+        block
+      })
     },
-    toggleFullDescription() {
-      this.showFullDescription = !this.showFullDescription;
+    toggleFullDescription () {
+      this.showFullDescription = !this.showFullDescription
       if (this.showFullDescription) {
-        this.$store.commit('enableScrolling', false);
+        this.$store.commit('enableScrolling', false)
       } else {
-        this.$store.commit('enableScrolling', true);
+        this.$store.commit('enableScrolling', true)
       }
     },
-    openMenu(e) {
-      this.$refs.artistMenu.openMenu(e);
+    openMenu (e) {
+      this.$refs.artistMenu.openMenu(e)
     },
-    copyUrl(id) {
-      let showToast = this.showToast;
+    copyUrl (id) {
+      const showToast = this.showToast
       this.$copyText('https://music.163.com/#/artist?id=' + id)
-        .then(function () {
-          showToast(locale.t('toast.copied'));
+        .then(() => {
+          showToast(this.$t('toast.copied'))
         })
         .catch(error => {
-          showToast(`${locale.t('toast.copyFailed')}${error}`);
-        });
-    },
-  },
-};
+          showToast(`${this.$t('toast.copyFailed')}${error}`)
+        })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -366,7 +368,7 @@ export default {
     width: 248px;
     border-radius: 50%;
     margin-right: 56px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 12px 16px -8px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 12px 16px -8px;
   }
   .name {
     font-size: 56px;

@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import { mapTrackPlayableStatus } from '@/utils/common'
+import type { PrivateFM } from './types'
 
 /**
  * 搜索
@@ -30,7 +31,10 @@ export function search (params) {
 
 export function personalFM () {
   const timestamp = Date.now()
-  return request.get('/personal_fm', { params: { timestamp } })
+  return request.get<any, {
+    data: PrivateFM[];
+    code: number;
+  }>('/personal_fm', { params: { timestamp } })
 }
 
 export function fmTrash (id: number) {

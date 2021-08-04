@@ -4,7 +4,7 @@
       class="progress-bar"
       :class="{
         nyancat: settings.nyancatStyle,
-        'nyancat-stop': settings.nyancatStyle && !player.playing,
+        'nyancat-stop': settings.nyancatStyle && !player.playing
       }"
       @click.stop
     >
@@ -26,9 +26,9 @@
       <div class="playing">
         <div class="container" @click.stop>
           <img
-            :src="currentTrack.al && currentTrack.al.picUrl | resizeImage(224)"
+            :src="resizeImage(currentTrack.al && currentTrack.al.picUrl, 224)"
             @click="goToAlbum"
-          />
+            alt="cover"/>
           <div class="track-info" :title="audioSource">
             <div class="name" @click="goToList">
               {{ currentTrack.name }}
@@ -99,7 +99,7 @@
             :title="$t('player.nextUp')"
             :class="{
               active: $route.name === 'next',
-              disabled: player.isPersonalFM,
+              disabled: player.isPersonalFM
             }"
             @click="goToNextTracksPage"
             ><svg-icon icon-class="list"
@@ -107,7 +107,7 @@
           <button-icon
             :class="{
               active: player.repeatMode !== 'off',
-              disabled: player.isPersonalFM,
+              disabled: player.isPersonalFM
             }"
             :title="
               player.repeatMode === 'one'
@@ -168,81 +168,83 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
-import '@/assets/css/slider.css';
+import { mapState, mapMutations, mapActions } from 'vuex'
+import '@/assets/css/slider.css'
 
-import ButtonIcon from '@/components/ButtonIcon.vue';
-import VueSlider from 'vue-slider-component';
+import ButtonIcon from '@/components/ButtonIcon.vue'
+import VueSlider from 'vue-slider-component'
+import { resizeImage } from '@/utils/filters'
 
 export default {
   name: 'Player',
   components: {
     ButtonIcon,
-    VueSlider,
+    VueSlider
   },
   computed: {
     ...mapState(['player', 'settings', 'data']),
-    currentTrack() {
-      return this.player.currentTrack;
+    currentTrack () {
+      return this.player.currentTrack
     },
     volume: {
-      get() {
-        return this.player.volume;
+      get () {
+        return this.player.volume
       },
-      set(value) {
-        this.player.volume = value;
-      },
+      set (value) {
+        this.player.volume = value
+      }
     },
-    playing() {
-      return this.player.playing;
+    playing () {
+      return this.player.playing
     },
-    audioSource() {
+    audioSource () {
       return this.player._howler?._src.includes('kuwo.cn')
         ? '音源来自酷我音乐'
-        : '';
-    },
+        : ''
+    }
   },
   methods: {
+    resizeImage,
     ...mapMutations(['toggleLyrics']),
     ...mapActions(['showToast', 'likeATrack']),
-    goToNextTracksPage() {
-      if (this.player.isPersonalFM) return;
+    goToNextTracksPage () {
+      if (this.player.isPersonalFM) return
       this.$route.name === 'next'
         ? this.$router.go(-1)
-        : this.$router.push({ name: 'next' });
+        : this.$router.push({ name: 'next' })
     },
-    formatTrackTime(value) {
-      if (!value) return '';
-      let min = ~~((value / 60) % 60);
-      let sec = (~~(value % 60)).toString().padStart(2, '0');
-      return `${min}:${sec}`;
+    formatTrackTime (value) {
+      if (!value) return ''
+      const min = ~~((value / 60) % 60)
+      const sec = (~~(value % 60)).toString().padStart(2, '0')
+      return `${min}:${sec}`
     },
-    goToList() {
+    goToList () {
       if (this.player.playlistSource.id === this.data.likedSongPlaylistID) {
-        this.$router.push({ path: '/library/liked-songs' });
+        this.$router.push({ path: '/library/liked-songs' })
       } else if (this.player.playlistSource.type === 'url') {
-        this.$router.push({ path: this.player.playlistSource.id });
+        this.$router.push(String(this.player.playlistSource.id))
       } else if (this.player.playlistSource.type === 'cloudDisk') {
-        this.$router.push({ path: '/library' });
+        this.$router.push({ path: '/library' })
       } else {
         this.$router.push({
           path:
             '/' +
             this.player.playlistSource.type +
             '/' +
-            this.player.playlistSource.id,
-        });
+            this.player.playlistSource.id
+        })
       }
     },
-    goToAlbum() {
-      if (this.player.currentTrack.al.id === 0) return;
-      this.$router.push({ path: '/album/' + this.player.currentTrack.al.id });
+    goToAlbum () {
+      if (this.player.currentTrack.al.id === 0) return
+      this.$router.push({ path: '/album/' + this.player.currentTrack.al.id })
     },
-    goToArtist(id) {
-      this.$router.push({ path: '/artist/' + id });
-    },
-  },
-};
+    goToArtist (id) {
+      this.$router.push({ path: '/artist/' + id })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

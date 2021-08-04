@@ -1,7 +1,7 @@
 <template>
   <div v-show="show">
     <h1>
-      <img class="avatar" :src="artist.img1v1Url | resizeImage(1024)" />{{
+      <img class="avatar" :src="resizeImage(artist.img1v1Url, 1024)"  alt="avatar"/>{{
         artist.name
       }}'s Music Videos
     </h1>
@@ -15,68 +15,70 @@
 </template>
 
 <script>
-import { artistMv, getArtist } from '@/api/artist';
-import NProgress from 'nprogress';
+import { artistMv, getArtist } from '@/api/artist'
+import NProgress from 'nprogress'
 
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
-import MvRow from '@/components/MvRow.vue';
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
+import MvRow from '@/components/MvRow.vue'
+import { resizeImage } from '@/utils/filters'
 
 export default {
   name: 'ArtistMV',
   components: {
     MvRow,
-    ButtonTwoTone,
+    ButtonTwoTone
   },
-  beforeRouteUpdate(to, from, next) {
-    this.id = to.params.id;
-    this.loadData();
-    next();
+  beforeRouteUpdate (to, from, next) {
+    this.id = to.params.id
+    this.loadData()
+    next()
   },
-  data() {
+  data () {
     return {
       id: 0,
       show: false,
       hasMore: true,
       artist: {},
-      mvs: [],
-    };
+      mvs: []
+    }
   },
-  created() {
-    this.id = this.$route.params.id;
-    this.loadData();
+  created () {
+    this.id = this.$route.params.id
+    this.loadData()
   },
-  activated() {
+  activated () {
     if (this.$route.params.id !== this.id) {
-      this.id = this.$route.params.id;
-      this.mvs = [];
-      this.artist = {};
-      this.show = false;
-      this.hasMore = true;
-      this.loadData();
+      this.id = this.$route.params.id
+      this.mvs = []
+      this.artist = {}
+      this.show = false
+      this.hasMore = true
+      this.loadData()
     }
   },
   methods: {
-    loadData() {
+    resizeImage,
+    loadData () {
       setTimeout(() => {
-        if (!this.show) NProgress.start();
-      }, 1000);
+        if (!this.show) NProgress.start()
+      }, 1000)
       getArtist(this.id).then(data => {
-        this.artist = data.artist;
-      });
-      this.loadMVs();
+        this.artist = data.artist
+      })
+      this.loadMVs()
     },
-    loadMVs() {
+    loadMVs () {
       artistMv({ id: this.id, limit: 100, offset: this.mvs.length }).then(
         data => {
-          this.mvs.push(...data.mvs);
-          this.hasMore = data.hasMore;
-          NProgress.done();
-          this.show = true;
+          this.mvs.push(...data.mvs)
+          this.hasMore = data.hasMore
+          NProgress.done()
+          this.show = true
         }
-      );
-    },
-  },
-};
+      )
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

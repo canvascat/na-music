@@ -7,7 +7,7 @@
     title="添加到歌单"
     width="25vw"
   >
-    <template slot="default">
+    <template v-slot:default>
       <div class="new-playlist-button" @click="newPlaylist"
         ><svg-icon icon-class="plus" />新建歌单</div
       >
@@ -17,7 +17,7 @@
         class="playlist"
         @click="addTrackToPlaylist(playlist.id)"
       >
-        <img :src="playlist.coverImgUrl | resizeImage(224)" />
+        <img :src="resizeImage(playlist.coverImgUrl, 224)" alt="cover" />
         <div class="info">
           <div class="title">{{ playlist.name }}</div>
           <div class="track-count">{{ playlist.trackCount }} 首</div>
@@ -28,83 +28,84 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
-import Modal from '@/components/Modal.vue';
-import locale from '@/locale';
-import { addOrRemoveTrackFromPlaylist } from '@/api/playlist';
+import { mapActions, mapMutations, mapState } from 'vuex'
+import Modal from '@/components/Modal.vue'
+import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
+import { resizeImage } from '@/utils/filters'
 
 export default {
   name: 'ModalAddTrackToPlaylist',
   components: {
-    Modal,
+    Modal
   },
-  data() {
+  data () {
     return {
-      playlists: [],
-    };
+      playlists: []
+    }
   },
   computed: {
     ...mapState(['modals', 'data', 'liked']),
     show: {
-      get() {
-        return this.modals.addTrackToPlaylistModal.show;
+      get () {
+        return this.modals.addTrackToPlaylistModal.show
       },
-      set(value) {
+      set (value) {
         this.updateModal({
           modalName: 'addTrackToPlaylistModal',
           key: 'show',
-          value,
-        });
+          value
+        })
         if (value) {
-          this.$store.commit('enableScrolling', false);
+          this.$store.commit('enableScrolling', false)
         } else {
-          this.$store.commit('enableScrolling', true);
+          this.$store.commit('enableScrolling', true)
         }
-      },
+      }
     },
-    ownPlaylists() {
+    ownPlaylists () {
       return this.liked.playlists.filter(
         p =>
           p.creator.userId === this.data.user.userId &&
           p.id !== this.data.likedSongPlaylistID
-      );
-    },
+      )
+    }
   },
   methods: {
+    resizeImage,
     ...mapMutations(['updateModal']),
     ...mapActions(['showToast']),
-    close() {
-      this.show = false;
+    close () {
+      this.show = false
     },
-    addTrackToPlaylist(playlistID) {
+    addTrackToPlaylist (playlistID) {
       addOrRemoveTrackFromPlaylist({
         op: 'add',
         pid: playlistID,
-        tracks: this.modals.addTrackToPlaylistModal.selectedTrackID,
+        tracks: this.modals.addTrackToPlaylistModal.selectedTrackID
       }).then(data => {
         if (data.body.code === 200) {
-          this.show = false;
-          this.showToast(locale.t('toast.savedToPlaylist'));
+          this.show = false
+          this.showToast(this.$t('toast.savedToPlaylist'))
         } else {
-          this.showToast(data.body.message);
+          this.showToast(data.body.message)
         }
-      });
+      })
     },
-    newPlaylist() {
+    newPlaylist () {
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'afterCreateAddTrackID',
-        value: this.modals.addTrackToPlaylistModal.selectedTrackID,
-      });
-      this.close();
+        value: this.modals.addTrackToPlaylistModal.selectedTrackID
+      })
+      this.close()
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'show',
-        value: true,
-      });
-    },
-  },
-};
+        value: true
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

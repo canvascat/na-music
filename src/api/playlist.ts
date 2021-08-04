@@ -99,7 +99,8 @@ export function playlistCatlist () {
  * 说明 : 调用此接口,可获取所有榜单 接口地址 : /toplist
  */
 export function toplists () {
-  return request.get('/toplist')
+  // TODO: ADD TYPE
+  return request.get<any, any>('/toplist')
 }
 
 /**
@@ -113,7 +114,8 @@ export function toplists () {
  */
 export function subscribePlaylist (params) {
   params.timestamp = Date.now()
-  return request.get('/playlist/subscribe', { params })
+  // TODO: ADD TYPE
+  return request.get<any, any>('/playlist/subscribe', { params })
 }
 
 /**
@@ -123,7 +125,8 @@ export function subscribePlaylist (params) {
  *  * @param {number} id
  */
 export function deletePlaylist (id: number) {
-  return request.get('/playlist/delete', { params: { id } })
+  // TODO: ADD TYPE
+  return request.get<any, any>('/playlist/delete', { params: { id } })
 }
 
 /**

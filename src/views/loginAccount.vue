@@ -69,7 +69,7 @@
 
         <div v-show="mode === 'qrCode'">
           <div v-show="qrCodeImage" class="qr-code-container">
-            <img :src="qrCodeImage" />
+            <img :src="qrCodeImage"  alt="qcCode"/>
           </div>
           <div class="qr-code-info">
             {{ qrCodeInformation }}
@@ -389,7 +389,6 @@ export default defineComponent({
   margin-top: 24px;
   transition: 0.2s;
   padding: 8px;
-  width: 100%;
   width: 300px;
   &:hover {
     transform: scale(1.06);

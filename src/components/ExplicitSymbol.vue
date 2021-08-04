@@ -3,31 +3,31 @@
 </template>
 
 <script>
-import SvgIcon from '@/components/SvgIcon.vue';
+import SvgIcon from '@/components/SvgIcon.vue'
 
 export default {
   name: 'ExplicitSymbol',
   components: {
-    SvgIcon,
+    SvgIcon
   },
   props: {
     size: {
       type: Number,
-      default: 16,
-    },
+      default: 16
+    }
   },
-  data() {
+  data () {
     return {
-      svgStyle: {},
-    };
+      svgStyle: {}
+    }
   },
-  created() {
+  created () {
     this.svgStyle = {
       height: this.size + 'px',
-      width: this.size + 'px',
-    };
-  },
-};
+      width: this.size + 'px'
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -7,7 +7,7 @@
     >
       <div
         v-if="
-          (settings.lyricsBackground === 'blur') |
+          (settings.lyricsBackground === 'blur') ||
             (settings.lyricsBackground === 'dynamic')
         "
         class="lyrics-background"
@@ -34,7 +34,7 @@
         <div>
           <div class="cover">
             <div class="cover-container">
-              <img :src="imageUrl" />
+              <img :src="imageUrl"  alt="cover"/>
               <div
                 class="shadow"
                 :style="{ backgroundImage: `url(${imageUrl})` }"
@@ -199,192 +199,194 @@
 // The lyrics page of Apple Music is so gorgeous, so I copy the design.
 // Some of the codes are from https://github.com/sl1673495/vue-netease-music
 
-import { mapState, mapMutations, mapActions } from 'vuex';
-import VueSlider from 'vue-slider-component';
-import { formatTrackTime } from '@/utils/common';
-import { getLyric } from '@/api/track';
-import { lyricParser } from '@/utils/lyrics';
-import ButtonIcon from '@/components/ButtonIcon.vue';
-import * as Vibrant from 'node-vibrant';
-import Color from 'color';
+import { mapState, mapMutations, mapActions } from 'vuex'
+import VueSlider from 'vue-slider-component'
+import { formatTrackTime } from '@/utils/common'
+import { getLyric } from '@/api/track'
+import { lyricParser } from '@/utils/lyrics'
+import ButtonIcon from '@/components/ButtonIcon.vue'
+import * as Vibrant from 'node-vibrant'
+import Color from 'color'
 
 export default {
   name: 'Lyrics',
   components: {
     VueSlider,
-    ButtonIcon,
+    ButtonIcon
   },
-  data() {
+  data () {
     return {
       lyricsInterval: null,
       lyric: [],
       tlyric: [],
       highlightLyricIndex: -1,
       minimize: true,
-      background: '',
-    };
+      background: ''
+    }
   },
   computed: {
     ...mapState(['player', 'settings', 'showLyrics']),
-    currentTrack() {
-      return this.player.currentTrack;
+    currentTrack () {
+      return this.player.currentTrack
     },
-    imageUrl() {
-      return this.player.currentTrack?.al?.picUrl + '?param=1024y1024';
+    imageUrl () {
+      return this.player.currentTrack?.al?.picUrl + '?param=1024y1024'
     },
-    bgImageUrl() {
-      return this.player.currentTrack?.al?.picUrl + '?param=512y512';
+    bgImageUrl () {
+      return this.player.currentTrack?.al?.picUrl + '?param=512y512'
     },
-    lyricWithTranslation() {
-      let ret = [];
+    lyricWithTranslation () {
+      let ret = []
       // 空内容的去除
       const lyricFiltered = this.lyric.filter(({ content }) =>
         Boolean(content)
-      );
+      )
       // content统一转换数组形式
       if (lyricFiltered.length) {
         lyricFiltered.forEach(l => {
-          const { rawTime, time, content } = l;
-          const lyricItem = { time, content, contents: [content] };
+          const { rawTime, time, content } = l
+          const lyricItem = { time, content, contents: [content] }
           const sameTimeTLyric = this.tlyric.find(
             ({ rawTime: tLyricRawTime }) => tLyricRawTime === rawTime
-          );
+          )
           if (sameTimeTLyric) {
-            const { content: tLyricContent } = sameTimeTLyric;
+            const { content: tLyricContent } = sameTimeTLyric
             if (content) {
-              lyricItem.contents.push(tLyricContent);
+              lyricItem.contents.push(tLyricContent)
             }
           }
-          ret.push(lyricItem);
-        });
+          ret.push(lyricItem)
+        })
       } else {
         ret = lyricFiltered.map(({ time, content }) => ({
           time,
           content,
-          contents: [content],
-        }));
+          contents: [content]
+        }))
       }
-      return ret;
+      return ret
     },
-    lyricFontSize() {
+    lyricFontSize () {
       return {
-        fontSize: `${this.$store.state.settings.lyricFontSize || 28}px`,
-      };
+        fontSize: `${this.$store.state.settings.lyricFontSize || 28}px`
+      }
     },
-    noLyric() {
-      return this.lyric.length == 0;
+    noLyric () {
+      return this.lyric.length === 0
     },
-    artist() {
+    artist () {
       return this.currentTrack?.ar
         ? this.currentTrack.ar[0]
-        : { id: 0, name: 'unknown' };
+        : { id: 0, name: 'unknown' }
     },
-    album() {
-      return this.currentTrack?.al || { id: 0, name: 'unknown' };
+    album () {
+      return this.currentTrack?.al || { id: 0, name: 'unknown' }
     },
-    theme() {
-      return this.settings.lyricsBackground === true ? 'dark' : 'auto';
-    },
+    theme () {
+      return this.settings.lyricsBackground === true ? 'dark' : 'auto'
+    }
   },
   watch: {
-    currentTrack() {
-      this.getLyric();
-      this.getCoverColor();
+    currentTrack () {
+      this.getLyric()
+      this.getCoverColor()
     },
-    showLyrics(show) {
+    showLyrics (show) {
       if (show) {
-        this.setLyricsInterval();
-        this.$store.commit('enableScrolling', false);
+        this.setLyricsInterval()
+        this.$store.commit('enableScrolling', false)
       } else {
-        clearInterval(this.lyricsInterval);
-        this.$store.commit('enableScrolling', true);
+        clearInterval(this.lyricsInterval)
+        this.$store.commit('enableScrolling', true)
       }
-    },
+    }
   },
-  created() {
-    this.getLyric();
-    this.getCoverColor();
+  created () {
+    this.getLyric()
+    this.getCoverColor()
   },
-  destroyed() {
-    clearInterval(this.lyricsInterval);
+  beforeUnmount () {
+    clearInterval(this.lyricsInterval)
   },
   methods: {
     ...mapMutations(['toggleLyrics']),
     ...mapActions(['likeATrack']),
-    getLyric() {
-      if (!this.currentTrack.id) return;
+    getLyric () {
+      if (!this.currentTrack.id) return
       return getLyric(this.currentTrack.id).then(data => {
         if (!data?.lrc?.lyric) {
-          this.lyric = [];
-          this.tlyric = [];
-          return false;
+          this.lyric = []
+          this.tlyric = []
+          return false
         } else {
-          let { lyric, tlyric } = lyricParser(data);
-          this.lyric = lyric;
-          this.tlyric = tlyric;
-          return true;
+          const { lyric, tlyric } = lyricParser(data)
+          this.lyric = lyric
+          this.tlyric = tlyric
+          return true
         }
-      });
+      })
     },
-    formatTrackTime(value) {
-      return formatTrackTime(value);
+    formatTrackTime (value) {
+      return formatTrackTime(value)
     },
-    clickLyricLine(value, startPlay = false) {
+    clickLyricLine (value, startPlay = false) {
       // TODO: 双击选择还会选中文字，考虑搞个右键菜单复制歌词
       if (window.getSelection().toString().length === 0) {
-        this.player.seek(value);
+        this.player.seek(value)
       }
       if (startPlay === true) {
-        this.player.play();
+        this.player.play()
       }
     },
-    setLyricsInterval() {
+    setLyricsInterval () {
       this.lyricsInterval = setInterval(() => {
-        const progress = this.player.seek() ?? 0;
-        let oldHighlightLyricIndex = this.highlightLyricIndex;
+        const progress = this.player.seek() ?? 0
+        const oldHighlightLyricIndex = this.highlightLyricIndex
         this.highlightLyricIndex = this.lyric.findIndex((l, index) => {
-          const nextLyric = this.lyric[index + 1];
+          const nextLyric = this.lyric[index + 1]
           return (
             progress >= l.time && (nextLyric ? progress < nextLyric.time : true)
-          );
-        });
+          )
+        })
         if (oldHighlightLyricIndex !== this.highlightLyricIndex) {
-          const el = document.getElementById(`line${this.highlightLyricIndex}`);
-          if (el)
+          const el = document.getElementById(`line${this.highlightLyricIndex}`)
+          if (el) {
             el.scrollIntoView({
               behavior: 'smooth',
-              block: 'center',
-            });
+              block: 'center'
+            })
+          }
         }
-      }, 50);
+      }, 50)
     },
-    formatLine(line) {
+    formatLine (line) {
       const showLyricsTranslation = this.$store.state.settings
-        .showLyricsTranslation;
+        .showLyricsTranslation
       if (showLyricsTranslation && line.contents[1]) {
-        return `<span>${line.contents[0]}<br/>${line.contents[1]}</span>`;
+        return `<span>${line.contents[0]}<br/>${line.contents[1]}</span>`
       } else if (line.contents[0] !== undefined) {
-        return `<span>${line.contents[0]}</span>`;
+        return `<span>${line.contents[0]}</span>`
       }
-      return 'unknown';
+      return 'unknown'
     },
-    moveToFMTrash() {
-      this.player.moveToFMTrash();
+    moveToFMTrash () {
+      this.player.moveToFMTrash()
     },
-    getCoverColor() {
-      if (this.settings.lyricsBackground !== true) return;
-      const cover = this.currentTrack.al?.picUrl + '?param=1024y1024';
-      Vibrant.from(cover, { colorCount: 1 })
+    getCoverColor () {
+      if (this.settings.lyricsBackground !== true) return
+      const cover = this.currentTrack.al?.picUrl + '?param=1024y1024'
+      // Vibrant.from(cover, { colorCount: 1 })
+      new Vibrant(cover, { colorCount: 1 })
         .getPalette()
         .then(palette => {
-          const orignColor = Color.rgb(palette.DarkMuted._rgb);
-          const color = orignColor.darken(0.1).rgb().string();
-          const color2 = orignColor.lighten(0.28).rotate(-30).rgb().string();
-          this.background = `linear-gradient(to top left, ${color}, ${color2})`;
-        });
-    },
-  },
-};
+          const originColor = Color.rgb(palette.DarkMuted.rgb)
+          const color = originColor.darken(0.1).rgb().string()
+          const color2 = originColor.lighten(0.28).rotate(-30).rgb().string()
+          this.background = `linear-gradient(to top left, ${color}, ${color2})`
+        })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -523,7 +525,7 @@ export default {
 
       .slider {
         width: 100%;
-        flex-grow: grow;
+        flex-grow: 1;
         padding: 0 10px;
       }
 

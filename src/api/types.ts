@@ -498,3 +498,11 @@ export interface PlaylistItem {
   sharedUsers?: any
   historySharedUsers?: any
 }
+
+export interface PrivateFM {
+  name: string;
+  id: number;
+  artists: Artist[];
+  album: Album;
+  privilege: Privilege;
+}

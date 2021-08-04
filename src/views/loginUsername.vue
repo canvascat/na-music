@@ -31,7 +31,7 @@
             :class="{ active: user.nickname === activeUser.nickname }"
             @click="activeUser = user"
           >
-            <img class="head" :src="user.avatarUrl | resizeImage"  alt="head"/>
+            <img class="head" :src="resizeImage(user.avatarUrl)"  alt="head"/>
             <div class="nickname">
               {{ user.nickname }}
             </div>
@@ -57,6 +57,7 @@ import { userPlaylist } from '@/api/user'
 import { throttle } from '@/utils/common'
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
+import { resizeImage } from '@/utils/filters'
 
 export default defineComponent({
   name: 'LoginUsername',
@@ -74,6 +75,7 @@ export default defineComponent({
     NProgress.done()
   },
   methods: {
+    resizeImage,
     ...mapMutations(['updateData']),
     search () {
       if (!this.keyword) return

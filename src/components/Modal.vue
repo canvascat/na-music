@@ -25,36 +25,36 @@ export default {
     close: Function,
     title: {
       type: String,
-      default: 'Title',
+      default: 'Title'
     },
     showFooter: {
       type: Boolean,
-      default: true,
+      default: true
     },
     width: {
       type: String,
-      default: '50vw',
+      default: '50vw'
     },
     clickOutsideHide: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   computed: {
-    modalStyles() {
+    modalStyles () {
       return {
-        width: this.width,
-      };
-    },
+        width: this.width
+      }
+    }
   },
   methods: {
-    clickOutside() {
+    clickOutside () {
       if (this.clickOutsideHide) {
-        this.close();
+        this.close()
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -143,11 +143,11 @@ export default {
 
 .footer {
   padding-top: 16px;
-  margin: 16px 24px 24px 24px;
   border-top: 1px solid rgba(128, 128, 128, 0.18);
   display: flex;
   justify-content: flex-end;
-  margin-bottom: -8px;
+  margin: 16px 24px -8px;
+
   button {
     color: var(--color-text);
     background: var(--color-secondary-bg-for-transparent);

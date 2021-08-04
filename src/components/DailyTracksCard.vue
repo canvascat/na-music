@@ -1,6 +1,6 @@
 <template>
   <div class="daily-recommend-card" @click="goToDailyTracks">
-    <img :src="coverUrl" />
+    <img :src="coverUrl"  alt="cover"/>
     <div class="container">
       <div class="title-box">
         <div class="title">
@@ -18,63 +18,62 @@
 </template>
 
 <script>
-import locale from '@/locale';
-import { mapMutations, mapState, mapActions } from 'vuex';
-import { dailyRecommendTracks } from '@/api/playlist';
-import { isAccountLoggedIn } from '@/utils/auth';
-import sample from 'lodash/sample';
+import { mapMutations, mapState, mapActions } from 'vuex'
+import { dailyRecommendTracks } from '@/api/playlist'
+import { isAccountLoggedIn } from '@/utils/auth'
+import sample from 'lodash/sample'
+import { noop } from 'lodash'
 
 const defaultCovers = [
   'https://p2.music.126.net/0-Ybpa8FrDfRgKYCTJD8Xg==/109951164796696795.jpg',
   'https://p2.music.126.net/QxJA2mr4hhb9DZyucIOIQw==/109951165422200291.jpg',
-  'https://p1.music.126.net/AhYP9TET8l-VSGOpWAKZXw==/109951165134386387.jpg',
-];
+  'https://p1.music.126.net/AhYP9TET8l-VSGOpWAKZXw==/109951165134386387.jpg'
+]
 
 export default {
   name: 'DailyTracksCard',
-  data() {
-    return { useAnimation: false };
+  data () {
+    return { useAnimation: false }
   },
   computed: {
     ...mapState(['dailyTracks']),
-    coverUrl() {
+    coverUrl () {
       return `${
         this.dailyTracks[0]?.al.picUrl || sample(defaultCovers)
-      }?param=1024y1024`;
-    },
+      }?param=1024y1024`
+    }
   },
-  created() {
-    if (this.dailyTracks.length === 0) this.loadDailyTracks();
+  created () {
+    if (this.dailyTracks.length === 0) this.loadDailyTracks()
   },
   methods: {
     ...mapActions(['showToast']),
     ...mapMutations(['updateDailyTracks']),
-    loadDailyTracks() {
-      if (!isAccountLoggedIn()) return;
+    loadDailyTracks () {
+      if (!isAccountLoggedIn()) return
       dailyRecommendTracks()
         .then(result => {
-          this.updateDailyTracks(result.data.dailySongs);
-        })
-        .catch(() => {});
+          this.updateDailyTracks(result.data.dailySongs)
+        }, noop)
     },
-    goToDailyTracks() {
-      this.$router.push({ name: 'dailySongs' });
+    goToDailyTracks () {
+      this.$router.push({ name: 'dailySongs' })
     },
-    playDailyTracks() {
+    playDailyTracks () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(this.$t('toast.needToLogin'))
+        return
       }
-      let trackIDs = this.dailyTracks.map(t => t.id);
+      const trackIDs = this.dailyTracks.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
         '/daily/songs',
         'url',
         this.dailyTracks[0].id
-      );
-    },
-  },
-};
+      )
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 
 export default {
   name: 'Toast',
   computed: {
-    ...mapState(['toast']),
-  },
-};
+    ...mapState(['toast'])
+  }
+}
 </script>
 
 <style lang="scss" scoped>

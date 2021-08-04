@@ -17,27 +17,27 @@ export default {
   props: {
     artists: {
       type: Array,
-      required: true,
+      required: true
     },
     exclude: {
       type: String,
-      default: '',
+      default: ''
     },
     prefix: {
       type: String,
-      default: '',
-    },
+      default: ''
+    }
   },
   computed: {
-    filteredArtists() {
-      return this.artists.filter(a => a.name !== this.exclude);
+    filteredArtists () {
+      return this.artists.filter(a => a.name !== this.exclude)
     },
-    computedPrefix() {
-      if (this.filteredArtists.length !== 0) return this.prefix;
-      else return '';
-    },
-  },
-};
+    computedPrefix () {
+      if (this.filteredArtists.length !== 0) return this.prefix
+      else return ''
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped></style>

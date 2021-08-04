@@ -15,30 +15,30 @@
 </template>
 
 <script>
-import { newAlbums } from '@/api/album';
-import NProgress from 'nprogress';
+import { newAlbums } from '@/api/album'
+import NProgress from 'nprogress'
 
-import CoverRow from '@/components/CoverRow.vue';
+import CoverRow from '@/components/CoverRow.vue'
 
 export default {
   components: {
-    CoverRow,
+    CoverRow
   },
-  data() {
+  data () {
     return {
-      albums: [],
-    };
+      albums: []
+    }
   },
-  created() {
+  created () {
     newAlbums({
       area: 'EA',
-      limit: 100,
+      limit: 100
     }).then(data => {
-      this.albums = data.albums;
-      NProgress.done();
-    });
-  },
-};
+      this.albums = data.albums
+      NProgress.done()
+    })
+  }
+}
 </script>
 
 <style lang="scss" scoped>

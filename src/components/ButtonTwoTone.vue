@@ -15,48 +15,47 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: null,
+      default: null
     },
     iconButton: {
       type: Boolean,
-      default: false,
+      default: false
     },
     horizontalPadding: {
       type: Number,
-      default: 16,
+      default: 16
     },
     color: {
       type: String,
-      default: 'blue',
+      default: 'blue'
     },
     backgroundColor: {
       type: String,
-      default: '',
+      default: ''
     },
     textColor: {
       type: String,
-      default: '',
+      default: ''
     },
     shape: {
       type: String,
-      default: 'square',
-    },
+      default: 'square'
+    }
   },
   computed: {
-    buttonStyle() {
-      let styles = {
+    buttonStyle () {
+      const styles = {
         borderRadius: this.shape === 'round' ? '50%' : '8px',
         padding: `8px ${this.horizontalPadding}px`,
         // height: "38px",
-        width: this.shape === 'round' ? '38px' : 'auto',
-      };
-      if (this.backgroundColor !== '')
-        styles.backgroundColor = this.backgroundColor;
-      if (this.textColor !== '') styles.color = this.textColor;
-      return styles;
-    },
-  },
-};
+        width: this.shape === 'round' ? '38px' : 'auto'
+      }
+      if (this.backgroundColor !== '') { styles.backgroundColor = this.backgroundColor }
+      if (this.textColor !== '') styles.color = this.textColor
+      return styles
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

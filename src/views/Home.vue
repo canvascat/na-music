@@ -21,14 +21,14 @@
       </div>
       <CoverRow
         :type="'playlist'"
-        :items="recommendPlaylist.items"
+        :items="recommendPlaylist"
         sub-text="copywriter"
       />
     </div>
     <div class="index-row">
       <div class="title"> For You </div>
       <div class="for-you-row">
-        <DailyTracksCard ref="DailyTracksCard" />
+        <DailyTracksCard ref="DailyTracksCardRef" />
         <FMCard />
       </div>
     </div>
@@ -37,7 +37,7 @@
       <CoverRow
         type="artist"
         :column-number="6"
-        :items="recommendArtists.items"
+        :items="recommendArtists"
       />
     </div>
     <div class="index-row">
@@ -47,20 +47,18 @@
       </div>
       <CoverRow
         type="album"
-        :items="newReleasesAlbum.items"
+        :items="newReleasesAlbum"
         sub-text="artist"
       />
     </div>
     <div class="index-row">
       <div class="title">
         {{ $t('home.charts') }}
-        <router-link to="/explore?category=排行榜">{{
-          $t('home.seeMore')
-        }}</router-link>
+        <router-link to="/explore?category=排行榜">{{ $t('home.seeMore') }}</router-link>
       </div>
       <CoverRow
         type="playlist"
-        :items="topList.items"
+        :items="topList"
         sub-text="updateFrequency"
         :image-size="1024"
       />
@@ -69,92 +67,68 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { toplists, recommendPlaylist } from '@/api/playlist'
+import { defineComponent, onActivated, ref } from 'vue'
+import { toplists, recommendPlaylist as fetchRecommendPlaylist } from '@/api/playlist'
 import { toplistOfArtists } from '@/api/artist'
 import { byAppleMusic } from '@/utils/staticData'
 import { countDBSize } from '@/utils/db'
 import { newAlbums } from '@/api/album'
 import NProgress from 'nprogress'
-import { mapState } from 'vuex'
 import CoverRow from '@/components/CoverRow.vue'
 import FMCard from '@/components/FMCard.vue'
 import DailyTracksCard from '@/components/DailyTracksCard.vue'
+import { random } from 'lodash'
+import store from '@/store'
 
 export default defineComponent({
   name: 'Home',
-  components: { CoverRow, FMCard, DailyTracksCard },
-  data () {
-    return {
-      show: false,
-      recommendPlaylist: { items: [] },
-      newReleasesAlbum: { items: [] },
-      topList: {
-        items: [],
-        ids: [19723756, 180106, 60198, 3812895, 60131]
-      },
-      recommendArtists: {
-        items: [],
-        indexs: []
-      }
-    }
-  },
-  computed: {
-    ...mapState(['settings']),
-    byAppleMusic () {
-      return byAppleMusic
-    }
-  },
-  activated () {
-    this.loadData()
-    this.$parent.$refs.scrollbar.restorePosition()
-  },
-  methods: {
-    loadData () {
-      setTimeout(() => {
-        if (!this.show) NProgress.start()
-      }, 1000)
-      recommendPlaylist({
-        limit: 10
-      }).then(data => {
-        this.recommendPlaylist.items = data.result
+  components: { CoverRow, DailyTracksCard, FMCard },
+  setup () {
+    const settings = store.state.settings
+    const DailyTracksCardRef = ref()
+    const show = ref(false)
+    const recommendPlaylist = ref([])
+    const newReleasesAlbum = ref([])
+    const topList = ref([])
+    const recommendArtists = ref([])
+    NProgress.start()
+    function loadData () {
+      const lang = settings.musicLanguage
+      fetchRecommendPlaylist({ limit: 10 }).then(data => {
+        recommendPlaylist.value = data.result
         NProgress.done()
-        this.show = true
+        show.value = true
       })
-      newAlbums({
-        area: this.settings.musicLanguage ?? 'ALL',
-        limit: 10
-      }).then(data => {
-        this.newReleasesAlbum.items = data.albums
+      newAlbums({ area: lang ?? 'ALL', limit: 10 }).then(data => {
+        newReleasesAlbum.value = data.albums
       })
 
-      const topListOfArtistsAreaTable = {
-        all: null,
-        zh: 1,
-        ea: 2,
-        jp: 4,
-        kr: 3
-      }
-      toplistOfArtists(
-        topListOfArtistsAreaTable[this.settings.musicLanguage ?? 'all']
-      ).then(data => {
-        const indexs = []
-        while (indexs.length < 6) {
-          const tmp = ~~(Math.random() * 100)
-          if (!indexs.includes(tmp)) indexs.push(tmp)
-        }
-        this.recommendArtists.indexs = indexs
-        this.recommendArtists.items = data.list.artists.filter((l, index) =>
-          indexs.includes(index)
-        )
+      toplistOfArtists({ zh: 1, ea: 2, jp: 4, kr: 3 }[lang]).then(data => {
+        // 随机取6个当作推荐艺人
+        const artists = data.list.artists
+        recommendArtists.value = [...Array(6)].map(() => artists.splice(random(artists.length), 1)[0])
       })
       toplists().then(data => {
-        this.topList.items = data.list.filter(l =>
-          this.topList.ids.includes(l.id)
-        )
+        const ids = [19723756, 180106, 60198, 3812895, 60131]
+        topList.value = data.list.filter(item => ids.includes(item.id))
       })
       countDBSize()
-      this.$refs.DailyTracksCard.loadDailyTracks()
+      DailyTracksCardRef.value.loadDailyTracks()
+    }
+    onActivated(() => {
+      loadData()
+      // TODO:
+      // this.$parent.$refs.scrollbar.restorePosition()
+    })
+    return {
+      settings,
+      show,
+      byAppleMusic,
+      DailyTracksCardRef,
+      recommendArtists,
+      topList,
+      recommendPlaylist,
+      newReleasesAlbum
     }
   }
 })

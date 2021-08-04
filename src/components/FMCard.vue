@@ -1,14 +1,14 @@
 <template>
-  <div class="fm" :style="{ background }" data-theme="dark">
-    <img :src="nextTrackCover" style="display: none" />
-    <img
+  <div class="fm" :style="{ background }" data-theme="dark" v-if="track">
+    <img :src="nextTrackCover" v-show="false" alt="cover"/>
+    <img alt="cover"
       class="cover"
-      :src="track.album && track.album.picUrl | resizeImage(512)"
+      :src="resizeImage(track?.album.picUrl, 512)"
       @click="goToAlbum"
     />
     <div class="right-part">
       <div class="info">
-        <div class="title">{{ track.name }}</div>
+        <div class="title">{{ track?.name }}</div>
         <div class="artist"><ArtistsInLine :artists="artists" /></div>
       </div>
       <div class="controls">
@@ -32,81 +32,73 @@
   </div>
 </template>
 
-<script>
-import ButtonIcon from '@/components/ButtonIcon.vue';
-import ArtistsInLine from '@/components/ArtistsInLine.vue';
-import { mapState } from 'vuex';
-import * as Vibrant from 'node-vibrant';
-import Color from 'color';
+<script lang="ts">
+import ButtonIcon from '@/components/ButtonIcon.vue'
+import ArtistsInLine from '@/components/ArtistsInLine.vue'
+import Vibrant from 'node-vibrant'
+import Color from 'color'
+import { resizeImage } from '@/utils/filters'
+import { computed, ref } from 'vue'
+import store from '@/store'
+import { useRouter } from 'vue-router'
+
+async function createCoverColor (cover: string) {
+  const palette = await new Vibrant(cover, { colorCount: 1 }).getPalette()
+  const rgb = palette.Vibrant.rgb
+  const color = Color.rgb(rgb).darken(0.1).rgb().string()
+  const color2 = Color.rgb(rgb).lighten(0.28).rotate(-30).rgb().string()
+  return `linear-gradient(to top left, ${color}, ${color2})`
+}
+function normlizeURL (url?: string) {
+  if (!url) return ''
+  return url.replace('http://', 'https://') + '?param=512y512'
+}
 
 export default {
   name: 'FMCard',
   components: { ButtonIcon, ArtistsInLine },
-  data() {
+  setup () {
+    const background = ref('')
+    updateBackground()
+    const player = store.state.player
+    async function updateBackground () {
+      console.log(player.personalFMTrack, '----')
+      background.value = await createCoverColor(normlizeURL(player.personalFMTrack?.album?.picUrl))
+    }
+    const track = computed(() => player.personalFMTrack)
+    const isPlaying = computed(() => player.playing && player.isPersonalFM)
+    const artists = computed(() => track.value?.artists || [])
+    const nextTrackCover = computed(() => normlizeURL(player.personalFMNextTrack?.album?.picUrl))
+    function play () {
+      player.playPersonalFM()
+    }
+    function next () {
+      player.playNextTrack(true)
+      updateBackground()
+    }
+    const router = useRouter()
+    function goToAlbum () {
+      if (!this.track?.album.id) return
+      router.push({ path: '/album/' + this.track.album.id })
+    }
+    function moveToFMTrash () {
+      player.moveToFMTrash()
+      updateBackground()
+    }
     return {
-      background: '',
-    };
-  },
-  computed: {
-    ...mapState(['player']),
-    track() {
-      return this.player.personalFMTrack;
-    },
-    isPlaying() {
-      return this.player.playing && this.player.isPersonalFM;
-    },
-    artists() {
-      return this.track.artists || this.track.ar || [];
-    },
-    nextTrackCover() {
-      return `${this.player._personalFMNextTrack?.album?.picUrl.replace(
-        'http://',
-        'https://'
-      )}?param=512y512`;
-    },
-  },
-  created() {
-    this.getColor();
-    window.ok = this.getColor;
-  },
-  methods: {
-    play() {
-      this.player.playPersonalFM();
-    },
-    next() {
-      this.player.playNextTrack(true);
-      this.getColor();
-    },
-    goToAlbum() {
-      if (this.track.album.id === 0) return;
-      this.$router.push({ path: '/album/' + this.track.album.id });
-    },
-    moveToFMTrash() {
-      this.player.moveToFMTrash();
-      this.getColor();
-    },
-    getColor() {
-      const cover = `${this.player.personalFMTrack.album.picUrl.replace(
-        'http://',
-        'https://'
-      )}?param=512y512`;
-      Vibrant.from(cover, { colorCount: 1 })
-        .getPalette()
-        .then(palette => {
-          const color = Color.rgb(palette.Vibrant._rgb)
-            .darken(0.1)
-            .rgb()
-            .string();
-          const color2 = Color.rgb(palette.Vibrant._rgb)
-            .lighten(0.28)
-            .rotate(-30)
-            .rgb()
-            .string();
-          this.background = `linear-gradient(to top left, ${color}, ${color2})`;
-        });
-    },
-  },
-};
+      background,
+      nextTrackCover,
+      track,
+      isPlaying,
+      artists,
+      goToAlbum,
+      play,
+      next,
+      moveToFMTrash,
+      resizeImage
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -108,7 +108,7 @@ export class LyricParse {
   lines: { time: number, txt: string }[] = []
   state = LYRIC_STATE.PAUSE
   curLine = 0
-  private _timer?: number
+  private _timer?: ReturnType<typeof setTimeout>
   private _curNum?: number
   private _startStamp?: number
   private _pauseStamp?: number

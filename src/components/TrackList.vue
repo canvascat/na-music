@@ -2,7 +2,7 @@
   <div class="track-list">
     <ContextMenu ref="menu">
       <div v-show="type !== 'cloudDisk'" class="item-info">
-        <img :src="rightClickedTrackComputed.al.picUrl | resizeImage(224)" />
+        <img :src="resizeImage(rightClickedTrackComputed.al.picUrl, 224)" />
         <div class="info">
           <div class="title">{{ rightClickedTrackComputed.name }}</div>
           <div class="subtitle">{{ rightClickedTrackComputed.ar[0].name }}</div>
@@ -68,49 +68,50 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
-import { addOrRemoveTrackFromPlaylist } from '@/api/playlist';
-import { cloudDiskTrackDelete } from '@/api/user';
-import { isAccountLoggedIn } from '@/utils/auth';
+import { mapActions, mapMutations, mapState } from 'vuex'
+import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
+import { cloudDiskTrackDelete } from '@/api/user'
+import { isAccountLoggedIn } from '@/utils/auth'
 
-import TrackListItem from '@/components/TrackListItem.vue';
-import ContextMenu from '@/components/ContextMenu.vue';
-import locale from '@/locale';
+import TrackListItem from '@/components/TrackListItem.vue'
+import ContextMenu from '@/components/ContextMenu.vue'
+import locale from '@/locale'
+import { resizeImage } from '@/utils/filters'
 
 export default {
   name: 'TrackList',
   components: {
     TrackListItem,
-    ContextMenu,
+    ContextMenu
   },
   props: {
     tracks: {
       type: Array,
       default: () => {
-        return [];
-      },
+        return []
+      }
     },
     type: {
       type: String,
-      default: 'tracklist',
+      default: 'tracklist'
     }, // tracklist | album | playlist | cloudDisk
     id: {
       type: Number,
-      default: 0,
+      default: 0
     },
     dbclickTrackFunc: {
       type: String,
-      default: 'default',
+      default: 'default'
     },
     albumObject: {
       type: Object,
       default: () => {
         return {
           artist: {
-            name: '',
-          },
-        };
-      },
+            name: ''
+          }
+        }
+      }
     },
     extraContextMenuItem: {
       type: Array,
@@ -119,176 +120,177 @@ export default {
           // 'removeTrackFromPlaylist'
           // 'removeTrackFromQueue'
           // 'removeTrackFromCloudDisk'
-        ];
-      },
+        ]
+      }
     },
     columnNumber: {
       type: Number,
-      default: 4,
+      default: 4
     },
     highlightPlayingTrack: {
       type: Boolean,
-      default: true,
+      default: true
     },
     itemKey: {
       type: String,
-      default: 'id',
-    },
+      default: 'id'
+    }
   },
-  data() {
+  data () {
     return {
       rightClickedTrack: {
         id: 0,
         name: '',
         ar: [{ name: '' }],
-        al: { picUrl: '' },
+        al: { picUrl: '' }
       },
       rightClickedTrackIndex: -1,
-      listStyles: {},
-    };
+      listStyles: {}
+    }
   },
   computed: {
     ...mapState(['liked', 'player']),
-    isRightClickedTrackLiked() {
-      return this.liked.songs.includes(this.rightClickedTrack?.id);
+    isRightClickedTrackLiked () {
+      return this.liked.songs.includes(this.rightClickedTrack?.id)
     },
-    rightClickedTrackComputed() {
+    rightClickedTrackComputed () {
       return this.type === 'cloudDisk'
         ? {
-            id: 0,
-            name: '',
-            ar: [{ name: '' }],
-            al: { picUrl: '' },
-          }
-        : this.rightClickedTrack;
-    },
+          id: 0,
+          name: '',
+          ar: [{ name: '' }],
+          al: { picUrl: '' }
+        }
+        : this.rightClickedTrack
+    }
   },
-  created() {
+  created () {
     if (this.type === 'tracklist') {
       this.listStyles = {
         display: 'grid',
         gap: '4px',
-        gridTemplateColumns: `repeat(${this.columnNumber}, 1fr)`,
-      };
+        gridTemplateColumns: `repeat(${this.columnNumber}, 1fr)`
+      }
     }
   },
   methods: {
+    resizeImage,
     ...mapMutations(['updateModal']),
     ...mapActions(['nextTrack', 'showToast', 'likeATrack']),
-    openMenu(e, track, index = -1) {
-      this.rightClickedTrack = track;
-      this.rightClickedTrackIndex = index;
-      this.$refs.menu.openMenu(e);
+    openMenu (e, track, index = -1) {
+      this.rightClickedTrack = track
+      this.rightClickedTrackIndex = index
+      this.$refs.menu.openMenu(e)
     },
-    closeMenu() {
+    closeMenu () {
       this.rightClickedTrack = {
         id: 0,
         name: '',
         ar: [{ name: '' }],
-        al: { picUrl: '' },
-      };
-      this.rightClickedTrackIndex = -1;
+        al: { picUrl: '' }
+      }
+      this.rightClickedTrackIndex = -1
     },
-    playThisList(trackID) {
+    playThisList (trackID) {
       if (this.dbclickTrackFunc === 'default') {
-        this.playThisListDefault(trackID);
+        this.playThisListDefault(trackID)
       } else if (this.dbclickTrackFunc === 'none') {
         // do nothing
       } else if (this.dbclickTrackFunc === 'playTrackOnListByID') {
-        this.player.playTrackOnListByID(trackID);
+        this.player.playTrackOnListByID(trackID)
       } else if (this.dbclickTrackFunc === 'playPlaylistByID') {
-        this.player.playPlaylistByID(this.id, trackID);
+        this.player.playPlaylistByID(this.id, trackID)
       } else if (this.dbclickTrackFunc === 'playAList') {
-        let trackIDs = this.tracks.map(t => t.id || t.songId);
-        this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID);
+        const trackIDs = this.tracks.map(t => t.id || t.songId)
+        this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID)
       } else if (this.dbclickTrackFunc === 'dailyTracks') {
-        let trackIDs = this.tracks.map(t => t.id);
-        this.player.replacePlaylist(trackIDs, '/daily/songs', 'url', trackID);
+        const trackIDs = this.tracks.map(t => t.id)
+        this.player.replacePlaylist(trackIDs, '/daily/songs', 'url', trackID)
       } else if (this.dbclickTrackFunc === 'playCloudDisk') {
-        let trackIDs = this.tracks.map(t => t.id || t.songId);
-        this.player.replacePlaylist(trackIDs, this.id, 'cloudDisk', trackID);
+        const trackIDs = this.tracks.map(t => t.id || t.songId)
+        this.player.replacePlaylist(trackIDs, this.id, 'cloudDisk', trackID)
       }
     },
-    playThisListDefault(trackID) {
+    playThisListDefault (trackID) {
       if (this.type === 'playlist') {
-        this.player.playPlaylistByID(this.id, trackID);
+        this.player.playPlaylistByID(this.id, trackID)
       } else if (this.type === 'album') {
-        this.player.playAlbumByID(this.id, trackID);
+        this.player.playAlbumByID(this.id, trackID)
       } else if (this.type === 'tracklist') {
-        let trackIDs = this.tracks.map(t => t.id);
-        this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID);
+        const trackIDs = this.tracks.map(t => t.id)
+        this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID)
       }
     },
-    play() {
-      this.player.addTrackToPlayNext(this.rightClickedTrack.id, true);
+    play () {
+      this.player.addTrackToPlayNext(this.rightClickedTrack.id, true)
     },
-    addToQueue() {
-      this.player.addTrackToPlayNext(this.rightClickedTrack.id);
+    addToQueue () {
+      this.player.addTrackToPlayNext(this.rightClickedTrack.id)
     },
-    like() {
-      this.likeATrack(this.rightClickedTrack.id);
+    like () {
+      this.likeATrack(this.rightClickedTrack.id)
     },
-    addTrackToPlaylist() {
+    addTrackToPlaylist () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(locale.t('toast.needToLogin'))
+        return
       }
       this.updateModal({
         modalName: 'addTrackToPlaylistModal',
         key: 'show',
-        value: true,
-      });
+        value: true
+      })
       this.updateModal({
         modalName: 'addTrackToPlaylistModal',
         key: 'selectedTrackID',
-        value: this.rightClickedTrack.id,
-      });
+        value: this.rightClickedTrack.id
+      })
     },
-    removeTrackFromPlaylist() {
+    removeTrackFromPlaylist () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(locale.t('toast.needToLogin'))
+        return
       }
       if (confirm(`确定要从歌单删除 ${this.rightClickedTrack.name}？`)) {
-        let trackID = this.rightClickedTrack.id;
+        const trackID = this.rightClickedTrack.id
         addOrRemoveTrackFromPlaylist({
           op: 'del',
           pid: this.id,
-          tracks: trackID,
+          tracks: trackID
         }).then(data => {
           this.showToast(
             data.body.code === 200
               ? locale.t('toast.removedFromPlaylist')
               : data.body.message
-          );
-          this.$parent.removeTrack(trackID);
-        });
+          )
+          this.$parent.removeTrack(trackID)
+        })
       }
     },
-    removeTrackFromQueue() {
+    removeTrackFromQueue () {
       this.$store.state.player.removeTrackFromQueue(
         this.rightClickedTrackIndex
-      );
+      )
     },
-    removeTrackFromCloudDisk() {
+    removeTrackFromCloudDisk () {
       if (confirm(`确定要从云盘删除 ${this.rightClickedTrack.songName}？`)) {
-        let trackID = this.rightClickedTrack.songId;
+        const trackID = this.rightClickedTrack.songId
         cloudDiskTrackDelete(trackID).then(data => {
           this.showToast(
             data.code === 200 ? '已将此歌曲从云盘删除' : data.message
-          );
-          let newCloudDisk = this.liked.cloudDisk.filter(
+          )
+          const newCloudDisk = this.liked.cloudDisk.filter(
             t => t.songId !== trackID
-          );
+          )
           this.$store.commit('updateLikedXXX', {
             name: 'cloudDisk',
-            data: newCloudDisk,
-          });
-        });
+            data: newCloudDisk
+          })
+        })
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped></style>

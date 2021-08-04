@@ -11,38 +11,38 @@
 </template>
 
 <script>
-import { authGetSession } from '@/api/lastfm';
+import { authGetSession } from '@/api/lastfm'
 
 export default {
   name: 'LastfmCallback',
-  data() {
-    return { message: '请稍等...', done: false };
+  data () {
+    return { message: '请稍等...', done: false }
   },
-  created() {
-    const token = new URLSearchParams(window.location.search).get('token');
+  created () {
+    const token = new URLSearchParams(window.location.search).get('token')
     if (!token) {
-      this.message = '连接失败，请重试或联系开发者（无Token）';
-      this.done = true;
-      return;
+      this.message = '连接失败，请重试或联系开发者（无Token）'
+      this.done = true
+      return
     }
     authGetSession(token).then(result => {
       if (!result.data.session) {
-        this.message = '连接失败，请重试或联系开发者（无Session）';
-        this.done = true;
-        return;
+        this.message = '连接失败，请重试或联系开发者（无Session）'
+        this.done = true
+        return
       }
-      localStorage.setItem('lastfm', JSON.stringify(result.data.session));
-      this.$store.commit('updateLastfm', result.data.session);
-      this.message = '已成功连接到 Last.fm';
-      this.done = true;
-    });
+      localStorage.setItem('lastfm', JSON.stringify(result.data.session))
+      this.$store.commit('updateLastfm', result.data.session)
+      this.message = '已成功连接到 Last.fm'
+      this.done = true
+    })
   },
   methods: {
-    close() {
-      window.close();
-    },
-  },
-};
+    close () {
+      window.close()
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

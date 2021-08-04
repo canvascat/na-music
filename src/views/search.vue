@@ -85,37 +85,37 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { getTrackDetail } from '@/api/track';
-import { search } from '@/api/others';
-import NProgress from 'nprogress';
+import { mapActions } from 'vuex'
+import { getTrackDetail } from '@/api/track'
+import { search } from '@/api/others'
+import NProgress from 'nprogress'
 
-import TrackList from '@/components/TrackList.vue';
-import MvRow from '@/components/MvRow.vue';
-import CoverRow from '@/components/CoverRow.vue';
+import TrackList from '@/components/TrackList.vue'
+import MvRow from '@/components/MvRow.vue'
+import CoverRow from '@/components/CoverRow.vue'
 
 export default {
   name: 'Search',
   components: {
     TrackList,
     MvRow,
-    CoverRow,
+    CoverRow
   },
-  data() {
+  data () {
     return {
       show: false,
       tracks: [],
       artists: [],
       albums: [],
       playlists: [],
-      musicVideos: [],
-    };
+      musicVideos: []
+    }
   },
   computed: {
-    keywords() {
-      return this.$route.params.keywords ?? '';
+    keywords () {
+      return this.$route.params.keywords ?? ''
     },
-    haveResult() {
+    haveResult () {
       return (
         this.tracks.length +
           this.artists.length +
@@ -123,106 +123,106 @@ export default {
           this.playlists.length +
           this.musicVideos.length >
         0
-      );
-    },
+      )
+    }
   },
   watch: {
     keywords: function (newKeywords) {
-      if (newKeywords.length === 0) return;
-      this.getData();
-    },
+      if (newKeywords.length === 0) return
+      this.getData()
+    }
   },
-  created() {
-    this.getData();
+  created () {
+    this.getData()
   },
   methods: {
     ...mapActions(['showToast']),
-    playTrackInSearchResult(id) {
-      let track = this.tracks.find(t => t.id === id);
-      this.$store.state.player.appendTrackToPlayerList(track, true);
+    playTrackInSearchResult (id) {
+      const track = this.tracks.find(t => t.id === id)
+      this.$store.state.player.appendTrackToPlayerList(track, true)
     },
-    search(type = 'all') {
-      let showToast = this.showToast;
+    search (type = 'all') {
+      const showToast = this.showToast
       const typeTable = {
         all: 1018,
         musicVideos: 1004,
         tracks: 1,
         albums: 10,
         artists: 100,
-        playlists: 1000,
-      };
+        playlists: 1000
+      }
       return search({
         keywords: this.keywords,
         type: typeTable[type],
-        limit: 16,
+        limit: 16
       })
         .then(result => {
-          return { result: result.result, type };
+          return { result: result.result, type }
         })
         .catch(err => {
-          showToast(err.response.data.msg || err.response.data.message);
-        });
+          showToast(err.response.data.msg || err.response.data.message)
+        })
     },
-    getData() {
+    getData () {
       setTimeout(() => {
-        if (!this.show) NProgress.start();
-      }, 1000);
-      this.show = false;
+        if (!this.show) NProgress.start()
+      }, 1000)
+      this.show = false
 
       const requestAll = requests => {
-        const keywords = this.keywords;
+        const keywords = this.keywords
         Promise.all(requests).then(results => {
-          if (keywords != this.keywords) return;
+          if (keywords !== this.keywords) return
           results.map(result => {
-            const searchType = result.type;
-            if (result.result === undefined) return;
-            result = result.result;
+            const searchType = result.type
+            if (result.result === undefined) return
+            result = result.result
             switch (searchType) {
               case 'all':
-                this.result = result;
-                break;
+                this.result = result
+                break
               case 'musicVideos':
-                this.musicVideos = result.mvs ?? [];
-                break;
+                this.musicVideos = result.mvs ?? []
+                break
               case 'artists':
-                this.artists = result.artists ?? [];
-                break;
+                this.artists = result.artists ?? []
+                break
               case 'albums':
-                this.albums = result.albums ?? [];
-                break;
+                this.albums = result.albums ?? []
+                break
               case 'tracks':
-                this.tracks = result.songs ?? [];
-                this.getTracksDetail();
-                break;
+                this.tracks = result.songs ?? []
+                this.getTracksDetail()
+                break
               case 'playlists':
-                this.playlists = result.playlists ?? [];
-                break;
+                this.playlists = result.playlists ?? []
+                break
             }
-          });
-          NProgress.done();
-          this.show = true;
-        });
-      };
+          })
+          NProgress.done()
+          this.show = true
+        })
+      }
 
       const requests = [
         this.search('artists'),
         this.search('albums'),
-        this.search('tracks'),
-      ];
-      const requests2 = [this.search('musicVideos'), this.search('playlists')];
+        this.search('tracks')
+      ]
+      const requests2 = [this.search('musicVideos'), this.search('playlists')]
 
-      requestAll(requests);
-      requestAll(requests2);
+      requestAll(requests)
+      requestAll(requests2)
     },
-    getTracksDetail() {
-      const trackIDs = this.tracks.map(t => t.id);
-      if (trackIDs.length === 0) return;
+    getTracksDetail () {
+      const trackIDs = this.tracks.map(t => t.id)
+      if (trackIDs.length === 0) return
       getTrackDetail(trackIDs.join(',')).then(result => {
-        this.tracks = result.songs;
-      });
-    },
-  },
-};
+        this.tracks = result.songs
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

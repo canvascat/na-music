@@ -2,6 +2,7 @@ import initLocalStorage from './initLocalStorage'
 import pkg from '../../package.json'
 import { updateApp } from '@/utils/updateApp'
 import type { State } from './type'
+import Player from '@/utils/Player'
 
 if (localStorage.getItem('appVersion') === null) {
   localStorage.setItem('settings', JSON.stringify(initLocalStorage.settings))
@@ -10,6 +11,16 @@ if (localStorage.getItem('appVersion') === null) {
 }
 
 updateApp()
+
+const player = new Proxy(new Player(), {
+  set (target, prop, val) {
+    target[prop] = val
+    if (prop === '_howler') return true
+    target.saveSelfToLocalStorage()
+    target.sendSelfToIpcMain()
+    return true
+  }
+})
 
 export const state: State = {
   showLyrics: false,
@@ -44,7 +55,7 @@ export const state: State = {
   },
   dailyTracks: [],
   lastfm: JSON.parse(localStorage.getItem('lastfm')) || {},
-  player: JSON.parse(localStorage.getItem('player')),
+  player,
   settings: JSON.parse(localStorage.getItem('settings')),
   data: JSON.parse(localStorage.getItem('data'))
 }

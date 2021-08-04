@@ -14,47 +14,47 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex';
-import NProgress from 'nprogress';
-import { dailyRecommendTracks } from '@/api/playlist';
+import { mapMutations, mapState } from 'vuex'
+import NProgress from 'nprogress'
+import { dailyRecommendTracks } from '@/api/playlist'
 
-import TrackList from '@/components/TrackList.vue';
+import TrackList from '@/components/TrackList.vue'
 
 export default {
   name: 'DailyTracks',
   components: {
-    TrackList,
+    TrackList
   },
-  data() {
+  data () {
     return {
-      show: false,
-    };
+      show: false
+    }
   },
   computed: {
-    ...mapState(['player', 'data', 'dailyTracks']),
+    ...mapState(['player', 'data', 'dailyTracks'])
   },
-  created() {
+  created () {
     if (this.dailyTracks.length === 0) {
       setTimeout(() => {
-        if (!this.show) NProgress.start();
-      }, 1000);
-      this.loadDailyTracks();
+        if (!this.show) NProgress.start()
+      }, 1000)
+      this.loadDailyTracks()
     } else {
-      this.show = true;
+      this.show = true
     }
-    this.$parent.$refs.main.scrollTo(0, 0);
+    this.$parent.$refs.main.scrollTo(0, 0)
   },
   methods: {
     ...mapMutations(['updateDailyTracks']),
-    loadDailyTracks() {
+    loadDailyTracks () {
       dailyRecommendTracks().then(result => {
-        this.updateDailyTracks(result.data.dailySongs);
-        NProgress.done();
-        this.show = true;
-      });
-    },
-  },
-};
+        this.updateDailyTracks(result.data.dailySongs)
+        NProgress.done()
+        this.show = true
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -66,7 +66,7 @@ export default {
 
   @keyframes letterSpacing4 {
     from {
-      letter-spacing: 0px;
+      letter-spacing: 0;
     }
 
     to {
@@ -76,7 +76,7 @@ export default {
 
   @keyframes letterSpacing1 {
     from {
-      letter-spacing: 0px;
+      letter-spacing: 0;
     }
 
     to {
@@ -94,7 +94,7 @@ export default {
     animation-duration: 0.8s;
     animation-name: letterSpacing4;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text;
     // background-image: linear-gradient(
     //   225deg,
     //   var(--color-primary),

@@ -1,27 +1,6 @@
 <template>
   <div>
     <nav>
-      <div class="win32-titlebar">
-        <div class="title">YesPlayMusic</div>
-        <div class="controls">
-          <div
-            class="button minimize codicon codicon-chrome-minimize"
-            @click="windowMinimize"
-          ></div>
-          <div
-            class="button max-restore codicon"
-            :class="{
-              'codicon-chrome-restore': !isWindowMaximized,
-              'codicon-chrome-maximize': isWindowMaximized,
-            }"
-            @click="windowMaxRestore"
-          ></div>
-          <div
-            class="button close codicon codicon-chrome-close"
-            @click="windowClose"
-          ></div>
-        </div>
-      </div>
       <div class="navigation-buttons">
         <button-icon @click="go('back')"
           ><svg-icon icon-class="arrow-left"
@@ -61,7 +40,7 @@
             </div>
           </div>
         </div>
-        <img class="avatar" :src="avatarUrl" @click="showUserProfileMenu" />
+        <img class="avatar" :src="avatarUrl" @click="showUserProfileMenu"  alt="avatar"/>
       </div>
     </nav>
 
@@ -88,103 +67,83 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { isLooseLoggedIn, doLogout } from '@/utils/auth';
+import { mapState } from 'vuex'
+import { isLooseLoggedIn, doLogout } from '@/utils/auth'
 
 // import icons for win32 title bar
 // icons by https://github.com/microsoft/vscode-codicons
-import 'vscode-codicons/dist/codicon.css';
+// import 'vscode-codicons/dist/codicon.css'
 
-import ContextMenu from '@/components/ContextMenu.vue';
-import ButtonIcon from '@/components/ButtonIcon.vue';
-
-const electron =
-  process.env.IS_ELECTRON === true ? window.require('electron') : null;
-const ipcRenderer =
-  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null;
+import ContextMenu from '@/components/ContextMenu.vue'
+import ButtonIcon from '@/components/ButtonIcon.vue'
 
 export default {
   name: 'Navbar',
   components: {
     ButtonIcon,
-    ContextMenu,
+    ContextMenu
   },
-  data() {
+  data () {
     return {
       inputFocus: false,
       langs: ['zh-CN', 'zh-TW', 'en', 'tr'],
       keywords: '',
-      isWindowMaximized: false,
-    };
+      isWindowMaximized: false
+    }
   },
   computed: {
     ...mapState(['settings', 'data']),
-    isLooseLoggedIn() {
-      return isLooseLoggedIn();
+    isLooseLoggedIn () {
+      return isLooseLoggedIn()
     },
-    avatarUrl() {
+    avatarUrl () {
       return this.data?.user?.avatarUrl && this.isLooseLoggedIn
         ? `${this.data?.user?.avatarUrl}?param=512y512`
-        : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60';
-    },
-  },
-  created() {
-    if (process.env.IS_ELECTRON === true) {
-      ipcRenderer.on('isMaximized', (event, value) => {
-        this.isWindowMaximized = value;
-      });
+        : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
     }
   },
+
   methods: {
-    go(where) {
-      if (where === 'back') this.$router.go(-1);
-      else this.$router.go(1);
+    go (where) {
+      if (where === 'back') this.$router.go(-1)
+      else this.$router.go(1)
     },
-    doSearch() {
-      if (!this.keywords) return;
+    doSearch () {
+      if (!this.keywords) return
       if (
         this.$route.name === 'search' &&
         this.$route.params.keywords === this.keywords
       ) {
-        return;
+        return
       }
       this.$router.push({
         name: 'search',
-        params: { keywords: this.keywords },
-      });
+        params: { keywords: this.keywords }
+      })
     },
-    showUserProfileMenu(e) {
-      this.$refs.userProfileMenu.openMenu(e);
+    showUserProfileMenu (e) {
+      this.$refs.userProfileMenu.openMenu(e)
     },
-    logout() {
-      if (!confirm('确定要退出登录吗？')) return;
-      doLogout();
-      this.$router.push({ name: 'home' });
+    logout () {
+      if (!confirm('确定要退出登录吗？')) return
+      doLogout()
+      this.$router.push({ name: 'home' })
     },
-    toSettings() {
-      this.$router.push({ name: 'settings' });
+    toSettings () {
+      this.$router.push({ name: 'settings' })
     },
-    toGitHub() {
-      window.open('https://github.com/qier222/YesPlayMusic');
+    toGitHub () {
+      window.open('https://github.com/qier222/YesPlayMusic')
     },
-    toLogin() {
+    toLogin () {
       if (process.env.IS_ELECTRON === true) {
-        this.$router.push({ name: 'loginAccount' });
+        this.$router.push({ name: 'loginAccount' })
       } else {
-        this.$router.push({ name: 'login' });
+        this.$router.push({ name: 'login' })
       }
-    },
-    windowMinimize() {
-      ipcRenderer.send('minimize');
-    },
-    windowMaxRestore() {
-      ipcRenderer.send('maximizeOrUnmaximize');
-    },
-    windowClose() {
-      ipcRenderer.send('close');
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -205,7 +164,6 @@ nav {
 
   background-color: var(--color-navbar-bg);
   z-index: 100;
-  -webkit-app-region: drag;
 }
 
 @media (max-width: 1336px) {
@@ -220,70 +178,6 @@ nav {
   }
 }
 
-.win32-titlebar {
-  display: none;
-}
-
-[data-electron-os='win32'] {
-  nav {
-    padding-top: 20px;
-    -webkit-app-region: no-drag;
-  }
-  .win32-titlebar {
-    color: var(--color-text);
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    -webkit-app-region: drag;
-    display: flex;
-    align-items: center;
-    --hover: #e6e6e6;
-    --active: #cccccc;
-
-    .title {
-      padding: 8px;
-      font-size: 12px;
-      font-family: 'Segoe UI', 'Microsoft YaHei UI', 'Microsoft YaHei',
-        sans-serif;
-    }
-    .controls {
-      height: 32px;
-      margin-left: auto;
-      justify-content: flex-end;
-      display: flex;
-      .button {
-        height: 100%;
-        width: 46px;
-        font-size: 16px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        -webkit-app-region: no-drag;
-        &:hover {
-          background: var(--hover);
-        }
-        &:active {
-          background: var(--active);
-        }
-        &.close {
-          &:hover {
-            background: rgba(232, 17, 35, 0.9);
-          }
-          &:active {
-            background: #f1707a;
-            color: #000;
-          }
-        }
-      }
-    }
-  }
-  &[data-theme='dark'] .win32-titlebar {
-    --hover: #191919;
-    --active: #333333;
-  }
-}
-
 .navigation-buttons {
   flex: 1;
   display: flex;
@@ -291,9 +185,6 @@ nav {
   .svg-icon {
     height: 24px;
     width: 24px;
-  }
-  button {
-    -webkit-app-region: no-drag;
   }
 }
 @media (max-width: 970px) {
@@ -309,7 +200,6 @@ nav {
   text-transform: uppercase;
   user-select: none;
   a {
-    -webkit-app-region: no-drag;
     font-size: 18px;
     font-weight: 700;
     text-decoration: none;
@@ -345,7 +235,6 @@ nav {
 .search-box {
   display: flex;
   justify-content: flex-end;
-  -webkit-app-region: no-drag;
 
   .container {
     display: flex;
@@ -410,7 +299,6 @@ nav {
     vertical-align: -7px;
     border-radius: 50%;
     cursor: pointer;
-    -webkit-app-region: no-drag;
     -webkit-user-drag: none;
     &:hover {
       filter: brightness(80%);
@@ -418,7 +306,6 @@ nav {
   }
   .search-button {
     display: none;
-    -webkit-app-region: no-drag;
   }
 }
 </style>

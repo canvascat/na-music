@@ -1,7 +1,7 @@
 <template>
   <div v-show="show" ref="library">
     <h1>
-      <img class="avatar" :src="data.user.avatarUrl | resizeImage" />{{
+      <img class="avatar" :src="resizeImage(data.user.avatarUrl)"  alt="avatar"/>{{
         data.user.nickname
       }}{{ $t('library.sLibrary') }}
     </h1>
@@ -169,162 +169,159 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex';
-import { randomNum, dailyTask } from '@/utils/common';
-import { isAccountLoggedIn } from '@/utils/auth';
-import { uploadSong } from '@/api/user';
-import { getLyric } from '@/api/track';
-import NProgress from 'nprogress';
-import locale from '@/locale';
-
-import ContextMenu from '@/components/ContextMenu.vue';
-import TrackList from '@/components/TrackList.vue';
-import CoverRow from '@/components/CoverRow.vue';
-import SvgIcon from '@/components/SvgIcon.vue';
-import MvRow from '@/components/MvRow.vue';
+import { mapActions, mapMutations, mapState } from 'vuex'
+import { randomNum, dailyTask } from '@/utils/common'
+import { isAccountLoggedIn } from '@/utils/auth'
+import { uploadSong } from '@/api/user'
+import { getLyric } from '@/api/track'
+import NProgress from 'nprogress'
+import ContextMenu from '@/components/ContextMenu.vue'
+import TrackList from '@/components/TrackList.vue'
+import CoverRow from '@/components/CoverRow.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
+import MvRow from '@/components/MvRow.vue'
+import { resizeImage } from '@/utils/filters'
 
 export default {
   name: 'Library',
   components: { SvgIcon, CoverRow, TrackList, MvRow, ContextMenu },
-  data() {
+  data () {
     return {
       show: false,
       likedSongs: [],
       lyric: undefined,
-      currentTab: 'playlists',
-    };
+      currentTab: 'playlists'
+    }
   },
   computed: {
     ...mapState(['data', 'liked']),
-    pickedLyric() {
-      if (this.lyric === undefined) return '';
-      let lyric = this.lyric.split('\n');
+    pickedLyric () {
+      if (this.lyric === undefined) return ''
+      let lyric = this.lyric.split('\n')
       lyric = lyric.filter(l => {
-        if (l.includes('作词') || l.includes('作曲')) {
-          return false;
-        }
-        return true;
-      });
-      let lineIndex = randomNum(0, lyric.length - 1);
+        return !(l.includes('作词') || l.includes('作曲'))
+      })
+      let lineIndex = randomNum(0, lyric.length - 1)
       while (lineIndex + 4 > lyric.length) {
-        lineIndex = randomNum(0, lyric.length - 1);
+        lineIndex = randomNum(0, lyric.length - 1)
       }
       return [
         lyric[lineIndex].split(']')[1],
         lyric[lineIndex + 1].split(']')[1],
-        lyric[lineIndex + 2].split(']')[1],
-      ];
+        lyric[lineIndex + 2].split(']')[1]
+      ]
     },
-    playlistFilter() {
-      return this.data.libraryPlaylistFilter || 'all';
+    playlistFilter () {
+      return this.data.libraryPlaylistFilter || 'all'
     },
-    filterPlaylists() {
-      const playlists = this.liked.playlists;
-      const userId = this.data.user.userId;
+    filterPlaylists () {
+      const playlists = this.liked.playlists
+      const userId = this.data.user.userId
       if (this.playlistFilter === 'mine') {
-        return playlists.filter(p => p.creator.userId === userId);
+        return playlists.filter(p => p.creator.userId === userId)
       } else if (this.playlistFilter === 'liked') {
-        return playlists.filter(p => p.creator.userId !== userId);
+        return playlists.filter(p => p.creator.userId !== userId)
       }
-      return playlists;
-    },
+      return playlists
+    }
   },
-  created() {
+  created () {
     setTimeout(() => {
-      if (!this.show) NProgress.start();
-    }, 1000);
-    this.loadData();
+      if (!this.show) NProgress.start()
+    }, 1000)
+    this.loadData()
   },
-  activated() {
-    this.$parent.$refs.scrollbar.restorePosition();
-    this.loadData();
-    dailyTask();
+  activated () {
+    this.$parent.$refs.scrollbar.restorePosition()
+    this.loadData()
+    dailyTask()
   },
   methods: {
+    resizeImage,
     ...mapActions(['showToast']),
     ...mapMutations(['updateModal', 'updateData']),
-    loadData() {
+    loadData () {
       if (this.liked.songsWithDetails.length > 0) {
-        NProgress.done();
-        this.show = true;
-        this.$store.dispatch('fetchLikedSongsWithDetails');
-        this.getRandomLyric();
+        NProgress.done()
+        this.show = true
+        this.$store.dispatch('fetchLikedSongsWithDetails')
+        this.getRandomLyric()
       } else {
         this.$store.dispatch('fetchLikedSongsWithDetails').then(() => {
-          NProgress.done();
-          this.show = true;
-          this.getRandomLyric();
-        });
+          NProgress.done()
+          this.show = true
+          this.getRandomLyric()
+        })
       }
-      this.$store.dispatch('fetchLikedSongs');
-      this.$store.dispatch('fetchLikedPlaylist');
-      this.$store.dispatch('fetchLikedAlbums');
-      this.$store.dispatch('fetchLikedArtists');
-      this.$store.dispatch('fetchLikedMVs');
-      this.$store.dispatch('fetchCloudDisk');
+      this.$store.dispatch('fetchLikedSongs')
+      this.$store.dispatch('fetchLikedPlaylist')
+      this.$store.dispatch('fetchLikedAlbums')
+      this.$store.dispatch('fetchLikedArtists')
+      this.$store.dispatch('fetchLikedMVs')
+      this.$store.dispatch('fetchCloudDisk')
     },
-    playLikedSongs() {
+    playLikedSongs () {
       this.$store.state.player.playPlaylistByID(
         this.liked.playlists[0].id,
         'first',
         true
-      );
+      )
     },
-    updateCurrentTab(tab) {
+    updateCurrentTab (tab) {
       if (!isAccountLoggedIn() && tab !== 'playlists') {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(this.$t('toast.needToLogin'))
+        return
       }
-      this.currentTab = tab;
-      this.$parent.$refs.main.scrollTo({ top: 375, behavior: 'smooth' });
+      this.currentTab = tab
+      this.$parent.$refs.main.scrollTo({ top: 375, behavior: 'smooth' })
     },
-    goToLikedSongsList() {
-      this.$router.push({ path: '/library/liked-songs' });
+    goToLikedSongsList () {
+      this.$router.push({ path: '/library/liked-songs' })
     },
-    getRandomLyric() {
-      if (this.liked.songs.length === 0) return;
+    getRandomLyric () {
+      if (this.liked.songs.length === 0) return
       getLyric(
         this.liked.songs[randomNum(0, this.liked.songs.length - 1)]
       ).then(data => {
-        if (data.lrc !== undefined) this.lyric = data.lrc.lyric;
-      });
+        if (data.lrc !== undefined) this.lyric = data.lrc.lyric
+      })
     },
-    openAddPlaylistModal() {
+    openAddPlaylistModal () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'));
-        return;
+        this.showToast(this.$t('toast.needToLogin'))
+        return
       }
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'show',
-        value: true,
-      });
+        value: true
+      })
     },
-    openPlaylistTabMenu(e) {
-      this.$refs.playlistTabMenu.openMenu(e);
+    openPlaylistTabMenu (e) {
+      this.$refs.playlistTabMenu.openMenu(e)
     },
-    changePlaylistFilter(type) {
-      this.updateData({ key: 'libraryPlaylistFilter', value: type });
-      window.scrollTo({ top: 375, behavior: 'smooth' });
+    changePlaylistFilter (type) {
+      this.updateData({ key: 'libraryPlaylistFilter', value: type })
+      window.scrollTo({ top: 375, behavior: 'smooth' })
     },
-    selectUploadFiles() {
-      this.$refs.cloudDiskUploadInput.click();
+    selectUploadFiles () {
+      this.$refs.cloudDiskUploadInput.click()
     },
-    uploadSongToCloudDisk(e) {
-      const files = e.target.files;
+    uploadSongToCloudDisk (e) {
+      const files = e.target.files
       uploadSong(files[0]).then(result => {
         if (result.code === 200) {
-          let newCloudDisk = this.liked.cloudDisk;
-          newCloudDisk.unshift(result.privateCloud);
+          const newCloudDisk = this.liked.cloudDisk
+          newCloudDisk.unshift(result.privateCloud)
           this.$store.commit('updateLikedXXX', {
             name: 'cloudDisk',
-            data: newCloudDisk,
-          });
+            data: newCloudDisk
+          })
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

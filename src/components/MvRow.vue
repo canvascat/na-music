@@ -33,53 +33,53 @@ export default {
     mvs: Array,
     subtitle: {
       type: String,
-      default: 'artist',
+      default: 'artist'
     },
-    withoutPadding: { type: Boolean, default: false },
+    withoutPadding: { type: Boolean, default: false }
   },
-  data() {
+  data () {
     return {
-      hoverVideoID: 0,
-    };
+      hoverVideoID: 0
+    }
   },
   methods: {
-    goToMv(id) {
-      let query = {};
+    goToMv (id) {
+      let query = {}
       if (this.$parent.player !== undefined) {
-        query = { autoplay: this.$parent.player.playing };
+        query = { autoplay: this.$parent.player.playing }
       }
-      this.$router.push({ path: '/mv/' + id, query });
+      this.$router.push({ path: '/mv/' + id, query })
     },
-    getUrl(mv) {
-      let url = mv.imgurl16v9 ?? mv.cover ?? mv.coverUrl;
-      return url.replace(/^http:/, 'https:') + '?param=464y260';
+    getUrl (mv) {
+      const url = mv.imgurl16v9 ?? mv.cover ?? mv.coverUrl
+      return url.replace(/^http:/, 'https:') + '?param=464y260'
     },
-    getID(mv) {
-      if (mv.id !== undefined) return mv.id;
-      if (mv.vid !== undefined) return mv.vid;
+    getID (mv) {
+      if (mv.id !== undefined) return mv.id
+      if (mv.vid !== undefined) return mv.vid
     },
-    getTitle(mv) {
-      if (mv.name !== undefined) return mv.name;
-      if (mv.title !== undefined) return mv.title;
+    getTitle (mv) {
+      if (mv.name !== undefined) return mv.name
+      if (mv.title !== undefined) return mv.title
     },
-    getSubtitle(mv) {
+    getSubtitle (mv) {
       if (this.subtitle === 'artist') {
-        let artistName = 'null';
-        let artistID = 0;
+        let artistName = 'null'
+        let artistID = 0
         if (mv.artistName !== undefined) {
-          artistName = mv.artistName;
-          artistID = mv.artistId;
+          artistName = mv.artistName
+          artistID = mv.artistId
         } else if (mv.creator !== undefined) {
-          artistName = mv.creator[0].userName;
-          artistID = mv.creator[0].userId;
+          artistName = mv.creator[0].userName
+          artistID = mv.creator[0].userId
         }
-        return `<a href="/#/artist/${artistID}">${artistName}</a>`;
+        return `<a href="/#/artist/${artistID}">${artistName}</a>`
       } else if (this.subtitle === 'publishTime') {
-        return mv.publishTime;
+        return mv.publishTime
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

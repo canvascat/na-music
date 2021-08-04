@@ -44,7 +44,7 @@
         :items="playlists"
         :sub-text="subText"
         :show-play-button="true"
-        :show-play-count="activeCategory !== '排行榜' ? true : false"
+        :show-play-count="activeCategory !== '排行榜'"
         :image-size="activeCategory !== '排行榜' ? 512 : 1024"
       />
     </div>
@@ -64,37 +64,37 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
-import NProgress from 'nprogress';
+import { mapState, mapMutations } from 'vuex'
+import NProgress from 'nprogress'
 import {
   topPlaylist,
   highQualityPlaylist,
   recommendPlaylist,
-  toplists,
-} from '@/api/playlist';
-import { playlistCategories } from '@/utils/staticData';
+  toplists
+} from '@/api/playlist'
+import { playlistCategories } from '@/utils/staticData'
 
-import ButtonTwoTone from '@/components/ButtonTwoTone.vue';
-import CoverRow from '@/components/CoverRow.vue';
-import SvgIcon from '@/components/SvgIcon.vue';
+import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
+import CoverRow from '@/components/CoverRow.vue'
+import SvgIcon from '@/components/SvgIcon.vue'
 
 export default {
   name: 'Explore',
   components: {
     CoverRow,
     ButtonTwoTone,
-    SvgIcon,
+    SvgIcon
   },
-  beforeRouteUpdate(to, from, next) {
-    this.showLoadMoreButton = false;
-    this.hasMore = true;
-    this.playlists = [];
-    this.offset = 1;
-    this.activeCategory = to.query.category;
-    this.getPlaylist();
-    next();
+  beforeRouteUpdate (to, from, next) {
+    this.showLoadMoreButton = false
+    this.hasMore = true
+    this.playlists = []
+    this.offset = 1
+    this.activeCategory = to.query.category
+    this.getPlaylist()
+    next()
   },
-  data() {
+  data () {
     return {
       show: false,
       playlists: [],
@@ -103,95 +103,95 @@ export default {
       showLoadMoreButton: false,
       hasMore: true,
       allBigCats: ['语种', '风格', '场景', '情感', '主题'],
-      showCatOptions: false,
-    };
+      showCatOptions: false
+    }
   },
   computed: {
     ...mapState(['settings']),
-    subText() {
-      if (this.activeCategory === '排行榜') return 'updateFrequency';
-      if (this.activeCategory === '推荐歌单') return 'copywriter';
-      return 'none';
-    },
+    subText () {
+      if (this.activeCategory === '排行榜') return 'updateFrequency'
+      if (this.activeCategory === '推荐歌单') return 'copywriter'
+      return 'none'
+    }
   },
-  activated() {
-    this.loadData();
-    this.$parent.$refs.scrollbar.restorePosition();
+  activated () {
+    this.loadData()
+    this.$parent.$refs.scrollbar.restorePosition()
   },
   methods: {
     ...mapMutations(['togglePlaylistCategory']),
-    loadData() {
+    loadData () {
       setTimeout(() => {
-        if (!this.show) NProgress.start();
-      }, 1000);
+        if (!this.show) NProgress.start()
+      }, 1000)
       this.activeCategory =
         this.$route.query.category === undefined
           ? '全部'
-          : this.$route.query.category;
-      this.getPlaylist();
+          : this.$route.query.category
+      this.getPlaylist()
     },
-    goToCategory(Category) {
-      this.showCatOptions = false;
-      this.$router.push({ path: '/explore?category=' + Category });
+    goToCategory (Category) {
+      this.showCatOptions = false
+      this.$router.push({ path: '/explore?category=' + Category })
     },
-    updatePlaylist(playlists) {
-      this.playlists.push(...playlists);
-      this.loadingMore = false;
-      this.showLoadMoreButton = true;
-      NProgress.done();
-      this.show = true;
+    updatePlaylist (playlists) {
+      this.playlists.push(...playlists)
+      this.loadingMore = false
+      this.showLoadMoreButton = true
+      NProgress.done()
+      this.show = true
     },
-    getPlaylist() {
-      this.loadingMore = true;
+    getPlaylist () {
+      this.loadingMore = true
       if (this.activeCategory === '推荐歌单') {
-        return this.getRecommendPlayList();
+        return this.getRecommendPlayList()
       }
       if (this.activeCategory === '精品歌单') {
-        return this.getHighQualityPlaylist();
+        return this.getHighQualityPlaylist()
       }
       if (this.activeCategory === '排行榜') {
-        return this.getTopLists();
+        return this.getTopLists()
       }
-      return this.getTopPlayList();
+      return this.getTopPlayList()
     },
-    getRecommendPlayList() {
+    getRecommendPlayList () {
       recommendPlaylist({ limit: 100 }).then(data => {
-        this.playlists = [];
-        this.updatePlaylist(data.result);
-      });
+        this.playlists = []
+        this.updatePlaylist(data.result)
+      })
     },
-    getHighQualityPlaylist() {
-      let playlists = this.playlists;
-      let before =
-        playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0;
+    getHighQualityPlaylist () {
+      const playlists = this.playlists
+      const before =
+        playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0
       highQualityPlaylist({ limit: 50, before }).then(data => {
-        this.updatePlaylist(data.playlists);
-        this.hasMore = data.more;
-      });
+        this.updatePlaylist(data.playlists)
+        this.hasMore = data.more
+      })
     },
-    getTopLists() {
+    getTopLists () {
       toplists().then(data => {
-        this.playlists = [];
-        this.updatePlaylist(data.list);
-      });
+        this.playlists = []
+        this.updatePlaylist(data.list)
+      })
     },
-    getTopPlayList() {
+    getTopPlayList () {
       topPlaylist({
         cat: this.activeCategory,
-        offset: this.playlists.length,
+        offset: this.playlists.length
       }).then(data => {
-        this.updatePlaylist(data.playlists);
-        this.hasMore = data.more;
-      });
+        this.updatePlaylist(data.playlists)
+        this.hasMore = data.more
+      })
     },
-    getCatsByBigCat(name) {
-      return playlistCategories.filter(c => c.bigCat === name);
+    getCatsByBigCat (name) {
+      return playlistCategories.filter(c => c.bigCat === name)
     },
-    toggleCat(name) {
-      this.togglePlaylistCategory(name);
-    },
-  },
-};
+    toggleCat (name) {
+      this.togglePlaylistCategory(name)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -255,7 +255,7 @@ h1 {
   }
   .cat {
     user-select: none;
-    margin: 4px 0px 0 0;
+    margin: 4px 0 0 0;
     display: flex;
     // justify-content: center;
     align-items: center;

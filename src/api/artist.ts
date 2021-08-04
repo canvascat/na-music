@@ -31,11 +31,7 @@ export async function getArtist (id: number) {
  * @param {number=} params.offset
  */
 export function getArtistAlbum (params) {
-  return request({
-    url: '/artist/album',
-    method: 'get',
-    params
-  })
+  return request.get<any, any>('/artist/album', { params })
 }
 
 /**
@@ -51,7 +47,7 @@ export function getArtistAlbum (params) {
 export function toplistOfArtists (type?: number) {
   const params = {}
   if (type) (params as any).type = type
-  return request.get('/toplist/artist', { params })
+  return request.get<any, any>('/toplist/artist', { params })
 }
 /**
  * 获取歌手 mv

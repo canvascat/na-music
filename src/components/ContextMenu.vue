@@ -17,45 +17,45 @@
 <script>
 export default {
   name: 'ContextMenu',
-  data() {
+  data () {
     return {
       showMenu: false,
       top: '0px',
-      left: '0px',
-    };
+      left: '0px'
+    }
   },
   methods: {
-    setMenu(top, left) {
-      let largestHeight =
-        window.innerHeight - this.$refs.menu.offsetHeight - 25;
-      let largestWidth = window.innerWidth - this.$refs.menu.offsetWidth - 25;
-      if (top > largestHeight) top = largestHeight;
-      if (left > largestWidth) left = largestWidth;
-      this.top = top + 'px';
-      this.left = left + 'px';
+    setMenu (top, left) {
+      const largestHeight =
+        window.innerHeight - this.$refs.menu.offsetHeight - 25
+      const largestWidth = window.innerWidth - this.$refs.menu.offsetWidth - 25
+      if (top > largestHeight) top = largestHeight
+      if (left > largestWidth) left = largestWidth
+      this.top = top + 'px'
+      this.left = left + 'px'
     },
 
-    closeMenu() {
-      this.showMenu = false;
+    closeMenu () {
+      this.showMenu = false
       if (this.$parent.closeMenu !== undefined) {
-        this.$parent.closeMenu();
+        this.$parent.closeMenu()
       }
-      this.$store.commit('enableScrolling', true);
+      this.$store.commit('enableScrolling', true)
     },
 
-    openMenu(e) {
-      this.showMenu = true;
+    openMenu (e) {
+      this.showMenu = true
       this.$nextTick(
         function () {
-          this.$refs.menu.focus();
-          this.setMenu(e.y, e.x);
+          this.$refs.menu.focus()
+          this.setMenu(e.y, e.x)
         }.bind(this)
-      );
-      e.preventDefault();
-      this.$store.commit('enableScrolling', false);
-    },
-  },
-};
+      )
+      e.preventDefault()
+      this.$store.commit('enableScrolling', false)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

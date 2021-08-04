@@ -46,7 +46,7 @@
         </div>
         <div class="date-and-count">
           {{ $t('playlist.updatedAt') }}
-          {{ playlist.updateTime | formatDate }} · {{ playlist.trackCount }}
+          {{ formatDate(playlist.updateTime) }} · {{ playlist.trackCount }}
           {{ $t('common.songs') }}
         </div>
         <div class="description" @click="toggleFullDescription">
@@ -230,14 +230,13 @@ import {
 } from '@/api/playlist'
 import { getTrackDetail } from '@/api/track'
 import { isAccountLoggedIn } from '@/utils/auth'
-import locale from '@/locale'
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 import ContextMenu from '@/components/ContextMenu.vue'
 import TrackList from '@/components/TrackList.vue'
 import Cover from '@/components/Cover.vue'
 import Modal from '@/components/Modal.vue'
-import { resizeImage } from '@/utils/filters'
+import { resizeImage, formatDate } from '@/utils/filters'
 
 const specialPlaylist = {
   2829816518: {
@@ -337,7 +336,7 @@ export default defineComponent({
   },
   directives: {
     focus: {
-      inserted: function (el) {
+      mounted (el) {
         el.focus()
       }
     }
@@ -413,8 +412,9 @@ export default defineComponent({
   },
   methods: {
     resizeImage,
+    formatDate,
     ...mapMutations(['appendTrackToPlayerList']),
-    ...mapActions(['playFirstTrackOnList', 'playTrackOnListByID', 'showToast']),
+    ...mapActions(['showToast']),
     playPlaylistByID (trackID = 'first') {
       const trackIDs = this.playlist.trackIds.map(t => t.id)
       this.$store.state.player.replacePlaylist(
@@ -426,7 +426,7 @@ export default defineComponent({
     },
     likePlaylist (toast = false) {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'))
+        this.showToast(this.$t('toast.needToLogin'))
         return
       }
       subscribePlaylist({
@@ -479,11 +479,7 @@ export default defineComponent({
         this.tracks.push(...data.songs)
         this.lastLoadedTrackIndex += trackIDs.length
         this.loadingMore = false
-        if (this.lastLoadedTrackIndex + 1 === this.playlist.trackIds.length) {
-          this.hasMore = false
-        } else {
-          this.hasMore = true
-        }
+        this.hasMore = this.lastLoadedTrackIndex + 1 !== this.playlist.trackIds.length
       })
     },
     openMenu (e) {
@@ -491,7 +487,7 @@ export default defineComponent({
     },
     deletePlaylist () {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'))
+        this.showToast(this.$t('toast.needToLogin'))
         return
       }
       const confirmation = confirm(`确定要删除歌单 ${this.playlist.name}？`)
@@ -522,7 +518,7 @@ export default defineComponent({
     },
     removeTrack (trackID) {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'))
+        this.showToast(this.$t('toast.needToLogin'))
         return
       }
       this.tracks = this.tracks.filter(t => t.id !== trackID)
@@ -647,7 +643,7 @@ export default defineComponent({
     animation-duration: 0.8s;
     animation-name: letterSpacing4;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text;
     // background-image: linear-gradient(
     //   225deg,
     //   var(--color-primary),

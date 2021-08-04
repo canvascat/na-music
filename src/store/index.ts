@@ -3,7 +3,6 @@ import { state } from './state'
 import { mutations } from './mutations'
 import { actions } from './actions'
 import { changeAppearance } from '@/utils/common'
-import Player from '@/utils/Player'
 // vuex 自定义插件
 import saveToLocalStorage from './plugins/localStorage'
 import type { State } from './type'
@@ -43,15 +42,5 @@ window
     if (store.state.settings.appearance !== 'auto') return
     changeAppearance(store.state.settings.appearance)
   })
-
-store.state.player = new Proxy(new Player(), {
-  set (target, prop, val) {
-    target[prop] = val
-    if (prop === '_howler') return true
-    target.saveSelfToLocalStorage()
-    target.sendSelfToIpcMain()
-    return true
-  }
-})
 
 export default store

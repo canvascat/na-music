@@ -9,12 +9,7 @@ import { personalFM, fmTrash } from '@/api/others'
 import store from '@/store'
 import { isAccountLoggedIn } from '@/utils/auth'
 import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm'
-import { Song } from '@/api/types'
-
-const electron =
-  process.env.IS_ELECTRON === true ? window.require('electron') : null
-const ipcRenderer =
-  process.env.IS_ELECTRON === true ? electron.ipcRenderer : null
+import type { PrivateFM, Song } from '@/api/types'
 
 type TrackID = number | 'first'
 
@@ -37,8 +32,8 @@ export default class {
   private _currentTrack: Song = {} as Song; // 当前播放歌曲的详细信息
   private _playNextList = []; // 当这个list不为空时，会优先播放这个list的歌
   private _isPersonalFM = false; // 是否是私人FM模式
-  private _personalFMTrack = { id: 0 }; // 私人FM当前歌曲
-  private _personalFMNextTrack = { id: 0 }; // 私人FM下一首歌曲信息（为了快速加载下一首）
+  private _personalFMTrack?: PrivateFM; // 私人FM当前歌曲
+  private _personalFMNextTrack?: PrivateFM; // 私人FM下一首歌曲信息（为了快速加载下一首）
 
   // howler (https://github.com/goldfire/howler.js)
   private _howler: Howl = null;
@@ -48,7 +43,7 @@ export default class {
     })
     // init
     this._init()
-    Object.defineProperty(window, 'yesplaymusic', { value: { player: this } })
+    // Object.defineProperty(window, 'yesplaymusic', { value: { player: this } })
   }
 
   get repeatMode () {
@@ -137,6 +132,10 @@ export default class {
     return this._personalFMTrack
   }
 
+  get personalFMNextTrack () {
+    return this._personalFMNextTrack
+  }
+
   get currentTrackDuration () {
     const trackDuration = this._currentTrack.dt || 1000
     const duration = ~~(trackDuration / 1000)
@@ -157,7 +156,7 @@ export default class {
     return store.state.liked.songs.includes(this.currentTrack.id)
   }
 
-  private _init () {
+  private async _init () {
     this._loadSelfFromLocalStorage()
     Howler.autoUnlock = false
     Howler.usingWebAudio = true
@@ -174,12 +173,9 @@ export default class {
     this._setIntervals()
 
     // 初始化私人FM
-    if (this._personalFMTrack.id === 0 || this._personalFMNextTrack.id === 0) {
-      personalFM().then(result => {
-        this._personalFMTrack = result.data[0]
-        this._personalFMNextTrack = result.data[1]
-        return this._personalFMTrack
-      })
+    if (!this._personalFMTrack || !this._personalFMNextTrack) {
+      const { data: fms } = await personalFM()
+      ;[this._personalFMTrack, this._personalFMNextTrack] = fms
     }
   }
 
@@ -269,12 +265,9 @@ export default class {
     })
   }
 
-  private _getAudioSourceFromCache (id) {
-    return getTrackSource(id).then(t => {
-      if (!t) return null
-      const source = URL.createObjectURL(new Blob([t.source]))
-      return source
-    })
+  private async _getAudioSourceFromCache (id) {
+    const t = await getTrackSource(id)
+    return t ? URL.createObjectURL(new Blob([t.source])) : null
   }
 
   private _getAudioSourceFromNetease (track) {
@@ -296,26 +289,9 @@ export default class {
     }
   }
 
-  private _getAudioSourceFromUnblockMusic (track) {
-    console.debug('[debug][Player.js] _getAudioSourceFromUnblockMusic')
-    if (
-      process.env.IS_ELECTRON !== true ||
-      store.state.settings.enableUnblockNeteaseMusic === false
-    ) {
-      return null
-    }
-    const source = ipcRenderer.sendSync('unblock-music', track)
-    if (store.state.settings.automaticallyCacheSongs && source?.url) {
-      // TODO: 将unblockMusic字样换成真正的来源（比如酷我咪咕等）
-      cacheTrackSource(track, source.url, 128000, 'unblockMusic')
-    }
-    return source?.url
-  }
-
   private async _getAudioSource (track: Song) {
     let source = await this._getAudioSourceFromCache(String(track.id))
     if (!source) source = await this._getAudioSourceFromNetease(track)
-    if (!source) source = await this._getAudioSourceFromUnblockMusic(track)
     return source
   }
 
@@ -399,7 +375,7 @@ export default class {
   }
 
   private _updateMediaSessionMetaData (track: Song) {
-    if ('mediaSession' in navigator === false) {
+    if (!('mediaSession' in navigator)) {
       return
     }
     const artists = track.ar.map(a => a.name)
@@ -418,7 +394,7 @@ export default class {
   }
 
   private _updateMediaSessionPositionState () {
-    if ('mediaSession' in navigator === false) {
+    if (!('mediaSession' in navigator)) {
       return
     }
     if ('setPositionState' in navigator.mediaSession) {
@@ -445,28 +421,6 @@ export default class {
       this._cacheNextTrack() // cache next track
       return this._personalFMNextTrack
     })
-  }
-
-  private _playDiscordPresence (track, seekTime = 0) {
-    if (
-      process.env.IS_ELECTRON !== true ||
-      store.state.settings.enableDiscordRichPresence === false
-    ) {
-      return null
-    }
-    const copyTrack = { ...track }
-    copyTrack.dt -= seekTime * 1000
-    ipcRenderer.send('playDiscordPresence', copyTrack)
-  }
-
-  private _pauseDiscordPresence (track) {
-    if (
-      process.env.IS_ELECTRON !== true ||
-      store.state.settings.enableDiscordRichPresence === false
-    ) {
-      return null
-    }
-    ipcRenderer.send('pauseDiscordPresence', track)
   }
 
   // currentTrackID() {
@@ -518,7 +472,6 @@ export default class {
     this._howler?.pause()
     this._playing = false
     document.title = 'YesPlayMusic'
-    this._pauseDiscordPresence(this._currentTrack)
   }
 
   play () {
@@ -526,7 +479,6 @@ export default class {
     this._howler?.play()
     this._playing = true
     document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`
-    this._playDiscordPresence(this._currentTrack, this.seek())
     if (store.state.lastfm.key !== undefined) {
       trackUpdateNowPlaying({
         artist: this.currentTrack.ar[0].name,
@@ -549,7 +501,6 @@ export default class {
   seek (time = null) {
     if (time !== null) {
       this._howler?.seek(time)
-      if (this._playing) { this._playDiscordPresence(this._currentTrack, this.seek()) }
     }
     return this._howler === null ? 0 : this._howler.seek() as number
   }
@@ -649,12 +600,9 @@ export default class {
     fmTrash(this._personalFMTrack.id)
   }
 
+  // TODO: DELETE
   sendSelfToIpcMain () {
-    if (process.env.IS_ELECTRON !== true) return false
-    ipcRenderer.send('player', {
-      playing: this.playing,
-      likedCurrentTrack: store.state.liked.songs.includes(this.currentTrack.id)
-    })
+    return false
   }
 
   switchRepeatMode () {
