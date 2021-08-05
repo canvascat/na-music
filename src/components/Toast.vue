@@ -1,18 +1,84 @@
 <template>
-  <transition name="fade">
-    <div v-show="toast.show" class="toast">{{ toast.text }}</div>
+  <transition name="toast-fade" @before-leave="onClose" @after-leave="$emit('destroy')">
+    <div
+      v-show="visible"
+      :id="id"
+      :class="['toast', customClass]"
+      :style="customStyle"
+      role="alert"
+      @mouseenter="clearTimer"
+      @mouseleave="startTimer"
+    >
+      <slot>
+        <p class="toast__content">{{ message }}</p>
+      </slot>
+    </div>
   </transition>
 </template>
 
-<script>
-import { mapState } from 'vuex'
+<script lang="ts">
+import { defineComponent, computed, ref, PropType, onMounted, onBeforeUnmount } from 'vue'
 
-export default {
+export default defineComponent({
   name: 'Toast',
-  computed: {
-    ...mapState(['toast'])
-  }
-}
+  props: {
+    customClass: { type: String, default: '' },
+    duration: { type: Number, default: 20000 },
+    id: { type: String, default: '' },
+    message: {
+      type: String,
+      default: '',
+    },
+    onClose: {
+      type: Function as PropType<() => void>,
+      required: true,
+    },
+    offset: { type: Number, default: 20 },
+    zIndex: { type: Number, default: 0 },
+  },
+  emits: ['destroy'],
+  setup(props) {
+    const customStyle = computed(() => {
+      return {
+        // top: `${props.offset}px`,
+        zIndex: props.zIndex,
+      }
+    })
+    const visible = ref(false)
+    let timer = null
+    function startTimer() {
+      if (props.duration > 0) {
+        timer = setTimeout(() => {
+          if (visible.value) {
+            close()
+          }
+        }, props.duration)
+      }
+    }
+    function clearTimer() {
+      clearTimeout(timer)
+      timer = null
+    }
+    function close() {
+      visible.value = false
+    }
+
+    onMounted(() => {
+      startTimer()
+      visible.value = true
+    })
+    onBeforeUnmount(() => {
+      clearTimer()
+    })
+    return {
+      customStyle,
+      visible,
+      close,
+      clearTimer,
+      startTimer,
+    }
+  },
+})
 </script>
 
 <style lang="scss" scoped>
@@ -33,7 +99,7 @@ export default {
   z-index: 100;
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   .toast {
     background: rgba(46, 46, 46, 0.68);
     backdrop-filter: blur(16px) contrast(120%);
@@ -41,11 +107,11 @@ export default {
   }
 }
 
-.fade-enter-active,
-.fade-leave-active {
+.toast-fade-enter-active,
+.toast-fade-leave-active {
   transition: opacity 0.2s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.toast-fade-enter, .toast-fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
 </style>

@@ -40,9 +40,6 @@ export const mutations: MutationTree<State> = {
       state.settings.enabledPlaylistCategories.push(name)
     }
   },
-  updateToast (state, toast) {
-    state.toast = toast
-  },
   updateModal (state, { modalName, key, value }) {
     state.modals[modalName][key] = value
     if (key === 'show') {

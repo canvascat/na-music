@@ -12,28 +12,13 @@ import {
 } from '@/api/user'
 import type { ActionTree } from 'vuex'
 import type { State } from './type'
+import { useToast } from '@/hook'
+const [toast] = useToast()
 
 export const actions: ActionTree<State, State> = {
-  showToast ({ state, commit }, text) {
-    if (state.toast.timer !== null) {
-      clearTimeout(state.toast.timer)
-      commit('updateToast', { show: false, text: '', timer: null })
-    }
-    commit('updateToast', {
-      show: true,
-      text,
-      timer: setTimeout(() => {
-        commit('updateToast', {
-          show: false,
-          text: state.toast.text,
-          timer: null
-        })
-      }, 3200)
-    })
-  },
   likeATrack ({ state, commit, dispatch }, id) {
     if (!isAccountLoggedIn()) {
-      dispatch('showToast', '此操作需要登录网易云账号')
+      toast('此操作需要登录网易云账号')
       return
     }
     const like = !state.liked.songs.includes(id)

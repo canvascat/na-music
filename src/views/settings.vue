@@ -7,8 +7,8 @@
           <div class="info">
             <div class="nickname">{{ data.user.nickname }}</div>
             <div class="extra-info">
-              <span v-if="data.user.vipType !== 0" class="vip"
-                ><img
+              <span v-if="data.user.vipType !== 0" class="vip">
+                <img
                   class="cvip"
                   src="data:image/png;base64,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"
                 />
@@ -28,7 +28,7 @@
 
       <div class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.language') }} </div>
+          <div class="title">{{ $t('settings.language') }}</div>
         </div>
         <div class="right">
           <select v-model="lang">
@@ -41,23 +41,19 @@
       </div>
       <div class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.appearance.text') }} </div>
+          <div class="title">{{ $t('settings.appearance.text') }}</div>
         </div>
         <div class="right">
           <select v-model="appearance">
             <option value="auto">{{ $t('settings.appearance.auto') }}</option>
-            <option value="light"
-              >🌞 {{ $t('settings.appearance.light') }}</option
-            >
-            <option value="dark"
-              >🌚 {{ $t('settings.appearance.dark') }}</option
-            >
+            <option value="light">🌞 {{ $t('settings.appearance.light') }}</option>
+            <option value="dark">🌚 {{ $t('settings.appearance.dark') }}</option>
           </select>
         </div>
       </div>
       <div class="item">
         <div class="left">
-          <div class="title"> 音乐语种偏好 </div>
+          <div class="title">音乐语种偏好</div>
         </div>
         <div class="right">
           <select v-model="musicLanguage">
@@ -73,28 +69,20 @@
       <h3>音质</h3>
       <div class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.musicQuality.text') }} </div>
+          <div class="title">{{ $t('settings.musicQuality.text') }}</div>
         </div>
         <div class="right">
           <select v-model="musicQuality">
-            <option value="128000">
-              {{ $t('settings.musicQuality.low') }} - 128Kbps
-            </option>
-            <option value="192000">
-              {{ $t('settings.musicQuality.medium') }} - 192Kbps
-            </option>
-            <option value="320000">
-              {{ $t('settings.musicQuality.high') }} - 320Kbps
-            </option>
-            <option value="999000">
-              {{ $t('settings.musicQuality.lossless') }} - FLAC
-            </option>
+            <option value="128000">{{ $t('settings.musicQuality.low') }} - 128Kbps</option>
+            <option value="192000">{{ $t('settings.musicQuality.medium') }} - 192Kbps</option>
+            <option value="320000">{{ $t('settings.musicQuality.high') }} - 320Kbps</option>
+            <option value="999000">{{ $t('settings.musicQuality.lossless') }} - FLAC</option>
           </select>
         </div>
       </div>
       <div v-if="isElectron" class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.deviceSelector') }} </div>
+          <div class="title">{{ $t('settings.deviceSelector') }}</div>
         </div>
         <div class="right">
           <select v-model="outputDevice">
@@ -103,9 +91,7 @@
               :key="device.deviceId"
               :value="device.deviceId"
               :selected="device.deviceId === outputDevice"
-            >
-              {{ $t(device.label) }}
-            </option>
+            >{{ $t(device.label) }}</option>
           </select>
         </div>
       </div>
@@ -113,9 +99,7 @@
       <h3 v-if="isElectron">缓存</h3>
       <div v-if="isElectron" class="item">
         <div class="left">
-          <div class="title">
-            {{ $t('settings.automaticallyCacheSongs') }}
-          </div>
+          <div class="title">{{ $t('settings.automaticallyCacheSongs') }}</div>
         </div>
         <div class="right">
           <div class="toggle">
@@ -131,18 +115,16 @@
       </div>
       <div v-if="isElectron" class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.cacheLimit.text') }} </div>
+          <div class="title">{{ $t('settings.cacheLimit.text') }}</div>
         </div>
         <div class="right">
           <select v-model="cacheLimit">
-            <option :value="false">
-              {{ $t('settings.cacheLimit.none') }}
-            </option>
-            <option :value="512"> 500MB </option>
-            <option :value="1024"> 1GB </option>
-            <option :value="2048"> 2GB </option>
-            <option :value="4096"> 4GB </option>
-            <option :value="8192"> 8GB </option>
+            <option :value="false">{{ $t('settings.cacheLimit.none') }}</option>
+            <option :value="512">500MB</option>
+            <option :value="1024">1GB</option>
+            <option :value="2048">2GB</option>
+            <option :value="4096">4GB</option>
+            <option :value="8192">8GB</option>
           </select>
         </div>
       </div>
@@ -170,37 +152,23 @@
         </div>
         <div class="right">
           <select v-model="lyricsBackground">
-            <option :value="false">
-              {{ $t('settings.lyricsBackground.off') }}
-            </option>
-            <option :value="true">
-              {{ $t('settings.lyricsBackground.on') }}
-            </option>
-            <option value="blur"> 模糊封面 </option>
-            <option value="dynamic">
-              {{ $t('settings.lyricsBackground.dynamic') }}
-            </option>
+            <option :value="false">{{ $t('settings.lyricsBackground.off') }}</option>
+            <option :value="true">{{ $t('settings.lyricsBackground.on') }}</option>
+            <option value="blur">模糊封面</option>
+            <option value="dynamic">{{ $t('settings.lyricsBackground.dynamic') }}</option>
           </select>
         </div>
       </div>
       <div class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.lyricFontSize.text') }} </div>
+          <div class="title">{{ $t('settings.lyricFontSize.text') }}</div>
         </div>
         <div class="right">
           <select v-model="lyricFontSize">
-            <option value="16">
-              {{ $t('settings.lyricFontSize.small') }} - 16px
-            </option>
-            <option value="22">
-              {{ $t('settings.lyricFontSize.medium') }} - 22px
-            </option>
-            <option value="28">
-              {{ $t('settings.lyricFontSize.large') }} - 28px
-            </option>
-            <option value="36">
-              {{ $t('settings.lyricFontSize.xlarge') }} - 36px
-            </option>
+            <option value="16">{{ $t('settings.lyricFontSize.small') }} - 16px</option>
+            <option value="22">{{ $t('settings.lyricFontSize.medium') }} - 22px</option>
+            <option value="28">{{ $t('settings.lyricFontSize.large') }} - 28px</option>
+            <option value="36">{{ $t('settings.lyricFontSize.xlarge') }} - 36px</option>
           </select>
         </div>
       </div>
@@ -213,26 +181,23 @@
               isLastfmConnected
                 ? `已连接到 Last.fm (${lastfm.name})`
                 : '连接 Last.fm '
-            }}</div
-          >
+            }}
+          </div>
         </div>
         <div class="right">
-          <button v-if="isLastfmConnected" @click="lastfmDisconnect()"
-            >断开连接
-          </button>
-          <button v-else @click="lastfmConnect()"> 授权连接 </button>
+          <button v-if="isLastfmConnected" @click="lastfmDisconnect()">断开连接</button>
+          <button v-else @click="lastfmConnect()">授权连接</button>
         </div>
       </div>
       <div v-if="isElectron" class="item">
         <div class="left">
-          <div class="title"
-            >启用
+          <div class="title">
+            启用
             <a
               href="https://github.com/nondanee/UnblockNeteaseMusic"
               target="blank"
-              >UnblockNeteaseMusic</a
-            ></div
-          >
+            >UnblockNeteaseMusic</a>
+          </div>
         </div>
         <div class="right">
           <div class="toggle">
@@ -248,9 +213,7 @@
       </div>
       <div v-if="isElectron" class="item">
         <div class="left">
-          <div class="title">
-            {{ $t('settings.enableDiscordRichPresence') }}</div
-          >
+          <div class="title">{{ $t('settings.enableDiscordRichPresence') }}</div>
         </div>
         <div class="right">
           <div class="toggle">
@@ -285,7 +248,7 @@
 
       <div v-if="isElectron" class="item">
         <div class="left">
-          <div class="title"> {{ $t('settings.showLibraryDefault') }}</div>
+          <div class="title">{{ $t('settings.showLibraryDefault') }}</div>
         </div>
         <div class="right">
           <div class="toggle">
@@ -302,9 +265,7 @@
 
       <div class="item">
         <div class="left">
-          <div class="title">
-            {{ $t('settings.showPlaylistsByAppleMusic') }}</div
-          >
+          <div class="title">{{ $t('settings.showPlaylistsByAppleMusic') }}</div>
         </div>
         <div class="right">
           <div class="toggle">
@@ -324,12 +285,7 @@
         </div>
         <div class="right">
           <div class="toggle">
-            <input
-              id="nyancat-style"
-              v-model="nyancatStyle"
-              type="checkbox"
-              name="nyancat-style"
-            />
+            <input id="nyancat-style" v-model="nyancatStyle" type="checkbox" name="nyancat-style" />
             <label for="nyancat-style"></label>
           </div>
         </div>
@@ -339,13 +295,13 @@
         <h3>代理</h3>
         <div class="item">
           <div class="left">
-            <div class="title"> 代理协议 </div>
+            <div class="title">代理协议</div>
           </div>
           <div class="right">
             <select v-model="proxyProtocol">
-              <option value="noProxy"> 关闭代理 </option>
-              <option value="HTTP"> HTTP 代理 </option>
-              <option value="HTTPS"> HTTPS 代理 </option>
+              <option value="noProxy">关闭代理</option>
+              <option value="HTTP">HTTP 代理</option>
+              <option value="HTTPS">HTTPS 代理</option>
               <!-- <option value="SOCKS"> SOCKS 代理 </option> -->
             </select>
           </div>
@@ -356,7 +312,8 @@
             class="text-input"
             placeholder="服务器地址"
             :disabled="proxyProtocol === 'noProxy'"
-          /><input
+          />
+          <input
             v-model="proxyPort"
             class="text-input"
             placeholder="端口"
@@ -373,7 +330,7 @@
         <h3>快捷键</h3>
         <div class="item">
           <div class="left">
-            <div class="title"> {{ $t('settings.enableGlobalShortcut') }}</div>
+            <div class="title">{{ $t('settings.enableGlobalShortcut') }}</div>
           </div>
           <div class="right">
             <div class="toggle">
@@ -398,11 +355,7 @@
             <div class="col">快捷键</div>
             <div class="col">全局快捷键</div>
           </div>
-          <div
-            v-for="shortcut in settings.shortcuts"
-            :key="shortcut.id"
-            class="row"
-          >
+          <div v-for="shortcut in settings.shortcuts" :key="shortcut.id" class="row">
             <div class="col">{{ shortcut.name }}</div>
             <div class="col">
               <div
@@ -416,8 +369,8 @@
               >
                 {{
                   shortcutInput.id === shortcut.id &&
-                  shortcutInput.type === 'shortcut' &&
-                  recordedShortcutComputed !== ''
+                    shortcutInput.type === 'shortcut' &&
+                    recordedShortcutComputed !== ''
                     ? formatShortcut(recordedShortcutComputed)
                     : formatShortcut(shortcut.shortcut)
                 }}
@@ -433,31 +386,28 @@
                     enableGlobalShortcut,
                 }"
                 @click.stop="
-                  readyToRecordShortcut(shortcut.id, 'globalShortcut')
+                readyToRecordShortcut(shortcut.id, 'globalShortcut')
                 "
-                >{{
+              >
+                {{
                   shortcutInput.id === shortcut.id &&
-                  shortcutInput.type === 'globalShortcut' &&
-                  recordedShortcutComputed !== ''
+                    shortcutInput.type === 'globalShortcut' &&
+                    recordedShortcutComputed !== ''
                     ? formatShortcut(recordedShortcutComputed)
                     : formatShortcut(shortcut.globalShortcut)
-                }}</div
-              >
+                }}
+              </div>
             </div>
           </div>
-          <button
-            class="restore-default-shortcut"
-            @click="restoreDefaultShortcuts"
-            >恢复默认快捷键</button
-          >
+          <button class="restore-default-shortcut" @click="restoreDefaultShortcuts">恢复默认快捷键</button>
         </div>
       </div>
 
       <div class="footer">
-        <p class="author"
-          >MADE BY
-          <a href="https://github.com/qier222" target="_blank">QIER222</a></p
-        >
+        <p class="author">
+          MADE BY
+          <a href="https://github.com/qier222" target="_blank">QIER222</a>
+        </p>
         <p class="version">v{{ version }}</p>
       </div>
     </div>
@@ -472,13 +422,16 @@ import { changeAppearance, bytesToSize } from '@/utils/common'
 import { countDBSize, clearDB } from '@/utils/db'
 import { IconLogout } from '@/components/icons'
 import pkg from '../../package.json'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 const validShortcutCodes = ['=', '-', '~', '[', ']', ';', "'", ',', '.', '/']
 
 export default {
   name: 'Settings',
   components: { IconLogout },
-  data () {
+  data() {
     return {
       tracksCache: {
         size: '0KB',
@@ -500,19 +453,20 @@ export default {
   },
   computed: {
     ...mapState(['player', 'settings', 'data', 'lastfm']),
-    isElectron () {
-      return process.env.IS_ELECTRON
+    isElectron() {
+      // TODO: DELETE
+      return false
     },
-    isMac () {
+    isMac() {
       return /macintosh|mac os x/i.test(navigator.userAgent)
     },
-    version () {
+    version() {
       return pkg.version
     },
-    showUserInfo () {
+    showUserInfo() {
       return isLooseLoggedIn() && this.data.user.nickname
     },
-    recordedShortcutComputed () {
+    recordedShortcutComputed() {
       let shortcut = []
       this.recordedShortcut.map(e => {
         if (e.keyCode >= 65 && e.keyCode <= 90) {
@@ -559,19 +513,19 @@ export default {
     },
 
     lang: {
-      get () {
+      get() {
         return this.settings.lang
       },
-      set (lang) {
+      set(lang) {
         this.$i18n.locale = lang
         this.$store.commit('changeLang', lang)
       }
     },
     musicLanguage: {
-      get () {
+      get() {
         return this.settings.musicLanguage ?? 'all'
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'musicLanguage',
           value
@@ -579,11 +533,11 @@ export default {
       }
     },
     appearance: {
-      get () {
+      get() {
         if (this.settings.appearance === undefined) return 'auto'
         return this.settings.appearance
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'appearance',
           value
@@ -592,27 +546,27 @@ export default {
       }
     },
     musicQuality: {
-      get () {
+      get() {
         if (this.settings.musicQuality === undefined) return 320000
         return this.settings.musicQuality
       },
-      set (value) {
+      set(value) {
         if (value === this.settings.musicQuality) return
         this.$store.commit('changeMusicQuality', value)
         this.clearCache()
       }
     },
     lyricFontSize: {
-      get () {
+      get() {
         if (this.settings.lyricFontSize === undefined) return 28
         return this.settings.lyricFontSize
       },
-      set (value) {
+      set(value) {
         this.$store.commit('changeLyricFontSize', value)
       }
     },
     outputDevice: {
-      get () {
+      get() {
         const isValidDevice = this.allOutputDevices.find(
           device => device.deviceId === this.settings.outputDevice
         )
@@ -622,18 +576,18 @@ export default {
         ) { return 'default' } // Default deviceId
         return this.settings.outputDevice
       },
-      set (deviceId) {
+      set(deviceId) {
         if (deviceId === this.settings.outputDevice || deviceId === undefined) { return }
         this.$store.commit('changeOutputDevice', deviceId)
         this.player.setOutputDevice()
       }
     },
     enableUnblockNeteaseMusic: {
-      get () {
+      get() {
         const value = this.settings.enableUnblockNeteaseMusic
         return value !== undefined ? value : true
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'enableUnblockNeteaseMusic',
           value
@@ -641,11 +595,11 @@ export default {
       }
     },
     showPlaylistsByAppleMusic: {
-      get () {
+      get() {
         if (this.settings.showPlaylistsByAppleMusic === undefined) return true
         return this.settings.showPlaylistsByAppleMusic
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'showPlaylistsByAppleMusic',
           value
@@ -653,11 +607,11 @@ export default {
       }
     },
     nyancatStyle: {
-      get () {
+      get() {
         if (this.settings.nyancatStyle === undefined) return false
         return this.settings.nyancatStyle
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'nyancatStyle',
           value
@@ -665,11 +619,11 @@ export default {
       }
     },
     automaticallyCacheSongs: {
-      get () {
+      get() {
         if (this.settings.automaticallyCacheSongs === undefined) return false
         return this.settings.automaticallyCacheSongs
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'automaticallyCacheSongs',
           value
@@ -680,10 +634,10 @@ export default {
       }
     },
     showLyricsTranslation: {
-      get () {
+      get() {
         return this.settings.showLyricsTranslation
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'showLyricsTranslation',
           value
@@ -691,10 +645,10 @@ export default {
       }
     },
     lyricsBackground: {
-      get () {
+      get() {
         return this.settings.lyricsBackground || false
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'lyricsBackground',
           value
@@ -702,10 +656,10 @@ export default {
       }
     },
     minimizeToTray: {
-      get () {
+      get() {
         return this.settings.minimizeToTray
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'minimizeToTray',
           value
@@ -713,10 +667,10 @@ export default {
       }
     },
     enableDiscordRichPresence: {
-      get () {
+      get() {
         return this.settings.enableDiscordRichPresence
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'enableDiscordRichPresence',
           value
@@ -724,10 +678,10 @@ export default {
       }
     },
     enableGlobalShortcut: {
-      get () {
+      get() {
         return this.settings.enableGlobalShortcut
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'enableGlobalShortcut',
           value
@@ -735,10 +689,10 @@ export default {
       }
     },
     showLibraryDefault: {
-      get () {
+      get() {
         return this.settings.showLibraryDefault || false
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'showLibraryDefault',
           value
@@ -746,10 +700,10 @@ export default {
       }
     },
     cacheLimit: {
-      get () {
+      get() {
         return this.settings.cacheLimit || false
       },
-      set (value) {
+      set(value) {
         this.$store.commit('updateSettings', {
           key: 'cacheLimit',
           value
@@ -757,14 +711,14 @@ export default {
       }
     },
     proxyProtocol: {
-      get () {
+      get() {
         return this.settings.proxyConfig?.protocol || 'noProxy'
       },
-      set (value) {
+      set(value) {
         const config = this.settings.proxyConfig || {}
         config.protocol = value
         if (value === 'noProxy') {
-          this.showToast('已关闭代理')
+          toast('已关闭代理')
         }
         this.$store.commit('updateSettings', {
           key: 'proxyConfig',
@@ -773,10 +727,10 @@ export default {
       }
     },
     proxyServer: {
-      get () {
+      get() {
         return this.settings.proxyConfig?.server || ''
       },
-      set (value) {
+      set(value) {
         const config = this.settings.proxyConfig || {}
         config.server = value
         this.$store.commit('updateSettings', {
@@ -786,10 +740,10 @@ export default {
       }
     },
     proxyPort: {
-      get () {
+      get() {
         return this.settings.proxyConfig?.port || ''
       },
-      set (value) {
+      set(value) {
         const config = this.settings.proxyConfig || {}
         config.port = value
         this.$store.commit('updateSettings', {
@@ -798,21 +752,19 @@ export default {
         })
       }
     },
-    isLastfmConnected () {
+    isLastfmConnected() {
       return this.lastfm.key !== undefined
     }
   },
-  created () {
+  created() {
     this.countDBSize('tracks')
-    if (process.env.IS_ELECTRON) this.getAllOutputDevices()
   },
-  activated () {
+  activated() {
     this.countDBSize('tracks')
-    if (process.env.IS_ELECTRON) this.getAllOutputDevices()
   },
   methods: {
-    ...mapActions(['showToast']),
-    getAllOutputDevices () {
+    // TODO: DELETE
+    getAllOutputDevices() {
       navigator.mediaDevices.enumerateDevices().then(devices => {
         this.allOutputDevices = devices.filter(device => {
           return device.kind === 'audiooutput'
@@ -832,11 +784,11 @@ export default {
         }
       })
     },
-    logout () {
+    logout() {
       doLogout()
       this.$router.push({ name: 'home' })
     },
-    countDBSize () {
+    countDBSize() {
       countDBSize().then(data => {
         if (data === undefined) {
           this.tracksCache = {
@@ -849,12 +801,12 @@ export default {
         this.tracksCache.length = data.length
       })
     },
-    clearCache () {
+    clearCache() {
       clearDB().then(() => {
         this.countDBSize()
       })
     },
-    lastfmConnect () {
+    lastfmConnect() {
       lastfmAuth()
       const lastfmChecker = setInterval(() => {
         const session = localStorage.getItem('lastfm')
@@ -864,15 +816,15 @@ export default {
         }
       }, 1000)
     },
-    lastfmDisconnect () {
+    lastfmDisconnect() {
       localStorage.removeItem('lastfm')
       this.$store.commit('updateLastfm', {})
     },
 
-    clickOutside () {
+    clickOutside() {
       this.exitRecordShortcut()
     },
-    formatShortcut (shortcut) {
+    formatShortcut(shortcut) {
       shortcut = shortcut
         .replaceAll('+', ' + ')
         .replace('Up', '↑')
@@ -884,24 +836,24 @@ export default {
       } else if (this.settings.lang === 'zh-TW') {
         shortcut = shortcut.replace('Space', '空白鍵')
       }
-      if (process.platform === 'darwin') {
-        return shortcut
-          .replace('CommandOrControl', '⌘')
-          .replace('Command', '⌘')
-          .replace('Alt', '⌥')
-          .replace('Control', '⌃')
-          .replace('Shift', '⇧')
-      }
+      // if (process.platform === 'darwin') {
+      //   return shortcut
+      //     .replace('CommandOrControl', '⌘')
+      //     .replace('Command', '⌘')
+      //     .replace('Alt', '⌥')
+      //     .replace('Control', '⌃')
+      //     .replace('Shift', '⇧')
+      // }
       return shortcut.replace('CommandOrControl', 'Ctrl')
     },
-    readyToRecordShortcut (id, type) {
+    readyToRecordShortcut(id, type) {
       if (type === 'globalShortcut' && this.enableGlobalShortcut === false) {
         return
       }
       this.shortcutInput = { id, type, recording: true }
       this.recordedShortcut = []
     },
-    handleShortcutKeydown (e) {
+    handleShortcutKeydown(e) {
       if (this.shortcutInput.recording === false) return
       e.preventDefault()
       if (this.recordedShortcut.find(s => s.keyCode === e.keyCode)) return
@@ -916,14 +868,14 @@ export default {
         this.saveShortcut()
       }
     },
-    handleShortcutKeyup (e) {
+    handleShortcutKeyup(e) {
       if (this.recordedShortcut.find(s => s.keyCode === e.keyCode)) {
         this.recordedShortcut = this.recordedShortcut.filter(
           s => s.keyCode !== e.keyCode
         )
       }
     },
-    saveShortcut () {
+    saveShortcut() {
       const { id, type } = this.shortcutInput
       const payload = {
         id,
@@ -931,14 +883,14 @@ export default {
         shortcut: this.recordedShortcutComputed
       }
       this.$store.commit('updateShortcut', payload)
-      this.showToast('快捷键已保存')
+      toast('快捷键已保存')
       this.recordedShortcut = []
     },
-    exitRecordShortcut () {
+    exitRecordShortcut() {
       this.shortcutInput = { id: '', type: '', recording: false }
       this.recordedShortcut = []
     },
-    restoreDefaultShortcuts () {
+    restoreDefaultShortcuts() {
       this.$store.commit('restoreDefaultShortcuts')
     }
   }
@@ -1103,7 +1055,7 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -1218,7 +1170,7 @@ input[type='number'] {
   border-radius: 8px;
 }
 .toggle input + label:before {
-  content: '';
+  content: "";
   position: absolute;
   display: block;
   -webkit-transition: 0.2s cubic-bezier(0.24, 0, 0.5, 1);
@@ -1230,7 +1182,7 @@ input[type='number'] {
   border-radius: 8px;
 }
 .toggle input + label:after {
-  content: '';
+  content: "";
   position: absolute;
   display: block;
   box-shadow: 0 0 0 1px hsla(0, 0%, 0%, 0.02), 0 4px 0 0 hsla(0, 0%, 0%, 0.01),

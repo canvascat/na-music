@@ -5,9 +5,8 @@ import dayjs from 'dayjs'
 import store from '@/store'
 import { random } from 'lodash'
 import type { Privilege, Song } from '@/api/types'
-export { throttle } from 'lodash'
 
-export function isTrackPlayable (track: Song) {
+export function isTrackPlayable(track: Song) {
   const result = {
     playable: true,
     reason: ''
@@ -39,7 +38,7 @@ export function isTrackPlayable (track: Song) {
   return result
 }
 
-export function mapTrackPlayableStatus (tracks: Song[], privileges: Privilege[] = []) {
+export function mapTrackPlayableStatus(tracks: Song[], privileges: Privilege[] = []) {
   if (tracks?.length === undefined) return tracks
   return tracks.map(t => {
     const privilege = privileges.find(item => item.id === t.id) || {} as Privilege
@@ -59,7 +58,7 @@ export function mapTrackPlayableStatus (tracks: Song[], privileges: Privilege[] 
 export const randomNum = random
 
 /** */
-export function shuffleAList (list) {
+export function shuffleAList(list) {
   const sortsList = list.map(t => t.sort)
   for (let i = 1; i < sortsList.length; i++) {
     const random = Math.floor(Math.random() * (i + 1));
@@ -73,12 +72,12 @@ export function shuffleAList (list) {
   return newSorts
 }
 
-export function updateHttps (url?: string) {
+export function updateHttps(url?: string) {
   if (!url) return ''
   return url.replace(/^http:/, 'https:')
 }
 
-export function dailyTask () {
+export function dailyTask() {
   const lastDate = store.state.data.lastRefreshCookieDate
   if (
     isAccountLoggedIn() &&
@@ -101,7 +100,7 @@ export function dailyTask () {
   }
 }
 
-export function changeAppearance (appearance?: string) {
+export function changeAppearance(appearance?: string) {
   if (appearance === 'auto' || appearance === undefined) {
     appearance = window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
@@ -114,7 +113,7 @@ export function changeAppearance (appearance?: string) {
   )
 }
 
-export function splitSoundtrackAlbumTitle (title: string) {
+export function splitSoundtrackAlbumTitle(title: string) {
   const keywords = [
     'Music from the Original Motion Picture Score',
     'The Original Motion Picture Soundtrack',
@@ -159,7 +158,7 @@ export function splitSoundtrackAlbumTitle (title: string) {
   }
 }
 
-export function splitAlbumTitle (title: string) {
+export function splitAlbumTitle(title: string) {
   const keywords = [
     'Bonus Tracks Edition',
     'Complete Edition',
@@ -185,7 +184,7 @@ export function splitAlbumTitle (title: string) {
   }
 }
 
-export function bytesToSize (bytes: number) {
+export function bytesToSize(bytes: number) {
   const marker = 1024 // Change to 1000 if required
   const decimal = 2 // Change as required
   const kiloBytes = marker
@@ -198,7 +197,7 @@ export function bytesToSize (bytes: number) {
   else if (bytes < megaBytes) { return (bytes / kiloBytes).toFixed(decimal) + ' KB' } else if (bytes < gigaBytes) { return (bytes / megaBytes).toFixed(decimal) + ' MB' } else return (bytes / gigaBytes).toFixed(decimal) + ' GB'
 }
 
-export function formatTrackTime (value: number) {
+export function formatTrackTime(value: number) {
   if (!value) return ''
   const min = ~~((value / 60) % 60)
   const sec = (~~(value % 60)).toString().padStart(2, '0')

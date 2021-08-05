@@ -8,9 +8,7 @@
         class="button"
         :class="{ active: category === activeCategory && !showCatOptions }"
         @click="goToCategory(category)"
-      >
-        {{ category }}
-      </div>
+      >{{ category }}</div>
       <div
         class="button more"
         :class="{ active: showCatOptions }"
@@ -32,8 +30,9 @@
               active: settings.enabledPlaylistCategories.includes(cat.name),
             }"
             @click="toggleCat(cat.name)"
-            ><span>{{ cat.name }}</span></div
           >
+            <span>{{ cat.name }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -48,17 +47,13 @@
         :image-size="activeCategory !== '排行榜' ? 512 : 1024"
       />
     </div>
-    <div
-      v-show="['推荐歌单', '排行榜'].includes(activeCategory) === false"
-      class="load-more"
-    >
+    <div v-show="['推荐歌单', '排行榜'].includes(activeCategory) === false" class="load-more">
       <ButtonTwoTone
         v-show="showLoadMoreButton && hasMore"
         color="grey"
         :loading="loadingMore"
         @click="getPlaylist"
-        >{{ $t('explore.loadMore') }}</ButtonTwoTone
-      >
+      >{{ $t('explore.loadMore') }}</ButtonTwoTone>
     </div>
   </div>
 </template>
@@ -85,7 +80,7 @@ export default {
     ButtonTwoTone,
     IconMore
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     this.showLoadMoreButton = false
     this.hasMore = true
     this.playlists = []
@@ -94,7 +89,7 @@ export default {
     this.getPlaylist()
     next()
   },
-  data () {
+  data() {
     return {
       show: false,
       playlists: [],
@@ -108,19 +103,18 @@ export default {
   },
   computed: {
     ...mapState(['settings']),
-    subText () {
+    subText() {
       if (this.activeCategory === '排行榜') return 'updateFrequency'
       if (this.activeCategory === '推荐歌单') return 'copywriter'
       return 'none'
     }
   },
-  activated () {
+  activated() {
     this.loadData()
-    this.$parent.$refs.scrollbar.restorePosition()
   },
   methods: {
     ...mapMutations(['togglePlaylistCategory']),
-    loadData () {
+    loadData() {
       setTimeout(() => {
         if (!this.show) NProgress.start()
       }, 1000)
@@ -130,18 +124,18 @@ export default {
           : this.$route.query.category
       this.getPlaylist()
     },
-    goToCategory (Category) {
+    goToCategory(Category) {
       this.showCatOptions = false
       this.$router.push({ path: '/explore?category=' + Category })
     },
-    updatePlaylist (playlists) {
+    updatePlaylist(playlists) {
       this.playlists.push(...playlists)
       this.loadingMore = false
       this.showLoadMoreButton = true
       NProgress.done()
       this.show = true
     },
-    getPlaylist () {
+    getPlaylist() {
       this.loadingMore = true
       if (this.activeCategory === '推荐歌单') {
         return this.getRecommendPlayList()
@@ -154,13 +148,13 @@ export default {
       }
       return this.getTopPlayList()
     },
-    getRecommendPlayList () {
+    getRecommendPlayList() {
       recommendPlaylist({ limit: 100 }).then(data => {
         this.playlists = []
         this.updatePlaylist(data.result)
       })
     },
-    getHighQualityPlaylist () {
+    getHighQualityPlaylist() {
       const playlists = this.playlists
       const before =
         playlists.length !== 0 ? playlists[playlists.length - 1].updateTime : 0
@@ -169,13 +163,13 @@ export default {
         this.hasMore = data.more
       })
     },
-    getTopLists () {
+    getTopLists() {
       toplists().then(data => {
         this.playlists = []
         this.updatePlaylist(data.list)
       })
     },
-    getTopPlayList () {
+    getTopPlayList() {
       topPlaylist({
         cat: this.activeCategory,
         offset: this.playlists.length
@@ -184,10 +178,10 @@ export default {
         this.hasMore = data.more
       })
     },
-    getCatsByBigCat (name) {
+    getCatsByBigCat(name) {
       return playlistCategories.filter(c => c.bigCat === name)
     },
-    toggleCat (name) {
+    toggleCat(name) {
       this.togglePlaylistCategory(name)
     }
   }

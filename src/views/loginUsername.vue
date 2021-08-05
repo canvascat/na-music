@@ -54,7 +54,7 @@ import { mapMutations } from 'vuex'
 import NProgress from 'nprogress'
 import { search } from '@/api/others'
 import { userPlaylist } from '@/api/user'
-import { throttle } from '@/utils/common'
+import { throttle } from 'lodash'
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 import { resizeImage } from '@/utils/filters'

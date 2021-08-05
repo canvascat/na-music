@@ -1,32 +1,22 @@
 <template>
   <div v-show="show" class="home">
-    <div
-      v-if="settings.showPlaylistsByAppleMusic !== false"
-      class="index-row first-row"
-    >
-      <div class="title"> by Apple Music </div>
-      <CoverRow
-        :type="'playlist'"
-        :items="byAppleMusic"
-        sub-text="appleMusic"
-        :image-size="1024"
-      />
+    <div v-if="settings.showPlaylistsByAppleMusic !== false" class="index-row first-row">
+      <div class="title">by Apple Music</div>
+      <CoverRow :type="'playlist'" :items="byAppleMusic" sub-text="appleMusic" :image-size="1024" />
     </div>
     <div class="index-row">
       <div class="title">
         {{ $t('home.recommendPlaylist') }}
-        <router-link to="/explore?category=推荐歌单">{{
-          $t('home.seeMore')
-        }}</router-link>
+        <router-link to="/explore?category=推荐歌单">
+          {{
+            $t('home.seeMore')
+          }}
+        </router-link>
       </div>
-      <CoverRow
-        :type="'playlist'"
-        :items="recommendPlaylist"
-        sub-text="copywriter"
-      />
+      <CoverRow :type="'playlist'" :items="recommendPlaylist" sub-text="copywriter" />
     </div>
     <div class="index-row">
-      <div class="title"> For You </div>
+      <div class="title">For You</div>
       <div class="for-you-row">
         <DailyTracksCard ref="DailyTracksCardRef" />
         <FMCard />
@@ -34,34 +24,21 @@
     </div>
     <div class="index-row">
       <div class="title">{{ $t('home.recommendArtist') }}</div>
-      <CoverRow
-        type="artist"
-        :column-number="6"
-        :items="recommendArtists"
-      />
+      <CoverRow type="artist" :column-number="6" :items="recommendArtists" />
     </div>
     <div class="index-row">
       <div class="title">
         {{ $t('home.newAlbum') }}
         <router-link to="/new-album">{{ $t('home.seeMore') }}</router-link>
       </div>
-      <CoverRow
-        type="album"
-        :items="newReleasesAlbum"
-        sub-text="artist"
-      />
+      <CoverRow type="album" :items="newReleasesAlbum" sub-text="artist" />
     </div>
     <div class="index-row">
       <div class="title">
         {{ $t('home.charts') }}
         <router-link to="/explore?category=排行榜">{{ $t('home.seeMore') }}</router-link>
       </div>
-      <CoverRow
-        type="playlist"
-        :items="topList"
-        sub-text="updateFrequency"
-        :image-size="1024"
-      />
+      <CoverRow type="playlist" :items="topList" sub-text="updateFrequency" :image-size="1024" />
     </div>
   </div>
 </template>
@@ -83,7 +60,7 @@ import store from '@/store'
 export default defineComponent({
   name: 'Home',
   components: { CoverRow, DailyTracksCard, FMCard },
-  setup () {
+  setup() {
     const settings = store.state.settings
     const DailyTracksCardRef = ref()
     const show = ref(false)
@@ -92,7 +69,7 @@ export default defineComponent({
     const topList = ref([])
     const recommendArtists = ref([])
     NProgress.start()
-    function loadData () {
+    function loadData() {
       const lang = settings.musicLanguage
       fetchRecommendPlaylist({ limit: 10 }).then(data => {
         recommendPlaylist.value = data.result
@@ -117,8 +94,6 @@ export default defineComponent({
     }
     onActivated(() => {
       loadData()
-      // TODO:
-      // this.$parent.$refs.scrollbar.restorePosition()
     })
     return {
       settings,

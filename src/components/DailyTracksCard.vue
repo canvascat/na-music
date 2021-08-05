@@ -1,6 +1,6 @@
 <template>
   <div class="daily-recommend-card" @click="goToDailyTracks">
-    <img :src="coverUrl"  alt="cover"/>
+    <img :src="coverUrl" alt="cover" />
     <div class="container">
       <div class="title-box">
         <div class="title">
@@ -18,12 +18,15 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapActions } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import { dailyRecommendTracks } from '@/api/playlist'
 import { isAccountLoggedIn } from '@/utils/auth'
 import sample from 'lodash/sample'
-import { noop } from 'lodash'
+import noop from 'lodash/noop'
 import { IconPlay } from '@/components/icons'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 const defaultCovers = [
   'https://p2.music.126.net/0-Ybpa8FrDfRgKYCTJD8Xg==/109951164796696795.jpg',
@@ -34,36 +37,34 @@ const defaultCovers = [
 export default {
   name: 'DailyTracksCard',
   components: { IconPlay },
-  data () {
+  data() {
     return { useAnimation: false }
   },
   computed: {
     ...mapState(['dailyTracks']),
-    coverUrl () {
-      return `${
-        this.dailyTracks[0]?.al.picUrl || sample(defaultCovers)
-      }?param=1024y1024`
+    coverUrl() {
+      return `${this.dailyTracks[0]?.al.picUrl || sample(defaultCovers)
+        }?param=1024y1024`
     }
   },
-  created () {
+  created() {
     if (this.dailyTracks.length === 0) this.loadDailyTracks()
   },
   methods: {
-    ...mapActions(['showToast']),
     ...mapMutations(['updateDailyTracks']),
-    loadDailyTracks () {
+    loadDailyTracks() {
       if (!isAccountLoggedIn()) return
       dailyRecommendTracks()
         .then(result => {
           this.updateDailyTracks(result.data.dailySongs)
         }, noop)
     },
-    goToDailyTracks () {
+    goToDailyTracks() {
       this.$router.push({ name: 'dailySongs' })
     },
-    playDailyTracks () {
+    playDailyTracks() {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       const trackIDs = this.dailyTracks.map(t => t.id)

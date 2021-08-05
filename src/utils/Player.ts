@@ -10,6 +10,9 @@ import store from '@/store'
 import { isAccountLoggedIn } from '@/utils/auth'
 import { trackUpdateNowPlaying, trackScrobble } from '@/api/lastfm'
 import type { PrivateFM, Song } from '@/api/types'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 type TrackID = number | 'first'
 
@@ -313,7 +316,7 @@ export default class {
           this._cacheNextTrack()
           return source
         } else {
-          store.dispatch('showToast', `无法播放 ${track.name}`)
+          toast(`无法播放 ${track.name}`)
           ifUnplayableThen === 'playNextTrack'
             ? this.playNextTrack()
             : this.playPrevTrack()

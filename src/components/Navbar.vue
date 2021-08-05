@@ -1,85 +1,87 @@
 <template>
-  <div>
-    <nav>
-      <div class="navigation-buttons">
-        <button-icon @click="go('back')" title="back"
-          ><IconArrowLeft /></button-icon>
-        <button-icon @click="go('forward')" title="forward"
-          ><IconArrowRight /></button-icon>
-      </div>
-      <div class="navigation-links">
-        <router-link to="/" :class="{ active: $route.name === 'home' }">{{
-          $t('nav.home')
-        }}</router-link>
-        <router-link
-          to="/explore"
-          :class="{ active: $route.name === 'explore' }"
-          >{{ $t('nav.explore') }}</router-link
-        >
-        <router-link
-          to="/library"
-          :class="{ active: $route.name === 'library' }"
-          >{{ $t('nav.library') }}</router-link
-        >
-      </div>
-      <div class="right-part">
-        <div class="search-box">
-          <div class="container" :class="{ active: inputFocus }">
-            <IconSearch />
-            <div class="input">
-              <input
-                ref="searchInput"
-                v-model="keywords"
-                :placeholder="inputFocus ? '' : $t('nav.search')"
-                @keydown.enter="doSearch"
-                @focus="inputFocus = true"
-                @blur="inputFocus = false"
-              />
-            </div>
+  <nav>
+    <div class="navigation-buttons">
+      <button class="button-icon" @click="go(1)" title="back">
+        <IconArrowLeft />
+      </button>
+      <button class="button-icon" @click="go(-1)" title="forward">
+        <IconArrowRight />
+      </button>
+    </div>
+    <div class="navigation-links">
+      <router-link to="/" :class="{ active: $route.name === 'home' }">{{ $t("nav.home") }}</router-link>
+      <router-link
+        to="/explore"
+        :class="{ active: $route.name === 'explore' }"
+      >{{ $t("nav.explore") }}</router-link>
+      <router-link
+        to="/library"
+        :class="{ active: $route.name === 'library' }"
+      >{{ $t("nav.library") }}</router-link>
+    </div>
+    <div class="right-part">
+      <div class="search-box">
+        <div class="container" :class="{ active: inputFocus }">
+          <IconSearch />
+          <div class="input">
+            <input
+              ref="searchInput"
+              v-model="keywords"
+              :placeholder="inputFocus ? '' : $t('nav.search')"
+              @keydown.enter="doSearch"
+              @focus="inputFocus = true"
+              @blur="inputFocus = false"
+            />
           </div>
         </div>
-        <img class="avatar" :src="avatarUrl" @click="showUserProfileMenu"  alt="avatar"/>
       </div>
-    </nav>
+      <img class="avatar" :src="avatarUrl" @click="showUserProfileMenu" alt="avatar" />
+    </div>
+  </nav>
 
-    <ContextMenu ref="userProfileMenu">
-      <div class="item" @click="toSettings">
-        <IconSettings />
-        {{ $t('library.userProfileMenu.settings') }}
-      </div>
-      <div v-if="!isLooseLoggedIn" class="item" @click="toLogin">
-        <IconLogin />
-        {{ $t('login.login') }}
-      </div>
-      <div v-if="isLooseLoggedIn" class="item" @click="logout">
-        <IconLogout />
-        {{ $t('library.userProfileMenu.logout') }}
-      </div>
-      <hr />
-      <div class="item" @click="toGitHub">
-        <IconGithub />
-        {{ $t('nav.github') }}
-      </div>
-    </ContextMenu>
-  </div>
+  <ContextMenu ref="userProfileMenu">
+    <div class="item" @click="toSettings">
+      <IconSettings />
+      {{ $t("library.userProfileMenu.settings") }}
+    </div>
+    <div v-if="!isLooseLoggedIn" class="item" @click="toLogin">
+      <IconLogin />
+      {{ $t("login.login") }}
+    </div>
+    <div v-if="isLooseLoggedIn" class="item" @click="logout">
+      <IconLogout />
+      {{ $t("library.userProfileMenu.logout") }}
+    </div>
+    <hr />
+    <div class="item" @click="toGitHub">
+      <IconGithub />
+      {{ $t("nav.github") }}
+    </div>
+  </ContextMenu>
 </template>
 
-<script>
-import { mapState } from 'vuex'
-import { isLooseLoggedIn, doLogout } from '@/utils/auth'
+<script lang="ts">
+import { defineComponent } from "vue";
+import { mapState } from "vuex";
+import { isLooseLoggedIn, doLogout } from "@/utils/auth";
+import ContextMenu from "@/components/ContextMenu.vue";
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconSearch,
+  IconSettings,
+  IconLogin,
+  IconLogout,
+  IconGithub,
+} from "@/components/icons"
 
-// import icons for win32 title bar
 // icons by https://github.com/microsoft/vscode-codicons
 // import 'vscode-codicons/dist/codicon.css'
 
-import ContextMenu from '@/components/ContextMenu.vue'
-import ButtonIcon from '@/components/ButtonIcon.vue'
-import { IconArrowLeft, IconArrowRight, IconSearch, IconSettings, IconLogin, IconLogout, IconGithub } from '@/components/icons'
+export default defineComponent({
+  name: "Navbar",
 
-export default {
-  name: 'Navbar',
   components: {
-    ButtonIcon,
     ContextMenu,
     IconArrowLeft,
     IconArrowRight,
@@ -87,69 +89,68 @@ export default {
     IconSettings,
     IconLogin,
     IconLogout,
-    IconGithub
+    IconGithub,
   },
-  data () {
+
+  // setup () {
+
+  // },
+  data() {
     return {
       inputFocus: false,
-      langs: ['zh-CN', 'zh-TW', 'en', 'tr'],
-      keywords: '',
+      langs: ["zh-CN", "zh-TW", "en", "tr"],
+      keywords: "",
       isWindowMaximized: false
-    }
+    };
   },
   computed: {
-    ...mapState(['settings', 'data']),
-    isLooseLoggedIn () {
-      return isLooseLoggedIn()
+    ...mapState(["settings", "data"]),
+    isLooseLoggedIn() {
+      return isLooseLoggedIn();
     },
-    avatarUrl () {
+    avatarUrl() {
       return this.data?.user?.avatarUrl && this.isLooseLoggedIn
         ? `${this.data?.user?.avatarUrl}?param=512y512`
-        : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
-    }
+        : "http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60";
+    },
   },
 
   methods: {
-    go (where) {
-      if (where === 'back') this.$router.go(-1)
-      else this.$router.go(1)
+    go(n: number) {
+      this.$router.go(n)
     },
-    doSearch () {
-      if (!this.keywords) return
+    doSearch() {
+      if (!this.keywords) return;
       if (
-        this.$route.name === 'search' &&
+        this.$route.name === "search" &&
         this.$route.params.keywords === this.keywords
       ) {
-        return
+        return;
       }
       this.$router.push({
-        name: 'search',
-        params: { keywords: this.keywords }
-      })
+        name: "search",
+        params: { keywords: this.keywords },
+      });
     },
-    showUserProfileMenu (e) {
-      this.$refs.userProfileMenu.openMenu(e)
+    showUserProfileMenu(e: MouseEvent) {
+      this.$refs.userProfileMenu.openMenu(e);
     },
-    logout () {
-      if (!confirm('确定要退出登录吗？')) return
-      doLogout()
-      this.$router.push({ name: 'home' })
+    logout() {
+      if (!confirm("确定要退出登录吗？")) return;
+      doLogout();
+      this.$router.push({ name: "home" });
     },
-    toSettings () {
-      this.$router.push({ name: 'settings' })
+    toSettings() {
+      this.$router.push({ name: "settings" });
     },
-    toGitHub () {
-      window.open('https://github.com/qier222/YesPlayMusic')
+    toGitHub() {
+      // window.open('xxxx')
     },
-    toLogin () {
-      if (process.env.IS_ELECTRON === true) {
-        this.$router.push({ name: 'loginAccount' })
-      } else {
-        this.$router.push({ name: 'login' })
-      }
-    }
-  }
-}
+    toLogin() {
+      this.$router.push({ name: "login" });
+    },
+  },
+})
 </script>
 
 <style lang="scss" scoped>
@@ -162,12 +163,8 @@ nav {
   justify-content: space-between;
   align-items: center;
   height: 64px;
-  padding: {
-    right: 10vw;
-    left: 10vw;
-  }
+  padding: 0 10vw;
   backdrop-filter: saturate(180%) blur(20px);
-
   background-color: var(--color-navbar-bg);
   z-index: 100;
 }
@@ -282,7 +279,7 @@ nav {
   }
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   .search-box {
     .active {
       input,

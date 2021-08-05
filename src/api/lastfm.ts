@@ -2,9 +2,10 @@
 
 import axios from 'axios'
 import md5 from 'crypto-js/md5'
-
-const apiKey = process.env.VUE_APP_LASTFM_API_KEY
-const apiSharedSecret = process.env.VUE_APP_LASTFM_API_SHARED_SECRET
+// VUE_APP_LASTFM_API_KEY=09c55292403d961aa517ff7f5e8a3d9c
+// VUE_APP_LASTFM_API_SHARED_SECRET=307c9fda32b3904e53654baff215cb67
+const apiKey = '09c55292403d961aa517ff7f5e8a3d9c'
+const apiSharedSecret = '307c9fda32b3904e53654baff215cb67'
 const baseUrl = window.location.origin
 const url = 'https://ws.audioscrobbler.com/2.0/'
 
@@ -21,13 +22,13 @@ const sign = params => {
   return md5(signature + apiSharedSecret).toString()
 }
 
-export function auth () {
+export function auth() {
   window.open(
     `https://www.last.fm/api/auth/?api_key=${apiKey}&cb=${baseUrl}/#/lastfm/callback`
   )
 }
 
-export function authGetSession (token) {
+export function authGetSession(token) {
   const signature = md5(
     `api_key${apiKey}methodauth.getSessiontoken${token}${apiSharedSecret}`
   ).toString()
@@ -44,7 +45,7 @@ export function authGetSession (token) {
   })
 }
 
-export function trackUpdateNowPlaying (params) {
+export function trackUpdateNowPlaying(params) {
   params.api_key = apiKey
   params.method = 'track.updateNowPlaying'
   params.sk = JSON.parse(localStorage.getItem('lastfm')).key
@@ -61,7 +62,7 @@ export function trackUpdateNowPlaying (params) {
   })
 }
 
-export function trackScrobble (params) {
+export function trackScrobble(params) {
   params.api_key = apiKey
   params.method = 'track.scrobble'
   params.sk = JSON.parse(localStorage.getItem('lastfm')).key

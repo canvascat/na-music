@@ -156,9 +156,11 @@ export default {
       )
     },
     showUnavailableSongInGreyStyle () {
-      return process.env.IS_ELECTRON
-        ? !this.$store.state.settings.enableUnblockNeteaseMusic
-        : true
+      return true
+      // TODO: DELETE
+      // return process.env.IS_ELECTRON
+      //   ? !this.$store.state.settings.enableUnblockNeteaseMusic
+      //   : true
     },
     showLikeButton () {
       return this.type !== 'tracklist' && this.type !== 'cloudDisk'

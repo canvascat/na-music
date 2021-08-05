@@ -6,9 +6,11 @@
       </div>
       <div class="video-info">
         <div class="title">
-          <router-link :to="'/artist/' + mv.data.artistId">{{
-            mv.data.artistName
-          }}</router-link>
+          <router-link :to="'/artist/' + mv.data.artistId">
+            {{
+              mv.data.artistName
+            }}
+          </router-link>
           -
           {{ mv.data.name }}
           <div class="like-button">
@@ -43,6 +45,9 @@ import MvRow from '@/components/MvRow.vue'
 import { mapActions } from 'vuex'
 import { formatPlayCount } from '@/utils/filters'
 import { IconHeartSolid, IconHeart } from '@/components/icons'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'mv',
@@ -52,11 +57,11 @@ export default {
     IconHeartSolid,
     IconHeart
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     this.getData(to.params.id)
     next()
   },
-  data () {
+  data() {
     return {
       mv: {
         url: '',
@@ -71,7 +76,7 @@ export default {
       simiMvs: []
     }
   },
-  mounted () {
+  mounted() {
     const videoOptions = {
       settings: ['quality'],
       autoplay: false,
@@ -91,8 +96,7 @@ export default {
   },
   methods: {
     formatPlayCount,
-    ...mapActions(['showToast']),
-    getData (id) {
+    getData(id) {
       mvDetail(id).then(data => {
         this.mv = data
         const requests = data.data.brs.map(br => {
@@ -119,9 +123,9 @@ export default {
         this.simiMvs = data.mvs
       })
     },
-    likeMV () {
+    likeMV() {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       likeAMV({

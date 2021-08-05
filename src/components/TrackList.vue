@@ -10,48 +10,42 @@
       </div>
       <hr v-show="type !== 'cloudDisk'" />
       <div class="item" @click="play">{{ $t('contextMenu.play') }}</div>
-      <div class="item" @click="addToQueue">{{
-        $t('contextMenu.addToQueue')
-      }}</div>
+      <div class="item" @click="addToQueue">
+        {{
+          $t('contextMenu.addToQueue')
+        }}
+      </div>
       <div
         v-if="extraContextMenuItem.includes('removeTrackFromQueue')"
         class="item"
         @click="removeTrackFromQueue"
-        >从队列删除</div
-      >
+      >从队列删除</div>
       <hr v-show="type !== 'cloudDisk'" />
       <div
         v-show="!isRightClickedTrackLiked && type !== 'cloudDisk'"
         class="item"
         @click="like"
-      >
-        {{ $t('contextMenu.saveToMyLikedSongs') }}
-      </div>
+      >{{ $t('contextMenu.saveToMyLikedSongs') }}</div>
       <div
         v-show="isRightClickedTrackLiked && type !== 'cloudDisk'"
         class="item"
         @click="like"
-      >
-        {{ $t('contextMenu.removeFromMyLikedSongs') }}
-      </div>
+      >{{ $t('contextMenu.removeFromMyLikedSongs') }}</div>
       <div
         v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
         class="item"
         @click="removeTrackFromPlaylist"
-        >从歌单中删除</div
-      >
+      >从歌单中删除</div>
       <div
         v-show="type !== 'cloudDisk'"
         class="item"
         @click="addTrackToPlaylist"
-        >{{ $t('contextMenu.addToPlaylist') }}</div
-      >
+      >{{ $t('contextMenu.addToPlaylist') }}</div>
       <div
         v-if="extraContextMenuItem.includes('removeTrackFromCloudDisk')"
         class="item"
         @click="removeTrackFromCloudDisk"
-        >从云盘中删除</div
-      >
+      >从云盘中删除</div>
     </ContextMenu>
 
     <div :style="listStyles">
@@ -77,6 +71,9 @@ import TrackListItem from '@/components/TrackListItem.vue'
 import ContextMenu from '@/components/ContextMenu.vue'
 import locale from '@/locale'
 import { resizeImage } from '@/utils/filters'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'TrackList',
@@ -136,7 +133,7 @@ export default {
       default: 'id'
     }
   },
-  data () {
+  data() {
     return {
       rightClickedTrack: {
         id: 0,
@@ -150,10 +147,10 @@ export default {
   },
   computed: {
     ...mapState(['liked', 'player']),
-    isRightClickedTrackLiked () {
+    isRightClickedTrackLiked() {
       return this.liked.songs.includes(this.rightClickedTrack?.id)
     },
-    rightClickedTrackComputed () {
+    rightClickedTrackComputed() {
       return this.type === 'cloudDisk'
         ? {
           id: 0,
@@ -164,7 +161,7 @@ export default {
         : this.rightClickedTrack
     }
   },
-  created () {
+  created() {
     if (this.type === 'tracklist') {
       this.listStyles = {
         display: 'grid',
@@ -176,13 +173,13 @@ export default {
   methods: {
     resizeImage,
     ...mapMutations(['updateModal']),
-    ...mapActions(['nextTrack', 'showToast', 'likeATrack']),
-    openMenu (e, track, index = -1) {
+    ...mapActions(['nextTrack', 'likeATrack']),
+    openMenu(e, track, index = -1) {
       this.rightClickedTrack = track
       this.rightClickedTrackIndex = index
       this.$refs.menu.openMenu(e)
     },
-    closeMenu () {
+    closeMenu() {
       this.rightClickedTrack = {
         id: 0,
         name: '',
@@ -191,7 +188,7 @@ export default {
       }
       this.rightClickedTrackIndex = -1
     },
-    playThisList (trackID) {
+    playThisList(trackID) {
       if (this.dbclickTrackFunc === 'default') {
         this.playThisListDefault(trackID)
       } else if (this.dbclickTrackFunc === 'none') {
@@ -211,7 +208,7 @@ export default {
         this.player.replacePlaylist(trackIDs, this.id, 'cloudDisk', trackID)
       }
     },
-    playThisListDefault (trackID) {
+    playThisListDefault(trackID) {
       if (this.type === 'playlist') {
         this.player.playPlaylistByID(this.id, trackID)
       } else if (this.type === 'album') {
@@ -221,18 +218,18 @@ export default {
         this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID)
       }
     },
-    play () {
+    play() {
       this.player.addTrackToPlayNext(this.rightClickedTrack.id, true)
     },
-    addToQueue () {
+    addToQueue() {
       this.player.addTrackToPlayNext(this.rightClickedTrack.id)
     },
-    like () {
+    like() {
       this.likeATrack(this.rightClickedTrack.id)
     },
-    addTrackToPlaylist () {
+    addTrackToPlaylist() {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'))
+        toast(locale.t('toast.needToLogin'))
         return
       }
       this.updateModal({
@@ -246,9 +243,9 @@ export default {
         value: this.rightClickedTrack.id
       })
     },
-    removeTrackFromPlaylist () {
+    removeTrackFromPlaylist() {
       if (!isAccountLoggedIn()) {
-        this.showToast(locale.t('toast.needToLogin'))
+        toast(locale.t('toast.needToLogin'))
         return
       }
       if (confirm(`确定要从歌单删除 ${this.rightClickedTrack.name}？`)) {
@@ -258,7 +255,7 @@ export default {
           pid: this.id,
           tracks: trackID
         }).then(data => {
-          this.showToast(
+          toast(
             data.body.code === 200
               ? locale.t('toast.removedFromPlaylist')
               : data.body.message
@@ -267,16 +264,16 @@ export default {
         })
       }
     },
-    removeTrackFromQueue () {
+    removeTrackFromQueue() {
       this.$store.state.player.removeTrackFromQueue(
         this.rightClickedTrackIndex
       )
     },
-    removeTrackFromCloudDisk () {
+    removeTrackFromCloudDisk() {
       if (confirm(`确定要从云盘删除 ${this.rightClickedTrack.songName}？`)) {
         const trackID = this.rightClickedTrack.songId
         cloudDiskTrackDelete(trackID).then(data => {
-          this.showToast(
+          toast(
             data.code === 200 ? '已将此歌曲从云盘删除' : data.message
           )
           const newCloudDisk = this.liked.cloudDisk.filter(
@@ -293,4 +290,5 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

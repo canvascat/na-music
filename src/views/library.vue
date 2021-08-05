@@ -1,7 +1,8 @@
 <template>
   <div v-show="show" ref="library">
     <h1>
-      <img class="avatar" :src="resizeImage(data.user.avatarUrl)"  alt="avatar"/>{{
+      <img class="avatar" :src="resizeImage(data.user.avatarUrl)" alt="avatar" />
+      {{
         data.user.nickname
       }}{{ $t('library.sLibrary') }}
     </h1>
@@ -13,18 +14,20 @@
               v-for="(line, index) in pickedLyric"
               v-show="line !== ''"
               :key="`${line}${index}`"
-              >{{ line }}<br
-            /></span>
+            >
+              {{ line }}
+              <br />
+            </span>
           </p>
         </div>
         <div class="bottom">
           <div class="titles">
             <div class="title">{{ $t('library.likedSongs') }}</div>
-            <div class="sub-title">
-              {{ liked.songs.length }} {{ $t('common.songs') }}
-            </div>
+            <div class="sub-title">{{ liked.songs.length }} {{ $t('common.songs') }}</div>
           </div>
-          <button @click.stop="playLikedSongs"><IconPlay /></button>
+          <button @click.stop="playLikedSongs">
+            <IconPlay />
+          </button>
         </div>
       </div>
       <div class="songs">
@@ -46,56 +49,42 @@
             :class="{ active: currentTab === 'playlists' }"
             @click="updateCurrentTab('playlists')"
           >
-            <span class="text">{{
-              {
-                all: $t('contextMenu.allPlaylists'),
-                mine: $t('contextMenu.minePlaylists'),
-                liked: $t('contextMenu.likedPlaylists'),
-              }[playlistFilter]
-            }}</span>
-            <span class="icon" @click.stop="openPlaylistTabMenu"
-              ><IconDropdown /></span>
+            <span class="text">{{ text }}</span>
+            <span class="icon" @click.stop="openPlaylistTabMenu">
+              <IconDropdown />
+            </span>
           </div>
           <div
             class="tab"
             :class="{ active: currentTab === 'albums' }"
             @click="updateCurrentTab('albums')"
-          >
-            {{ $t('library.albums') }}
-          </div>
+          >{{ $t('library.albums') }}</div>
           <div
             class="tab"
             :class="{ active: currentTab === 'artists' }"
             @click="updateCurrentTab('artists')"
-          >
-            {{ $t('library.artists') }}
-          </div>
+          >{{ $t('library.artists') }}</div>
           <div
             class="tab"
             :class="{ active: currentTab === 'mvs' }"
             @click="updateCurrentTab('mvs')"
-          >
-            {{ $t('library.mvs') }}
-          </div>
+          >{{ $t('library.mvs') }}</div>
           <div
             class="tab"
             :class="{ active: currentTab === 'cloudDisk' }"
             @click="updateCurrentTab('cloudDisk')"
-          >
-            云盘
-          </div>
+          >云盘</div>
         </div>
         <button
           v-show="currentTab === 'playlists'"
           class="tab-button"
           @click="openAddPlaylistModal"
-          ><IconPlus />{{ $t('library.newPlayList') }}
+        >
+          <IconPlus />
+          {{ $t('library.newPlayList') }}
         </button>
-        <button
-          v-show="currentTab === 'cloudDisk'"
-          class="tab-button"
-          @click="selectUploadFiles"
-          ><IconArrowUpAlt /> 上传歌曲
+        <button v-show="currentTab === 'cloudDisk'" class="tab-button" @click="selectUploadFiles">
+          <IconArrowUpAlt />上传歌曲
         </button>
       </div>
 
@@ -111,20 +100,11 @@
       </div>
 
       <div v-show="currentTab === 'albums'">
-        <CoverRow
-          :items="liked.albums"
-          type="album"
-          sub-text="artist"
-          :show-play-button="true"
-        />
+        <CoverRow :items="liked.albums" type="album" sub-text="artist" :show-play-button="true" />
       </div>
 
       <div v-show="currentTab === 'artists'">
-        <CoverRow
-          :items="liked.artists"
-          type="artist"
-          :show-play-button="true"
-        />
+        <CoverRow :items="liked.artists" type="artist" :show-play-button="true" />
       </div>
 
       <div v-show="currentTab === 'mvs'">
@@ -151,16 +131,22 @@
     />
 
     <ContextMenu ref="playlistTabMenu">
-      <div class="item" @click="changePlaylistFilter('all')">{{
-        $t('contextMenu.allPlaylists')
-      }}</div>
+      <div class="item" @click="changePlaylistFilter('all')">
+        {{
+          $t('contextMenu.allPlaylists')
+        }}
+      </div>
       <hr />
-      <div class="item" @click="changePlaylistFilter('mine')">{{
-        $t('contextMenu.minePlaylists')
-      }}</div>
-      <div class="item" @click="changePlaylistFilter('liked')">{{
-        $t('contextMenu.likedPlaylists')
-      }}</div>
+      <div class="item" @click="changePlaylistFilter('mine')">
+        {{
+          $t('contextMenu.minePlaylists')
+        }}
+      </div>
+      <div class="item" @click="changePlaylistFilter('liked')">
+        {{
+          $t('contextMenu.likedPlaylists')
+        }}
+      </div>
     </ContextMenu>
   </div>
 </template>
@@ -178,6 +164,9 @@ import CoverRow from '@/components/CoverRow.vue'
 import MvRow from '@/components/MvRow.vue'
 import { resizeImage } from '@/utils/filters'
 import { IconPlay, IconDropdown, IconPlus, IconArrowUpAlt } from '@/components/icons'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'Library',
@@ -191,7 +180,7 @@ export default {
     IconPlus,
     IconArrowUpAlt
   },
-  data () {
+  data() {
     return {
       show: false,
       likedSongs: [],
@@ -201,7 +190,14 @@ export default {
   },
   computed: {
     ...mapState(['data', 'liked']),
-    pickedLyric () {
+    text() {
+      const all = this.$t('contextMenu.allPlaylists')
+      const mine = this.$t('contextMenu.minePlaylists')
+      const liked = this.$t('contextMenu.likedPlaylists')
+      return map = { all, mine, linked }
+      return map[this.playlistFilter]
+    },
+    pickedLyric() {
       if (this.lyric === undefined) return ''
       let lyric = this.lyric.split('\n')
       lyric = lyric.filter(l => {
@@ -217,10 +213,10 @@ export default {
         lyric[lineIndex + 2].split(']')[1]
       ]
     },
-    playlistFilter () {
+    playlistFilter() {
       return this.data.libraryPlaylistFilter || 'all'
     },
-    filterPlaylists () {
+    filterPlaylists() {
       const playlists = this.liked.playlists
       const userId = this.data.user.userId
       if (this.playlistFilter === 'mine') {
@@ -231,22 +227,20 @@ export default {
       return playlists
     }
   },
-  created () {
+  created() {
     setTimeout(() => {
       if (!this.show) NProgress.start()
     }, 1000)
     this.loadData()
   },
-  activated () {
-    this.$parent.$refs.scrollbar.restorePosition()
+  activated() {
     this.loadData()
     dailyTask()
   },
   methods: {
     resizeImage,
-    ...mapActions(['showToast']),
     ...mapMutations(['updateModal', 'updateData']),
-    loadData () {
+    loadData() {
       if (this.liked.songsWithDetails.length > 0) {
         NProgress.done()
         this.show = true
@@ -266,25 +260,25 @@ export default {
       this.$store.dispatch('fetchLikedMVs')
       this.$store.dispatch('fetchCloudDisk')
     },
-    playLikedSongs () {
+    playLikedSongs() {
       this.$store.state.player.playPlaylistByID(
         this.liked.playlists[0].id,
         'first',
         true
       )
     },
-    updateCurrentTab (tab) {
+    updateCurrentTab(tab) {
       if (!isAccountLoggedIn() && tab !== 'playlists') {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       this.currentTab = tab
       this.$parent.$refs.main.scrollTo({ top: 375, behavior: 'smooth' })
     },
-    goToLikedSongsList () {
+    goToLikedSongsList() {
       this.$router.push({ path: '/library/liked-songs' })
     },
-    getRandomLyric () {
+    getRandomLyric() {
       if (this.liked.songs.length === 0) return
       getLyric(
         this.liked.songs[randomNum(0, this.liked.songs.length - 1)]
@@ -292,9 +286,9 @@ export default {
         if (data.lrc !== undefined) this.lyric = data.lrc.lyric
       })
     },
-    openAddPlaylistModal () {
+    openAddPlaylistModal() {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       this.updateModal({
@@ -303,17 +297,17 @@ export default {
         value: true
       })
     },
-    openPlaylistTabMenu (e) {
+    openPlaylistTabMenu(e) {
       this.$refs.playlistTabMenu.openMenu(e)
     },
-    changePlaylistFilter (type) {
+    changePlaylistFilter(type) {
       this.updateData({ key: 'libraryPlaylistFilter', value: type })
       window.scrollTo({ top: 375, behavior: 'smooth' })
     },
-    selectUploadFiles () {
+    selectUploadFiles() {
       this.$refs.cloudDiskUploadInput.click()
     },
-    uploadSongToCloudDisk (e) {
+    uploadSongToCloudDisk(e) {
       const files = e.target.files
       uploadSong(files[0]).then(result => {
         if (result.code === 200) {

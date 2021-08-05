@@ -1,9 +1,6 @@
 <template>
   <div v-show="show" class="playlist">
-    <div
-      v-if="specialPlaylistInfo === undefined && !isLikeSongsPage"
-      class="playlist-info"
-    >
+    <div v-if="specialPlaylistInfo === undefined && !isLikeSongsPage" class="playlist-info">
       <Cover
         :id="playlist.id"
         :image-url="resizeImage(playlist.coverImgUrl, 1024)"
@@ -18,8 +15,11 @@
       />
       <div class="info">
         <div class="title" @click.right="openMenu">
-          <span v-if="playlist.privacy === 10" class="lock-icon"><IconLock /></span>{{ playlist.name }}</div
-        >
+          <span v-if="playlist.privacy === 10" class="lock-icon">
+            <IconLock />
+          </span>
+          {{ playlist.name }}
+        </div>
         <div class="artist">
           Playlist by
           <span
@@ -33,26 +33,24 @@
               ].includes(playlist.id)
             "
             style="font-weight: 600"
-            >Apple Music</span
-          >
+          >Apple Music</span>
           <a
             v-else
             :href="`https://music.163.com/#/user/home?id=${playlist.creator.userId}`"
             target="blank"
-            >{{ playlist.creator.nickname }}</a
-          >
+          >{{ playlist.creator.nickname }}</a>
         </div>
         <div class="date-and-count">
           {{ $t('playlist.updatedAt') }}
           {{ formatDate(playlist.updateTime) }} · {{ playlist.trackCount }}
           {{ $t('common.songs') }}
         </div>
-        <div class="description" @click="toggleFullDescription">
-          {{ playlist.description }}
-        </div>
+        <div class="description" @click="toggleFullDescription">{{ playlist.description }}</div>
         <div class="buttons">
           <ButtonTwoTone @click="playPlaylistByID()">
-            <template #icon><IconPlay /></template>
+            <template #icon>
+              <IconPlay />
+            </template>
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone
@@ -64,13 +62,16 @@
               playlist.subscribed ? 'var(--color-secondary-bg)' : ''
             "
             @click="likePlaylist"
-          ><template #icon><IconHeartSolid v-if="playlist.subscribed" /><IconHeart v-else /></template>
+          >
+            <template #icon>
+              <IconHeartSolid v-if="playlist.subscribed" />
+              <IconHeart v-else />
+            </template>
           </ButtonTwoTone>
-          <ButtonTwoTone
-            :horizontal-padding="0"
-            color="grey"
-            @click="openMenu"
-          ><template #icon><IconMore /></template>
+          <ButtonTwoTone :horizontal-padding="0" color="grey" @click="openMenu">
+            <template #icon>
+              <IconMore />
+            </template>
           </ButtonTwoTone>
         </div>
       </div>
@@ -91,24 +92,17 @@
       </div>
     </div>
     <div v-if="specialPlaylistInfo !== undefined" class="special-playlist">
-      <div
-        class="title"
-        :class="specialPlaylistInfo.gradient"
-        @click.right="openMenu"
-      >
+      <div class="title" :class="specialPlaylistInfo.gradient" @click.right="openMenu">
         <!-- <img :src="resizeImage(playlist.coverImgUrl)" /> -->
         {{ specialPlaylistInfo.name }}
       </div>
-      <div class="subtitle"
-        >{{ playlist.englishTitle }} · {{ playlist.updateFrequency }}
-      </div>
+      <div class="subtitle">{{ playlist.englishTitle }} · {{ playlist.updateFrequency }}</div>
 
       <div class="buttons">
-        <ButtonTwoTone
-          class="play-button"
-          color="grey"
-          @click="playPlaylistByID()"
-        > <template #icon><IconPlay /></template>
+        <ButtonTwoTone class="play-button" color="grey" @click="playPlaylistByID()">
+          <template #icon>
+            <IconPlay />
+          </template>
           {{ $t('common.play') }}
         </ButtonTwoTone>
         <ButtonTwoTone
@@ -120,20 +114,24 @@
             playlist.subscribed ? 'var(--color-secondary-bg)' : ''
           "
           @click="likePlaylist"
-        ><template #icon><IconHeartSolid v-if="playlist.subscribed" /><IconHeart v-else /></template>
+        >
+          <template #icon>
+            <IconHeartSolid v-if="playlist.subscribed" />
+            <IconHeart v-else />
+          </template>
         </ButtonTwoTone>
-        <ButtonTwoTone
-          :horizontal-padding="0"
-          color="grey"
-          @click="openMenu"
-        ><template #icon><IconMore /></template>
+        <ButtonTwoTone :horizontal-padding="0" color="grey" @click="openMenu">
+          <template #icon>
+            <IconMore />
+          </template>
         </ButtonTwoTone>
       </div>
     </div>
 
     <div v-if="isLikeSongsPage" class="user-info">
       <h1>
-        <img class="avatar" :src="resizeImage(data.user.avatarUrl)"  alt="avatar"/>{{
+        <img class="avatar" :src="resizeImage(data.user.avatarUrl)" alt="avatar" />
+        {{
           data.user.nickname
         }}{{ $t('library.sLikedSongs') }}
       </h1>
@@ -170,8 +168,7 @@
         color="grey"
         :loading="loadingMore"
         @click="loadMore(100)"
-        >{{ $t('explore.loadMore') }}</ButtonTwoTone
-      >
+      >{{ $t('explore.loadMore') }}</ButtonTwoTone>
     </div>
 
     <Modal
@@ -180,31 +177,32 @@
       :show-footer="false"
       :click-outside-hide="true"
       title="歌单介绍"
-      >{{ playlist.description }}</Modal
-    >
+    >{{ playlist.description }}</Modal>
 
     <ContextMenu ref="playlistMenu">
       <!-- <div class="item">{{ $t('contextMenu.addToQueue') }}</div> -->
-      <div class="item" @click="likePlaylist(true)">{{
-        playlist.subscribed
-          ? $t('contextMenu.removeFromLibrary')
-          : $t('contextMenu.saveToLibrary')
-      }}</div>
-      <div class="item" @click="searchInPlaylist()">{{
-        $t('contextMenu.searchInPlaylist')
-      }}</div>
+      <div class="item" @click="likePlaylist(true)">
+        {{
+          playlist.subscribed
+            ? $t('contextMenu.removeFromLibrary')
+            : $t('contextMenu.saveToLibrary')
+        }}
+      </div>
+      <div class="item" @click="searchInPlaylist()">
+        {{
+          $t('contextMenu.searchInPlaylist')
+        }}
+      </div>
       <div
         v-if="playlist.creator.userId === data.user.userId"
         class="item"
         @click="editPlaylist"
-        >编辑歌单信息</div
-      >
+      >编辑歌单信息</div>
       <div
         v-if="playlist.creator.userId === data.user.userId"
         class="item"
         @click="deletePlaylist"
-        >删除歌单</div
-      >
+      >删除歌单</div>
     </ContextMenu>
   </div>
 </template>
@@ -228,93 +226,10 @@ import Cover from '@/components/Cover.vue'
 import Modal from '@/components/Modal.vue'
 import { IconLock, IconSearch, IconHeart, IconHeartSolid, IconMore, IconPlay } from '@/components/icons'
 import { resizeImage, formatDate } from '@/utils/filters'
+import { useToast } from '@/hook'
+import { specialPlaylist } from '@/const';
 
-const specialPlaylist = {
-  2829816518: {
-    name: '欧美私人订制',
-    gradient: 'gradient-pink-purple-blue'
-  },
-  2890490211: {
-    name: '助眠鸟鸣声',
-    gradient: 'gradient-green'
-  },
-  5089855855: {
-    name: '夜的胡思乱想',
-    gradient: 'gradient-moonstone-blue'
-  },
-  2888212971: {
-    name: '全球百大DJ',
-    gradient: 'gradient-orange-red'
-  },
-  2829733864: {
-    name: '睡眠伴侣',
-    gradient: 'gradient-midnight-blue'
-  },
-  2829844572: {
-    name: '洗澡时听的歌',
-    gradient: 'gradient-yellow'
-  },
-  2920647537: {
-    name: '还是会想你',
-    gradient: 'gradient-dark-blue-midnight-blue'
-  },
-  2890501416: {
-    name: '助眠白噪声',
-    gradient: 'gradient-sky-blue'
-  },
-  5217150082: {
-    name: '摇滚唱片行',
-    gradient: 'gradient-yellow-red'
-  },
-  2829961453: {
-    name: '古风音乐大赏',
-    gradient: 'gradient-fog'
-  },
-  4923261701: {
-    name: 'Trance',
-    gradient: 'gradient-light-red-light-blue '
-  },
-  5212729721: {
-    name: '欧美点唱机',
-    gradient: 'gradient-indigo-pink-yellow'
-  },
-  3103434282: {
-    name: '甜蜜少女心',
-    gradient: 'gradient-pink'
-  },
-  2829896389: {
-    name: '日系私人订制',
-    gradient: 'gradient-yellow-pink'
-  },
-  2829779628: {
-    name: '运动随身听',
-    gradient: 'gradient-orange-red'
-  },
-  2860654884: {
-    name: '独立女声精选',
-    gradient: 'gradient-sharp-blue'
-  },
-  898150: {
-    name: '浪漫婚礼专用',
-    gradient: 'gradient-pink'
-  },
-  2638104052: {
-    name: '牛奶泡泡浴',
-    gradient: 'gradient-fog'
-  },
-  5317236517: {
-    name: '后朋克精选',
-    gradient: 'gradient-pink-purple-blue'
-  },
-  2821115454: {
-    name: '一周原创发现',
-    gradient: 'gradient-blue-purple'
-  },
-  3136952023: {
-    name: '私人雷达',
-    gradient: 'gradient-radar'
-  }
-}
+const [toast] = useToast()
 
 export default defineComponent({
   name: 'Playlist',
@@ -333,12 +248,12 @@ export default defineComponent({
   },
   directives: {
     focus: {
-      mounted (el) {
+      mounted(el) {
         el.focus()
       }
     }
   },
-  data () {
+  data() {
     return {
       show: false,
       playlist: {
@@ -364,19 +279,19 @@ export default defineComponent({
   },
   computed: {
     ...mapState(['player', 'data']),
-    isLikeSongsPage () {
+    isLikeSongsPage() {
       return this.$route.name === 'likedSongs'
     },
-    specialPlaylistInfo () {
+    specialPlaylistInfo() {
       return specialPlaylist[this.playlist.id]
     },
-    isUserOwnPlaylist () {
+    isUserOwnPlaylist() {
       return (
         this.playlist.creator.userId === this.data.user.userId &&
         this.playlist.id !== this.data.likedSongPlaylistID
       )
     },
-    filteredTracks () {
+    filteredTracks() {
       return this.tracks.filter(
         track =>
           (track.name &&
@@ -397,7 +312,7 @@ export default defineComponent({
       )
     }
   },
-  created () {
+  created() {
     if (this.$route.name === 'likedSongs') {
       this.loadData(this.data.likedSongPlaylistID)
     } else {
@@ -411,8 +326,7 @@ export default defineComponent({
     resizeImage,
     formatDate,
     ...mapMutations(['appendTrackToPlayerList']),
-    ...mapActions(['showToast']),
-    playPlaylistByID (trackID = 'first') {
+    playPlaylistByID(trackID = 'first') {
       const trackIDs = this.playlist.trackIds.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
@@ -421,9 +335,9 @@ export default defineComponent({
         trackID
       )
     },
-    likePlaylist (toast = false) {
+    likePlaylist(showToast = false) {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       subscribePlaylist({
@@ -432,8 +346,8 @@ export default defineComponent({
       }).then(data => {
         if (data.code === 200) {
           this.playlist.subscribed = !this.playlist.subscribed
-          if (toast === true) {
-            this.showToast(
+          if (showToast === true) {
+            toast(
               this.playlist.subscribed ? '已保存到音乐库' : '已从音乐库删除'
             )
           }
@@ -443,7 +357,7 @@ export default defineComponent({
         })
       })
     },
-    loadData (id, next = undefined) {
+    loadData(id, next = undefined) {
       this.id = id
       getPlaylistDetail(this.id, true)
         .then(data => {
@@ -462,7 +376,7 @@ export default defineComponent({
           }
         })
     },
-    loadMore (loadNum = 100) {
+    loadMore(loadNum = 100) {
       let trackIDs = this.playlist.trackIds.filter((t, index) => {
         if (
           index > this.lastLoadedTrackIndex &&
@@ -479,12 +393,12 @@ export default defineComponent({
         this.hasMore = this.lastLoadedTrackIndex + 1 !== this.playlist.trackIds.length
       })
     },
-    openMenu (e) {
+    openMenu(e) {
       this.$refs.playlistMenu.openMenu(e)
     },
-    deletePlaylist () {
+    deletePlaylist() {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       const confirmation = confirm(`确定要删除歌单 ${this.playlist.name}？`)
@@ -499,10 +413,10 @@ export default defineComponent({
         })
       }
     },
-    editPlaylist () {
+    editPlaylist() {
       alert('此功能开发中')
     },
-    searchInPlaylist () {
+    searchInPlaylist() {
       this.displaySearchInPlaylist =
         !this.displaySearchInPlaylist || this.isLikeSongsPage
       if (this.displaySearchInPlaylist === false) {
@@ -513,20 +427,20 @@ export default defineComponent({
         this.loadMore(500)
       }
     },
-    removeTrack (trackID) {
+    removeTrack(trackID) {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       this.tracks = this.tracks.filter(t => t.id !== trackID)
     },
-    inputDebounce () {
+    inputDebounce() {
       if (this.debounceTimeout) clearTimeout(this.debounceTimeout)
       this.debounceTimeout = setTimeout(() => {
         this.searchKeyWords = this.inputSearchKeyWords
       }, 600)
     },
-    toggleFullDescription () {
+    toggleFullDescription() {
       this.showFullDescription = !this.showFullDescription
       if (this.showFullDescription) {
         this.$store.commit('enableScrolling', false)
@@ -676,7 +590,7 @@ export default defineComponent({
   background-image: linear-gradient(to left, #92fe9d 0%, #00c9ff 100%);
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   .gradient-radar {
     background-image: linear-gradient(to left, #92fe9d 0%, #00c9ff 100%);
   }
@@ -854,7 +768,7 @@ export default defineComponent({
   }
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   .search-box {
     .active {
       input,
@@ -916,7 +830,7 @@ export default defineComponent({
   }
 }
 
-[data-theme='dark'] {
+[data-theme="dark"] {
   .search-box-likepage {
     .active {
       input,

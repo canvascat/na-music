@@ -1,12 +1,7 @@
 <template>
   <div id="app" :class="{ 'user-select-none': userSelectNone }">
-    <Scrollbar v-show="!showLyrics" ref="scrollbar" />
-    <Navbar v-show="showNavbar" ref="navbar" />
-    <main
-      ref="main"
-      :style="{ overflow: enableScrolling ? 'auto' : 'hidden' }"
-      @scroll="handleScroll"
-    >
+    <Navbar v-if="showNavbar" />
+    <main ref="main" :style="{ overflow: enableScrolling ? 'auto' : 'hidden' }">
       <router-view v-if="keepAlive" v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
@@ -30,7 +25,6 @@
 import { defineComponent } from 'vue'
 import ModalAddTrackToPlaylist from './components/ModalAddTrackToPlaylist.vue'
 import ModalNewPlaylist from './components/ModalNewPlaylist.vue'
-import Scrollbar from './components/Scrollbar.vue'
 import Navbar from './components/Navbar.vue'
 import Player from './components/Player.vue'
 import Toast from './components/Toast.vue'
@@ -46,20 +40,19 @@ export default defineComponent({
     Toast,
     ModalAddTrackToPlaylist,
     ModalNewPlaylist,
-    Lyrics,
-    Scrollbar
+    Lyrics
   },
-  data () {
+  data() {
     return {
       userSelectNone: false
     }
   },
   computed: {
     ...mapState(['showLyrics', 'settings', 'player', 'enableScrolling']),
-    isAccountLoggedIn () {
+    isAccountLoggedIn() {
       return isAccountLoggedIn()
     },
-    showPlayer () {
+    showPlayer() {
       return (
         [
           'mv',
@@ -70,22 +63,22 @@ export default defineComponent({
         ].includes(this.$route.name) === false
       )
     },
-    enablePlayer () {
+    enablePlayer() {
       return this.player.enabled && this.$route.name !== 'lastfmCallback'
     },
-    showNavbar () {
+    showNavbar() {
       return this.$route.name !== 'lastfmCallback'
     },
-    keepAlive () {
+    keepAlive() {
       return this.$route.meta.keepAlive as boolean
     }
   },
-  created () {
+  created() {
     window.addEventListener('keydown', this.handleKeydown)
     this.fetchData()
   },
   methods: {
-    handleKeydown (e) {
+    handleKeydown(e) {
       if (e.code === 'Space') {
         if (e.target.tagName === 'INPUT') return false
         if (this.$route.name === 'mv') return false
@@ -93,7 +86,7 @@ export default defineComponent({
         this.player.playOrPause()
       }
     },
-    fetchData () {
+    fetchData() {
       if (!isLooseLoggedIn()) return
       this.$store.dispatch('fetchLikedSongs')
       this.$store.dispatch('fetchLikedSongsWithDetails')
@@ -104,9 +97,6 @@ export default defineComponent({
         this.$store.dispatch('fetchLikedMVs')
         this.$store.dispatch('fetchCloudDisk')
       }
-    },
-    handleScroll () {
-      this.$refs.scrollbar.handleScroll()
     }
   }
 })
@@ -133,10 +123,6 @@ main {
   main {
     padding: 64px 5vw 96px 5vw;
   }
-}
-
-main::-webkit-scrollbar {
-  width: 0;
 }
 
 .slide-up-enter-active,

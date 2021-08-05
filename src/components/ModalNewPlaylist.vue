@@ -1,24 +1,9 @@
 <template>
-  <Modal
-    class="add-playlist-modal"
-    :show="show"
-    :close="close"
-    title="新建歌单"
-    width="25vw"
-  >
+  <Modal class="add-playlist-modal" :show="show" :close="close" title="新建歌单" width="25vw">
     <template v-slot:default>
-      <input
-        v-model="title"
-        type="text"
-        placeholder="歌单标题"
-        maxlength="40"
-      />
+      <input v-model="title" type="text" placeholder="歌单标题" maxlength="40" />
       <div class="checkbox">
-        <input
-          id="checkbox-private"
-          v-model="privatePlaylist"
-          type="checkbox"
-        />
+        <input id="checkbox-private" v-model="privatePlaylist" type="checkbox" />
         <label for="checkbox-private">设置为隐私歌单</label>
       </div>
     </template>
@@ -32,13 +17,16 @@
 import Modal from '@/components/Modal.vue'
 import { mapMutations, mapState, mapActions } from 'vuex'
 import { createPlaylist, addOrRemoveTrackFromPlaylist } from '@/api/playlist'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'ModalNewPlaylist',
   components: {
     Modal
   },
-  data () {
+  data() {
     return {
       title: '',
       privatePlaylist: false
@@ -47,10 +35,10 @@ export default {
   computed: {
     ...mapState(['modals']),
     show: {
-      get () {
+      get() {
         return this.modals.newPlaylistModal.show
       },
-      set (value) {
+      set(value) {
         this.updateModal({
           modalName: 'newPlaylistModal',
           key: 'show',
@@ -66,14 +54,14 @@ export default {
   },
   methods: {
     ...mapMutations(['updateModal', 'updateData']),
-    ...mapActions(['showToast', 'fetchLikedPlaylist']),
-    close () {
+    ...mapActions(['fetchLikedPlaylist']),
+    close() {
       this.show = false
       this.title = ''
       this.privatePlaylist = false
       this.resetAfterCreateAddTrackID()
     },
-    createPlaylist () {
+    createPlaylist() {
       const params = { name: this.title }
       if (this.private) params.type = 10
       createPlaylist(params).then(data => {
@@ -85,21 +73,21 @@ export default {
               tracks: this.modals.newPlaylistModal.afterCreateAddTrackID
             }).then(data => {
               if (data.body.code === 200) {
-                this.showToast(this.$t('toast.savedToPlaylist'))
+                toast(this.$t('toast.savedToPlaylist'))
               } else {
-                this.showToast(data.body.message)
+                toast(data.body.message)
               }
               this.resetAfterCreateAddTrackID()
             })
           }
           this.close()
-          this.showToast('成功创建歌单')
+          toast('成功创建歌单')
           this.updateData({ key: 'libraryPlaylistFilter', value: 'mine' })
           this.fetchLikedPlaylist()
         }
       })
     },
-    resetAfterCreateAddTrackID () {
+    resetAfterCreateAddTrackID() {
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'AfterCreateAddTrackID',
@@ -118,7 +106,7 @@ export default {
     input {
       margin-bottom: 12px;
     }
-    input[type='text'] {
+    input[type="text"] {
       width: calc(100% - 24px);
       flex: 1;
       background: var(--color-secondary-bg-for-transparent);
@@ -133,12 +121,12 @@ export default {
         background: var(--color-primary-bg-for-transparent);
         opacity: 1;
       }
-      [data-theme='light'] &:focus {
+      [data-theme="light"] &:focus {
         color: var(--color-primary);
       }
     }
     .checkbox {
-      input[type='checkbox' i] {
+      input[type="checkbox" i] {
         margin: 3px 3px 3px 4px;
       }
       display: flex;

@@ -1,31 +1,34 @@
 <template>
   <div class="fm" :style="{ background }" data-theme="dark" v-if="track">
-    <img :src="nextTrackCover" v-show="false" alt="cover"/>
-    <img alt="cover"
-      class="cover"
-      :src="resizeImage(track?.album.picUrl, 512)"
-      @click="goToAlbum"
-    />
+    <img :src="nextTrackCover" v-show="false" alt="cover" />
+    <img alt="cover" class="cover" :src="resizeImage(track?.album.picUrl, 512)" @click="goToAlbum" />
     <div class="right-part">
       <div class="info">
         <div class="title">{{ track?.name }}</div>
-        <div class="artist"><ArtistsInLine :artists="artists" /></div>
+        <div class="artist">
+          <ArtistsInLine :artists="artists" />
+        </div>
       </div>
       <div class="controls">
         <div class="buttons">
-          <button-icon title="不喜欢" @click="moveToFMTrash"
-            ><IconThumbsDown id="thumbs-down" /></button-icon>
+          <button class="button-icon" title="不喜欢" @click="moveToFMTrash">
+            <IconThumbsDown id="thumbs-down" />
+          </button>
           <button-icon
             :title="$t(isPlaying ? 'player.pause' : 'player.play')"
             class="play"
             @click="play"
           >
-            <IconPause v-if="isPlaying" /><IconPlay v-else />
+            <IconPause v-if="isPlaying" />
+            <IconPlay v-else />
           </button-icon>
-          <button-icon :title="$t('player.next')" @click="next"
-            ><IconNext /></button-icon
-        ></div>
-        <div class="card-name"><IconFm />私人FM</div>
+          <button-icon :title="$t('player.next')" @click="next">
+            <IconNext />
+          </button-icon>
+        </div>
+        <div class="card-name">
+          <IconFm />私人FM
+        </div>
       </div>
     </div>
   </div>
@@ -38,23 +41,23 @@ import { IconThumbsDown, IconPlay, IconPause, IconNext, IconFm } from '@/compone
 import Vibrant from 'node-vibrant'
 import Color from 'color'
 import { resizeImage } from '@/utils/filters'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, defineComponent } from 'vue'
 import store from '@/store'
 import { useRouter } from 'vue-router'
 
-async function createCoverColor (cover: string) {
+async function createCoverColor(cover: string) {
   const palette = await new Vibrant(cover, { colorCount: 1 }).getPalette()
   const rgb = palette.Vibrant.rgb
   const color = Color.rgb(rgb).darken(0.1).rgb().string()
   const color2 = Color.rgb(rgb).lighten(0.28).rotate(-30).rgb().string()
   return `linear-gradient(to top left, ${color}, ${color2})`
 }
-function normlizeURL (url?: string) {
+function normlizeURL(url?: string) {
   if (!url) return ''
   return url.replace('http://', 'https://') + '?param=512y512'
 }
 
-export default {
+export default defineComponent({
   name: 'FMCard',
   components: {
     ButtonIcon,
@@ -65,31 +68,33 @@ export default {
     IconNext,
     IconFm
   },
-  setup () {
+  setup() {
     const background = ref('')
-    updateBackground()
     const player = store.state.player
-    async function updateBackground () {
+    async function updateBackground() {
       console.log(player.personalFMTrack, '----')
       background.value = await createCoverColor(normlizeURL(player.personalFMTrack?.album?.picUrl))
     }
+    onMounted(() => {
+      updateBackground()
+    })
     const track = computed(() => player.personalFMTrack)
     const isPlaying = computed(() => player.playing && player.isPersonalFM)
     const artists = computed(() => track.value?.artists || [])
     const nextTrackCover = computed(() => normlizeURL(player.personalFMNextTrack?.album?.picUrl))
-    function play () {
+    function play() {
       player.playPersonalFM()
     }
-    function next () {
+    function next() {
       player.playNextTrack(true)
       updateBackground()
     }
     const router = useRouter()
-    function goToAlbum () {
+    function goToAlbum() {
       if (!this.track?.album.id) return
       router.push({ path: '/album/' + this.track.album.id })
     }
-    function moveToFMTrash () {
+    function moveToFMTrash() {
       player.moveToFMTrash()
       updateBackground()
     }
@@ -106,7 +111,7 @@ export default {
       resizeImage
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

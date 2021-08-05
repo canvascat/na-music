@@ -14,38 +14,42 @@
         @click.right="openMenu"
       />
       <div class="info">
-        <div class="title" @click.right="openMenu"> {{ title }}</div>
-        <div v-if="subtitle !== ''" class="subtitle" @click.right="openMenu">{{
-          subtitle
-        }}</div>
+        <div class="title" @click.right="openMenu">{{ title }}</div>
+        <div v-if="subtitle !== ''" class="subtitle" @click.right="openMenu">
+          {{
+            subtitle
+          }}
+        </div>
         <div class="artist">
           <span v-if="album.artist.id !== 104700">
-            <span>{{ formatAlbumType(album.type, album) }} by </span
-            ><router-link :to="`/artist/${album.artist.id}`">{{
-              album.artist.name
-            }}</router-link></span
-          >
+            <span>{{ formatAlbumType(album.type, album) }} by</span>
+            <router-link :to="`/artist/${album.artist.id}`">
+              {{
+                album.artist.name
+              }}
+            </router-link>
+          </span>
           <span v-else>Compilation by Various Artists</span>
         </div>
         <div class="date-and-count">
-          <span v-if="album.mark === 1056768" class="explicit-symbol"
-            ><ExplicitSymbol
-          /></span>
-          <span :title="formatDate(album.publishTime)">{{
-            new Date(album.publishTime).getFullYear()
-          }}</span>
-          <span> · {{ album.size }} {{ $t('common.songs') }}</span
-          >,
+          <span v-if="album.mark === 1056768" class="explicit-symbol">
+            <ExplicitSymbol />
+          </span>
+          <span :title="formatDate(album.publishTime)">
+            {{
+              new Date(album.publishTime).getFullYear()
+            }}
+          </span>
+          <span>· {{ album.size }} {{ $t('common.songs') }}</span>
+          ,
           {{ formatTime(albumTime, 'Human') }}
         </div>
-        <div class="description" @click="toggleFullDescription">
-          {{ album.description }}
-        </div>
+        <div class="description" @click="toggleFullDescription">{{ album.description }}</div>
         <div class="buttons" style="margin-top: 32px">
-          <ButtonTwoTone
-            @click="playAlbumByID(album.id)"
-          >
-            <template #icon><IconPlay /></template>
+          <ButtonTwoTone @click="playAlbumByID(album.id)">
+            <template #icon>
+              <IconPlay />
+            </template>
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone
@@ -56,44 +60,34 @@
             @click="likeAlbum"
           >
             <template #icon>
-              <IconHeartSolid v-if="dynamicDetail.isSub" /><IconHeart v-else />
+              <IconHeartSolid v-if="dynamicDetail.isSub" />
+              <IconHeart v-else />
             </template>
           </ButtonTwoTone>
           <ButtonTwoTone :horizontal-padding="0" color="grey" @click="openMenu">
-            <template #icon><IconMore /></template>
+            <template #icon>
+              <IconMore />
+            </template>
           </ButtonTwoTone>
         </div>
       </div>
     </div>
-    <TrackList
-      :id="album.id"
-      :tracks="tracks"
-      :type="'album'"
-      :album-object="album"
-    />
+    <TrackList :id="album.id" :tracks="tracks" :type="'album'" :album-object="album" />
     <div class="extra-info">
       <div class="album-time"></div>
       <div class="release-date">
         {{ $t('album.released') }}
         {{ formatDate(album.publishTime, 'MMMM D, YYYY') }}
       </div>
-      <div v-if="album.company !== null" class="copyright">
-        © {{ album.company }}
-      </div>
+      <div v-if="album.company !== null" class="copyright">© {{ album.company }}</div>
     </div>
     <div v-if="filteredMoreAlbums.length !== 0" class="more-by">
       <div class="section-title">
         More by
-        <router-link :to="`/artist/${album.artist.id}`"
-          >{{ album.artist.name }}
-        </router-link>
+        <router-link :to="`/artist/${album.artist.id}`">{{ album.artist.name }}</router-link>
       </div>
       <div>
-        <CoverRow
-          type="album"
-          :items="filteredMoreAlbums"
-          sub-text="albumType+releaseYear"
-        />
+        <CoverRow type="album" :items="filteredMoreAlbums" sub-text="albumType+releaseYear" />
       </div>
     </div>
     <Modal
@@ -103,21 +97,23 @@
       :click-outside-hide="true"
       :title="$t('album.albumDesc')"
     >
-      <p class="description-fulltext">
-        {{ album.description }}
-      </p>
+      <p class="description-fulltext">{{ album.description }}</p>
     </Modal>
     <ContextMenu ref="albumMenu">
       <!-- <div class="item">{{ $t('contextMenu.addToQueue') }}</div> -->
-      <div class="item" @click="likeAlbum(true)">{{
-        dynamicDetail.isSub
-          ? $t('contextMenu.removeFromLibrary')
-          : $t('contextMenu.saveToLibrary')
-      }}</div>
+      <div class="item" @click="likeAlbum(true)">
+        {{
+          dynamicDetail.isSub
+            ? $t('contextMenu.removeFromLibrary')
+            : $t('contextMenu.saveToLibrary')
+        }}
+      </div>
       <div class="item">{{ $t('contextMenu.addToPlaylist') }}</div>
-      <div class="item" @click="copyUrl(album.id)">{{
-        $t('contextMenu.copyUrl')
-      }}</div>
+      <div class="item" @click="copyUrl(album.id)">
+        {{
+          $t('contextMenu.copyUrl')
+        }}
+      </div>
     </ContextMenu>
   </div>
 </template>
@@ -145,6 +141,9 @@ import {
   IconHeart,
   IconMore
 } from '@/components/icons'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'Album',
@@ -161,12 +160,12 @@ export default {
     IconHeart,
     IconMore
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     this.show = false
     this.loadData(to.params.id)
     next()
   },
-  data () {
+  data() {
     return {
       show: false,
       album: {
@@ -186,12 +185,12 @@ export default {
   },
   computed: {
     ...mapState(['player', 'data']),
-    albumTime () {
+    albumTime() {
       let time = 0
       this.tracks.map(t => (time = time + t.dt))
       return time
     },
-    filteredMoreAlbums () {
+    filteredMoreAlbums() {
       const moreAlbums = this.moreAlbums.filter(a => a.id !== this.album.id)
       const realAlbums = moreAlbums.filter(a => a.type === '专辑')
       const eps = moreAlbums.filter(
@@ -209,7 +208,7 @@ export default {
       }
     }
   },
-  created () {
+  created() {
     this.loadData(this.$route.params.id)
   },
   methods: {
@@ -217,13 +216,12 @@ export default {
     formatDate,
     formatTime,
     formatAlbumType,
-    ...mapActions(['showToast']),
-    playAlbumByID (id, trackID = 'first') {
+    playAlbumByID(id, trackID = 'first') {
       this.$store.state.player.playAlbumByID(id, trackID)
     },
-    likeAlbum (toast = false) {
+    likeAlbum(toast = false) {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       likeAAlbum({
@@ -234,17 +232,17 @@ export default {
           if (data.code === 200) {
             this.dynamicDetail.isSub = !this.dynamicDetail.isSub
             if (toast === true) {
-              this.showToast(
+              toast(
                 this.dynamicDetail.isSub ? '已保存到音乐库' : '已从音乐库删除'
               )
             }
           }
         })
         .catch(error => {
-          this.showToast(`${error.response.data.message || error}`)
+          toast(`${error.response.data.message || error}`)
         })
     },
-    formatTitle () {
+    formatTitle() {
       const splitTitle = splitSoundtrackAlbumTitle(this.album.name)
       const splitTitle2 = splitAlbumTitle(splitTitle.title)
       this.title = splitTitle2.title
@@ -257,7 +255,7 @@ export default {
             : splitTitle.subtitle
       }
     },
-    loadData (id) {
+    loadData(id) {
       setTimeout(() => {
         if (!this.show) NProgress.start()
       }, 1000)
@@ -283,7 +281,7 @@ export default {
         this.dynamicDetail = data
       })
     },
-    toggleFullDescription () {
+    toggleFullDescription() {
       this.showFullDescription = !this.showFullDescription
       if (this.showFullDescription) {
         this.$store.commit('enableScrolling', false)
@@ -291,17 +289,16 @@ export default {
         this.$store.commit('enableScrolling', true)
       }
     },
-    openMenu (e) {
+    openMenu(e) {
       this.$refs.albumMenu.openMenu(e)
     },
-    copyUrl (id) {
-      const showToast = this.showToast
+    copyUrl(id) {
       this.$copyText('https://music.163.com/#/album?id=' + id)
         .then(() => {
-          showToast(this.$t('toast.copied'))
+          toast(this.$t('toast.copied'))
         })
         .catch(error => {
-          showToast(`${this.$t('toast.copyFailed')}${error}`)
+          toast(`${this.$t('toast.copyFailed')}${error}`)
         })
     }
   }

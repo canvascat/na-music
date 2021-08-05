@@ -2,42 +2,36 @@
   <div v-show="show" class="artist-page">
     <div class="artist-info">
       <div class="head">
-        <img :src="resizeImage(artist.img1v1Url, 1024)" alt="cover"/>
+        <img :src="resizeImage(artist.img1v1Url, 1024)" alt="cover" />
       </div>
       <div>
         <div class="name">{{ artist.name }}</div>
         <div class="artist">{{ $t('artist.artist') }}</div>
         <div class="statistics">
-          <a @click="scrollTo('popularTracks')"
-            >{{ artist.musicSize }} {{ $t('common.songs') }}</a
-          >
+          <a @click="scrollTo('popularTracks')">{{ artist.musicSize }} {{ $t('common.songs') }}</a>
           ·
-          <a @click="scrollTo('seeMore', 'start')"
-            >{{ artist.albumSize }} {{ $t('artist.withAlbums') }}</a
-          >
+          <a
+            @click="scrollTo('seeMore', 'start')"
+          >{{ artist.albumSize }} {{ $t('artist.withAlbums') }}</a>
           ·
-          <a @click="scrollTo('mvs')"
-            >{{ artist.mvSize }} {{ $t('artist.videos') }}</a
-          >
+          <a @click="scrollTo('mvs')">{{ artist.mvSize }} {{ $t('artist.videos') }}</a>
         </div>
-        <div class="description" @click="toggleFullDescription">
-          {{ artist.briefDesc }}
-        </div>
+        <div class="description" @click="toggleFullDescription">{{ artist.briefDesc }}</div>
         <div class="buttons">
           <ButtonTwoTone @click="playPopularSongs()">
-            <template #icon><IconPlay /></template>
+            <template #icon>
+              <IconPlay />
+            </template>
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone color="grey" @click="followArtist">
             <span v-if="artist.followed">{{ $t('artist.following') }}</span>
             <span v-else>{{ $t('artist.follow') }}</span>
           </ButtonTwoTone>
-          <ButtonTwoTone
-            :horizontal-padding="0"
-            color="grey"
-            @click="openMenu"
-          >
-            <template #icon><IconMore /></template>
+          <ButtonTwoTone :horizontal-padding="0" color="grey" @click="openMenu">
+            <template #icon>
+              <IconMore />
+            </template>
           </ButtonTwoTone>
         </div>
       </div>
@@ -55,13 +49,13 @@
           />
           <div class="info">
             <div class="name">
-              <router-link :to="`/album/${latestRelease.id}`">{{
-                latestRelease.name
-              }}</router-link>
+              <router-link :to="`/album/${latestRelease.id}`">
+                {{
+                  latestRelease.name
+                }}
+              </router-link>
             </div>
-            <div class="date">
-              {{ formatDate(latestRelease.publishTime) }}
-            </div>
+            <div class="date">{{ formatDate(latestRelease.publishTime) }}</div>
             <div class="type">
               {{ formatAlbumType(latestRelease.type, latestRelease) }} ·
               {{ latestRelease.size }} {{ $t('common.songs') }}
@@ -75,7 +69,7 @@
             @mouseleave="mvHover = false"
             @click="goToMv(latestMV.id)"
           >
-            <img :src="latestMV.coverUrl"  alt="mv"/>
+            <img :src="latestMV.coverUrl" alt="mv" />
             <transition name="fade">
               <div
                 v-show="mvHover"
@@ -88,13 +82,13 @@
           </div>
           <div class="info">
             <div class="name">
-              <router-link :to="'/mv/' + latestMV.id">{{
-                latestMV.name
-              }}</router-link>
+              <router-link :to="'/mv/' + latestMV.id">
+                {{
+                  latestMV.name
+                }}
+              </router-link>
             </div>
-            <div class="date">
-              {{ formatDate(latestMV.publishTime) }}
-            </div>
+            <div class="date">{{ formatDate(latestMV.publishTime) }}</div>
             <div class="type">{{ $t('artist.latestMV') }}</div>
           </div>
         </div>
@@ -103,10 +97,7 @@
     </div>
     <div id="popularTracks" class="popular-tracks">
       <div class="section-title">{{ $t('artist.popularSongs') }}</div>
-      <TrackList
-        :tracks="popularTracks.slice(0, showMorePopTracks ? 24 : 12)"
-        :type="'tracklist'"
-      />
+      <TrackList :tracks="popularTracks.slice(0, showMorePopTracks ? 24 : 12)" :type="'tracklist'" />
 
       <div id="seeMore" class="show-more">
         <button @click="showMorePopTracks = !showMorePopTracks">
@@ -117,19 +108,16 @@
     </div>
     <div v-if="albums.length !== 0" id="albums" class="albums">
       <div class="section-title">{{ $t('artist.albums') }}</div>
-      <CoverRow
-        :type="'album'"
-        :items="albums"
-        :sub-text="'releaseYear'"
-        :show-play-button="true"
-      />
+      <CoverRow :type="'album'" :items="albums" :sub-text="'releaseYear'" :show-play-button="true" />
     </div>
     <div v-if="mvs.length !== 0" id="mvs" class="mvs">
-      <div class="section-title"
-        >MVs
-        <router-link v-show="hasMoreMV" :to="`/artist/${this.artist.id}/mv`">{{
-          $t('home.seeMore')
-        }}</router-link>
+      <div class="section-title">
+        MVs
+        <router-link v-show="hasMoreMV" :to="`/artist/${this.artist.id}/mv`">
+          {{
+            $t('home.seeMore')
+          }}
+        </router-link>
       </div>
       <MvRow :mvs="mvs" subtitle="publishTime" />
     </div>
@@ -160,15 +148,15 @@
       :click-outside-hide="true"
       :title="$t('artist.artistDesc')"
     >
-      <p class="description-fulltext">
-        {{ artist.briefDesc }}
-      </p>
+      <p class="description-fulltext">{{ artist.briefDesc }}</p>
     </Modal>
 
     <ContextMenu ref="artistMenu">
-      <div class="item" @click="copyUrl(artist.id)">{{
-        $t('contextMenu.copyUrl')
-      }}</div>
+      <div class="item" @click="copyUrl(artist.id)">
+        {{
+          $t('contextMenu.copyUrl')
+        }}
+      </div>
     </ContextMenu>
   </div>
 </template>
@@ -194,6 +182,9 @@ import Cover from '@/components/Cover.vue'
 import MvRow from '@/components/MvRow.vue'
 import Modal from '@/components/Modal.vue'
 import { IconPlay, IconMore } from '@/components/icons'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'Artist',
@@ -208,12 +199,12 @@ export default {
     IconPlay,
     IconMore
   },
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     this.artist.img1v1Url =
       'https://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg'
     this.loadData(to.params.id, next)
   },
-  data () {
+  data() {
     return {
       show: false,
       artist: {
@@ -240,15 +231,15 @@ export default {
   },
   computed: {
     ...mapState(['player']),
-    albums () {
+    albums() {
       return this.albumsData.filter(a => a.type === '专辑')
     },
-    eps () {
+    eps() {
       return this.albumsData.filter(a =>
         ['EP/Single', 'EP', 'Single'].includes(a.type)
       )
     },
-    latestMV () {
+    latestMV() {
       const mv = this.mvs[0] || {}
       return {
         id: mv.id || mv.vid,
@@ -258,19 +249,16 @@ export default {
       }
     }
   },
-  activated () {
+  activated() {
     if (this.artist?.id?.toString() !== this.$route.params.id) {
       this.loadData(this.$route.params.id)
-    } else {
-      this.$parent.$refs.scrollbar.restorePosition()
     }
   },
   methods: {
     formatAlbumType,
     formatDate,
     resizeImage,
-    ...mapActions(['showToast']),
-    loadData (id, next = undefined) {
+    loadData(id, next = undefined) {
       setTimeout(() => {
         if (!this.show) NProgress.start()
       }, 1000)
@@ -295,16 +283,16 @@ export default {
         this.similarArtists = data.artists
       })
     },
-    goToAlbum (id) {
+    goToAlbum(id) {
       this.$router.push({
         name: 'album',
         params: { id }
       })
     },
-    goToMv (id) {
+    goToMv(id) {
       this.$router.push({ path: '/mv/' + id })
     },
-    playPopularSongs (trackID = 'first') {
+    playPopularSongs(trackID = 'first') {
       const trackIDs = this.popularTracks.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
@@ -313,9 +301,9 @@ export default {
         trackID
       )
     },
-    followArtist () {
+    followArtist() {
       if (!isAccountLoggedIn()) {
-        this.showToast(this.$t('toast.needToLogin'))
+        toast(this.$t('toast.needToLogin'))
         return
       }
       followAArtist({
@@ -325,13 +313,13 @@ export default {
         if (data.code === 200) this.artist.followed = !this.artist.followed
       })
     },
-    scrollTo (div, block = 'center') {
+    scrollTo(div, block = 'center') {
       document.getElementById(div).scrollIntoView({
         behavior: 'smooth',
         block
       })
     },
-    toggleFullDescription () {
+    toggleFullDescription() {
       this.showFullDescription = !this.showFullDescription
       if (this.showFullDescription) {
         this.$store.commit('enableScrolling', false)
@@ -339,17 +327,16 @@ export default {
         this.$store.commit('enableScrolling', true)
       }
     },
-    openMenu (e) {
+    openMenu(e) {
       this.$refs.artistMenu.openMenu(e)
     },
-    copyUrl (id) {
-      const showToast = this.showToast
+    copyUrl(id) {
       this.$copyText('https://music.163.com/#/artist?id=' + id)
         .then(() => {
-          showToast(this.$t('toast.copied'))
+          toast(this.$t('toast.copied'))
         })
         .catch(error => {
-          showToast(`${this.$t('toast.copyFailed')}${error}`)
+          toast(`${this.$t('toast.copyFailed')}${error}`)
         })
     }
   }

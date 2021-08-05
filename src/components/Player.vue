@@ -28,27 +28,23 @@
           <img
             :src="resizeImage(currentTrack.al && currentTrack.al.picUrl, 224)"
             @click="goToAlbum"
-            alt="cover"/>
+            alt="cover"
+          />
           <div class="track-info" :title="audioSource">
-            <div class="name" @click="goToList">
-              {{ currentTrack.name }}
-            </div>
+            <div class="name" @click="goToList">{{ currentTrack.name }}</div>
             <div class="artist">
               <span
                 v-for="(ar, index) in currentTrack.ar"
                 :key="ar.id"
                 @click="ar.id !== 0 && goToArtist(ar.id)"
               >
-                <span :class="ar.id !== 0 ? 'ar' : ''"> {{ ar.name }} </span
-                ><span v-if="index !== currentTrack.ar.length - 1">, </span>
+                <span :class="ar.id !== 0 ? 'ar' : ''">{{ ar.name }}</span>
+                <span v-if="index !== currentTrack.ar.length - 1">,</span>
               </span>
             </div>
           </div>
           <div class="like-button">
-            <button-icon
-              :title="$t('player.like')"
-              @click="likeATrack(player.currentTrack.id)"
-            >
+            <button-icon :title="$t('player.like')" @click="likeATrack(player.currentTrack.id)">
               <IconHeartSolid v-if="player.isCurrentTrackLiked" />
               <IconHeart v-else />
             </button-icon>
@@ -63,23 +59,23 @@
             v-show="!player.isPersonalFM"
             :title="$t('player.previous')"
             @click="player.playPrevTrack"
-            ><IconPrevious /></button-icon>
-          <button-icon
-            v-show="player.isPersonalFM"
-            title="不喜欢"
-            @click="player.moveToFMTrash"
-            ><IconThumbsDown /></button-icon>
+          >
+            <IconPrevious />
+          </button-icon>
+          <button-icon v-show="player.isPersonalFM" title="不喜欢" @click="player.moveToFMTrash">
+            <IconThumbsDown />
+          </button-icon>
           <button-icon
             class="play"
             :title="$t(player.playing ? 'player.pause' : 'player.play')"
             @click="player.playOrPause"
           >
-            <IconPause v-if="player.playing" /><IconPlay v-else />
+            <IconPause v-if="player.playing" />
+            <IconPlay v-else />
           </button-icon>
-          <button-icon
-            :title="$t('player.next')"
-            @click="player.playNextTrack"
-            ><IconNext /></button-icon>
+          <button-icon :title="$t('player.next')" @click="player.playNextTrack">
+            <IconNext />
+          </button-icon>
         </div>
         <div class="blank"></div>
       </div>
@@ -93,7 +89,9 @@
               disabled: player.isPersonalFM
             }"
             @click="goToNextTracksPage"
-            ><IconList /></button-icon>
+          >
+            <IconList />
+          </button-icon>
           <button-icon
             :class="{
               active: player.repeatMode !== 'off',
@@ -113,7 +111,9 @@
             :class="{ active: player.shuffle, disabled: player.isPersonalFM }"
             :title="$t('player.shuffle')"
             @click="player.switchShuffle"
-            ><IconShuffle /></button-icon>
+          >
+            <IconShuffle />
+          </button-icon>
           <div class="volume-control">
             <button-icon :title="$t('player.mute')" @click="player.mute">
               <icon-volume v-if="volume > 0.5" />
@@ -140,7 +140,9 @@
             title="歌词"
             style="margin-left: 12px"
             @click="toggleLyrics"
-            ><IconArrowUp /></button-icon>
+          >
+            <IconArrowUp />
+          </button-icon>
         </div>
       </div>
     </div>
@@ -193,21 +195,21 @@ export default {
   },
   computed: {
     ...mapState(['player', 'settings', 'data']),
-    currentTrack () {
+    currentTrack() {
       return this.player.currentTrack
     },
     volume: {
-      get () {
+      get() {
         return this.player.volume
       },
-      set (value) {
+      set(value) {
         this.player.volume = value
       }
     },
-    playing () {
+    playing() {
       return this.player.playing
     },
-    audioSource () {
+    audioSource() {
       return this.player._howler?._src.includes('kuwo.cn')
         ? '音源来自酷我音乐'
         : ''
@@ -216,20 +218,20 @@ export default {
   methods: {
     resizeImage,
     ...mapMutations(['toggleLyrics']),
-    ...mapActions(['showToast', 'likeATrack']),
-    goToNextTracksPage () {
+    ...mapActions(['likeATrack']),
+    goToNextTracksPage() {
       if (this.player.isPersonalFM) return
       this.$route.name === 'next'
         ? this.$router.go(-1)
         : this.$router.push({ name: 'next' })
     },
-    formatTrackTime (value) {
+    formatTrackTime(value) {
       if (!value) return ''
       const min = ~~((value / 60) % 60)
       const sec = (~~(value % 60)).toString().padStart(2, '0')
       return `${min}:${sec}`
     },
-    goToList () {
+    goToList() {
       if (this.player.playlistSource.id === this.data.likedSongPlaylistID) {
         this.$router.push({ path: '/library/liked-songs' })
       } else if (this.player.playlistSource.type === 'url') {
@@ -246,11 +248,11 @@ export default {
         })
       }
     },
-    goToAlbum () {
+    goToAlbum() {
       if (this.player.currentTrack.al.id === 0) return
       this.$router.push({ path: '/album/' + this.player.currentTrack.al.id })
     },
-    goToArtist (id) {
+    goToArtist(id) {
       this.$router.push({ path: '/artist/' + id })
     }
   }

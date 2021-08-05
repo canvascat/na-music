@@ -2,27 +2,30 @@
   <div v-show="show" class="search-page">
     <div v-show="artists.length > 0 || albums.length > 0" class="row">
       <div v-show="artists.length > 0" class="artists">
-        <div v-show="artists.length > 0" class="section-title"
-          >{{ $t('search.artist')
-          }}<router-link :to="`/search/${keywords}/artists`">{{
-            $t('home.seeMore')
-          }}</router-link></div
-        >
-        <CoverRow
-          type="artist"
-          :column-number="3"
-          :items="artists.slice(0, 3)"
-          gap="34px 24px"
-        />
+        <div v-show="artists.length > 0" class="section-title">
+          {{
+            $t('search.artist')
+          }}
+          <router-link :to="`/search/${keywords}/artists`">
+            {{
+              $t('home.seeMore')
+            }}
+          </router-link>
+        </div>
+        <CoverRow type="artist" :column-number="3" :items="artists.slice(0, 3)" gap="34px 24px" />
       </div>
 
       <div class="albums">
-        <div v-show="albums.length > 0" class="section-title"
-          >{{ $t('search.album')
-          }}<router-link :to="`/search/${keywords}/albums`">{{
-            $t('home.seeMore')
-          }}</router-link></div
-        >
+        <div v-show="albums.length > 0" class="section-title">
+          {{
+            $t('search.album')
+          }}
+          <router-link :to="`/search/${keywords}/albums`">
+            {{
+              $t('home.seeMore')
+            }}
+          </router-link>
+        </div>
         <CoverRow
           type="album"
           :items="albums.slice(0, 3)"
@@ -36,32 +39,44 @@
     </div>
 
     <div v-show="tracks.length > 0" class="tracks">
-      <div class="section-title"
-        >{{ $t('search.song')
-        }}<router-link :to="`/search/${keywords}/tracks`">{{
-          $t('home.seeMore')
-        }}</router-link></div
-      >
+      <div class="section-title">
+        {{
+          $t('search.song')
+        }}
+        <router-link :to="`/search/${keywords}/tracks`">
+          {{
+            $t('home.seeMore')
+          }}
+        </router-link>
+      </div>
       <TrackList :tracks="tracks" type="tracklist" />
     </div>
 
     <div v-show="musicVideos.length > 0" class="music-videos">
-      <div class="section-title"
-        >{{ $t('search.mv')
-        }}<router-link :to="`/search/${keywords}/music-videos`">{{
-          $t('home.seeMore')
-        }}</router-link></div
-      >
+      <div class="section-title">
+        {{
+          $t('search.mv')
+        }}
+        <router-link :to="`/search/${keywords}/music-videos`">
+          {{
+            $t('home.seeMore')
+          }}
+        </router-link>
+      </div>
       <MvRow :mvs="musicVideos.slice(0, 5)" />
     </div>
 
     <div v-show="playlists.length > 0" class="playlists">
-      <div class="section-title"
-        >{{ $t('search.playlist')
-        }}<router-link :to="`/search/${keywords}/playlists`">{{
-          $t('home.seeMore')
-        }}</router-link></div
-      >
+      <div class="section-title">
+        {{
+          $t('search.playlist')
+        }}
+        <router-link :to="`/search/${keywords}/playlists`">
+          {{
+            $t('home.seeMore')
+          }}
+        </router-link>
+      </div>
       <CoverRow
         type="playlist"
         :items="playlists.slice(0, 12)"
@@ -74,7 +89,10 @@
     </div>
 
     <div v-show="!haveResult" class="no-results">
-      <div><IconSearch />{{ keywords.length === 0 ? '输入关键字搜索' : $t('search.noResult') }}</div>
+      <div>
+        <IconSearch />
+        {{ keywords.length === 0 ? '输入关键字搜索' : $t('search.noResult') }}
+      </div>
     </div>
   </div>
 </template>
@@ -89,6 +107,9 @@ import TrackList from '@/components/TrackList.vue'
 import MvRow from '@/components/MvRow.vue'
 import CoverRow from '@/components/CoverRow.vue'
 import { IconSearch } from '@/components/icons'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'Search',
@@ -98,7 +119,7 @@ export default {
     CoverRow,
     IconSearch
   },
-  data () {
+  data() {
     return {
       show: false,
       tracks: [],
@@ -109,37 +130,35 @@ export default {
     }
   },
   computed: {
-    keywords () {
+    keywords() {
       return this.$route.params.keywords ?? ''
     },
-    haveResult () {
+    haveResult() {
       return (
         this.tracks.length +
-          this.artists.length +
-          this.albums.length +
-          this.playlists.length +
-          this.musicVideos.length >
+        this.artists.length +
+        this.albums.length +
+        this.playlists.length +
+        this.musicVideos.length >
         0
       )
     }
   },
   watch: {
-    keywords: function (newKeywords) {
+    keywords(newKeywords) {
       if (newKeywords.length === 0) return
       this.getData()
     }
   },
-  created () {
+  created() {
     this.getData()
   },
   methods: {
-    ...mapActions(['showToast']),
-    playTrackInSearchResult (id) {
+    playTrackInSearchResult(id) {
       const track = this.tracks.find(t => t.id === id)
       this.$store.state.player.appendTrackToPlayerList(track, true)
     },
-    search (type = 'all') {
-      const showToast = this.showToast
+    search(type = 'all') {
       const typeTable = {
         all: 1018,
         musicVideos: 1004,
@@ -157,10 +176,10 @@ export default {
           return { result: result.result, type }
         })
         .catch(err => {
-          showToast(err.response.data.msg || err.response.data.message)
+          toast(err.response.data.msg || err.response.data.message)
         })
     },
-    getData () {
+    getData() {
       setTimeout(() => {
         if (!this.show) NProgress.start()
       }, 1000)
@@ -211,7 +230,7 @@ export default {
       requestAll(requests)
       requestAll(requests2)
     },
-    getTracksDetail () {
+    getTracksDetail() {
       const trackIDs = this.tracks.map(t => t.id)
       if (trackIDs.length === 0) return
       getTrackDetail(trackIDs.join(',')).then(result => {

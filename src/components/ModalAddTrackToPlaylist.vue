@@ -8,7 +8,9 @@
     width="25vw"
   >
     <template v-slot:default>
-      <div class="new-playlist-button" @click="newPlaylist"><IconPlus />新建歌单</div>
+      <div class="new-playlist-button" @click="newPlaylist">
+        <IconPlus />新建歌单
+      </div>
       <div
         v-for="playlist in ownPlaylists"
         :key="playlist.id"
@@ -31,6 +33,9 @@ import Modal from '@/components/Modal.vue'
 import { IconPlus } from '@/components/icons'
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
 import { resizeImage } from '@/utils/filters'
+import { useToast } from '@/hook'
+
+const [toast] = useToast()
 
 export default {
   name: 'ModalAddTrackToPlaylist',
@@ -38,7 +43,7 @@ export default {
     Modal,
     IconPlus
   },
-  data () {
+  data() {
     return {
       playlists: []
     }
@@ -46,10 +51,10 @@ export default {
   computed: {
     ...mapState(['modals', 'data', 'liked']),
     show: {
-      get () {
+      get() {
         return this.modals.addTrackToPlaylistModal.show
       },
-      set (value) {
+      set(value) {
         this.updateModal({
           modalName: 'addTrackToPlaylistModal',
           key: 'show',
@@ -62,7 +67,7 @@ export default {
         }
       }
     },
-    ownPlaylists () {
+    ownPlaylists() {
       return this.liked.playlists.filter(
         p =>
           p.creator.userId === this.data.user.userId &&
@@ -73,11 +78,10 @@ export default {
   methods: {
     resizeImage,
     ...mapMutations(['updateModal']),
-    ...mapActions(['showToast']),
-    close () {
+    close() {
       this.show = false
     },
-    addTrackToPlaylist (playlistID) {
+    addTrackToPlaylist(playlistID) {
       addOrRemoveTrackFromPlaylist({
         op: 'add',
         pid: playlistID,
@@ -85,13 +89,13 @@ export default {
       }).then(data => {
         if (data.body.code === 200) {
           this.show = false
-          this.showToast(this.$t('toast.savedToPlaylist'))
+          toast(this.$t('toast.savedToPlaylist'))
         } else {
-          this.showToast(data.body.message)
+          toast(data.body.message)
         }
       })
     },
-    newPlaylist () {
+    newPlaylist() {
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'afterCreateAddTrackID',

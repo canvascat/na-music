@@ -100,7 +100,7 @@
       <div
         v-show="mode !== 'qrCode'"
         class="notice"
-        v-html="isElectron ? $t('login.noticeElectron') : $t('login.notice')"
+        v-html="$t('login.notice')"
       ></div>
     </div>
   </div>
@@ -140,11 +140,7 @@ export default defineComponent({
       qrCodeInformation: '打开网易云音乐APP扫码登录'
     }
   },
-  computed: {
-    isElectron () {
-      return process.env.IS_ELECTRON
-    }
-  },
+
   created () {
     if (['phone', 'email', 'qrCode'].includes(this.$route.query.mode)) {
       this.mode = this.$route.query.mode
