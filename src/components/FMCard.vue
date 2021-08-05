@@ -14,19 +14,18 @@
       <div class="controls">
         <div class="buttons">
           <button-icon title="不喜欢" @click="moveToFMTrash"
-            ><svg-icon id="thumbs-down" icon-class="thumbs-down"
-          /></button-icon>
+            ><IconThumbsDown id="thumbs-down" /></button-icon>
           <button-icon
             :title="$t(isPlaying ? 'player.pause' : 'player.play')"
             class="play"
             @click="play"
           >
-            <svg-icon :icon-class="isPlaying ? 'pause' : 'play'"
-          /></button-icon>
+            <IconPause v-if="isPlaying" /><IconPlay v-else />
+          </button-icon>
           <button-icon :title="$t('player.next')" @click="next"
-            ><svg-icon icon-class="next" /></button-icon
+            ><IconNext /></button-icon
         ></div>
-        <div class="card-name"><svg-icon icon-class="fm" />私人FM</div>
+        <div class="card-name"><IconFm />私人FM</div>
       </div>
     </div>
   </div>
@@ -35,6 +34,7 @@
 <script lang="ts">
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import ArtistsInLine from '@/components/ArtistsInLine.vue'
+import { IconThumbsDown, IconPlay, IconPause, IconNext, IconFm } from '@/components/icons'
 import Vibrant from 'node-vibrant'
 import Color from 'color'
 import { resizeImage } from '@/utils/filters'
@@ -56,7 +56,15 @@ function normlizeURL (url?: string) {
 
 export default {
   name: 'FMCard',
-  components: { ButtonIcon, ArtistsInLine },
+  components: {
+    ButtonIcon,
+    ArtistsInLine,
+    IconThumbsDown,
+    IconPlay,
+    IconPause,
+    IconNext,
+    IconFm
+  },
   setup () {
     const background = ref('')
     updateBackground()

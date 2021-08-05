@@ -2,12 +2,10 @@
   <div>
     <nav>
       <div class="navigation-buttons">
-        <button-icon @click="go('back')"
-          ><svg-icon icon-class="arrow-left"
-        /></button-icon>
-        <button-icon @click="go('forward')"
-          ><svg-icon icon-class="arrow-right"
-        /></button-icon>
+        <button-icon @click="go('back')" title="back"
+          ><IconArrowLeft /></button-icon>
+        <button-icon @click="go('forward')" title="forward"
+          ><IconArrowRight /></button-icon>
       </div>
       <div class="navigation-links">
         <router-link to="/" :class="{ active: $route.name === 'home' }">{{
@@ -27,7 +25,7 @@
       <div class="right-part">
         <div class="search-box">
           <div class="container" :class="{ active: inputFocus }">
-            <svg-icon icon-class="search" />
+            <IconSearch />
             <div class="input">
               <input
                 ref="searchInput"
@@ -46,20 +44,20 @@
 
     <ContextMenu ref="userProfileMenu">
       <div class="item" @click="toSettings">
-        <svg-icon icon-class="settings" />
+        <IconSettings />
         {{ $t('library.userProfileMenu.settings') }}
       </div>
       <div v-if="!isLooseLoggedIn" class="item" @click="toLogin">
-        <svg-icon icon-class="login" />
+        <IconLogin />
         {{ $t('login.login') }}
       </div>
       <div v-if="isLooseLoggedIn" class="item" @click="logout">
-        <svg-icon icon-class="logout" />
+        <IconLogout />
         {{ $t('library.userProfileMenu.logout') }}
       </div>
       <hr />
       <div class="item" @click="toGitHub">
-        <svg-icon icon-class="github" />
+        <IconGithub />
         {{ $t('nav.github') }}
       </div>
     </ContextMenu>
@@ -76,12 +74,20 @@ import { isLooseLoggedIn, doLogout } from '@/utils/auth'
 
 import ContextMenu from '@/components/ContextMenu.vue'
 import ButtonIcon from '@/components/ButtonIcon.vue'
+import { IconArrowLeft, IconArrowRight, IconSearch, IconSettings, IconLogin, IconLogout, IconGithub } from '@/components/icons'
 
 export default {
   name: 'Navbar',
   components: {
     ButtonIcon,
-    ContextMenu
+    ContextMenu,
+    IconArrowLeft,
+    IconArrowRight,
+    IconSearch,
+    IconSettings,
+    IconLogin,
+    IconLogout,
+    IconGithub
   },
   data () {
     return {

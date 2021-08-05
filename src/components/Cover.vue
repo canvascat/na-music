@@ -13,7 +13,7 @@
           class="play-button"
           :style="playButtonStyles"
           @click.stop="play()"
-          ><svg-icon icon-class="play" />
+          ><IconPlay />
         </button>
       </div>
       <img :src="imageUrl" :style="imageStyles"  alt="cover"/>
@@ -29,7 +29,10 @@
 </template>
 
 <script>
+import { IconPlay } from '@/components/icons'
+
 export default {
+  components: { IconPlay },
   props: {
     id: { type: Number, required: true },
     type: { type: String, required: true },

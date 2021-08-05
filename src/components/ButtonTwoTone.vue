@@ -1,10 +1,6 @@
 <template>
   <button :style="buttonStyle" :class="color">
-    <svg-icon
-      v-if="iconClass !== null"
-      :icon-class="iconClass"
-      :style="{ marginRight: iconButton ? '0px' : '8px' }"
-    />
+    <slot name="icon"></slot>
     <slot></slot>
   </button>
 </template>
@@ -13,14 +9,6 @@
 export default {
   name: 'ButtonTwoTone',
   props: {
-    iconClass: {
-      type: String,
-      default: null
-    },
-    iconButton: {
-      type: Boolean,
-      default: false
-    },
     horizontalPadding: {
       type: Number,
       default: 16
@@ -76,6 +64,9 @@ button {
   .svg-icon {
     width: 16px;
     height: 16px;
+  }
+  > .svg-icon + * {
+    margin-left: 8px;
   }
   &:hover {
     transform: scale(1.06);

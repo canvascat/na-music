@@ -20,7 +20,7 @@
         </div>
         <div class="right">
           <button @click="logout">
-            <svg-icon icon-class="logout" />
+            <IconLogout />
             {{ $t('settings.logout') }}
           </button>
         </div>
@@ -470,12 +470,14 @@ import { isLooseLoggedIn, doLogout } from '@/utils/auth'
 import { auth as lastfmAuth } from '@/api/lastfm'
 import { changeAppearance, bytesToSize } from '@/utils/common'
 import { countDBSize, clearDB } from '@/utils/db'
+import { IconLogout } from '@/components/icons'
 import pkg from '../../package.json'
 
 const validShortcutCodes = ['=', '-', '~', '[', ']', ';', "'", ',', '.', '/']
 
 export default {
   name: 'Settings',
+  components: { IconLogout },
   data () {
     return {
       tracksCache: {

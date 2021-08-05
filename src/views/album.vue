@@ -43,30 +43,24 @@
         </div>
         <div class="buttons" style="margin-top: 32px">
           <ButtonTwoTone
-            icon-class="play"
             @click="playAlbumByID(album.id)"
           >
+            <template #icon><IconPlay /></template>
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone
-            :icon-class="dynamicDetail.isSub ? 'heart-solid' : 'heart'"
-            :icon-button="true"
             :horizontal-padding="0"
             :color="dynamicDetail.isSub ? 'blue' : 'grey'"
             :text-color="dynamicDetail.isSub ? '#335eea' : ''"
-            :background-color="
-              dynamicDetail.isSub ? 'var(--color-secondary-bg)' : ''
-            "
+            :background-color="dynamicDetail.isSub ? 'var(--color-secondary-bg)' : ''"
             @click="likeAlbum"
           >
+            <template #icon>
+              <IconHeartSolid v-if="dynamicDetail.isSub" /><IconHeart v-else />
+            </template>
           </ButtonTwoTone>
-          <ButtonTwoTone
-            icon-class="more"
-            :icon-button="true"
-            :horizontal-padding="0"
-            color="grey"
-            @click="openMenu"
-          >
+          <ButtonTwoTone :horizontal-padding="0" color="grey" @click="openMenu">
+            <template #icon><IconMore /></template>
           </ButtonTwoTone>
         </div>
       </div>
@@ -145,6 +139,12 @@ import TrackList from '@/components/TrackList.vue'
 import CoverRow from '@/components/CoverRow.vue'
 import Cover from '@/components/Cover.vue'
 import Modal from '@/components/Modal.vue'
+import {
+  IconPlay,
+  IconHeartSolid,
+  IconHeart,
+  IconMore
+} from '@/components/icons'
 
 export default {
   name: 'Album',
@@ -155,7 +155,11 @@ export default {
     ExplicitSymbol,
     CoverRow,
     Modal,
-    ContextMenu
+    ContextMenu,
+    IconPlay,
+    IconHeartSolid,
+    IconHeart,
+    IconMore
   },
   beforeRouteUpdate (to, from, next) {
     this.show = false

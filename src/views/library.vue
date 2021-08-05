@@ -24,9 +24,7 @@
               {{ liked.songs.length }} {{ $t('common.songs') }}
             </div>
           </div>
-          <button @click.stop="playLikedSongs">
-            <svg-icon icon-class="play" />
-          </button>
+          <button @click.stop="playLikedSongs"><IconPlay /></button>
         </div>
       </div>
       <div class="songs">
@@ -56,8 +54,7 @@
               }[playlistFilter]
             }}</span>
             <span class="icon" @click.stop="openPlaylistTabMenu"
-              ><svg-icon icon-class="dropdown"
-            /></span>
+              ><IconDropdown /></span>
           </div>
           <div
             class="tab"
@@ -92,13 +89,13 @@
           v-show="currentTab === 'playlists'"
           class="tab-button"
           @click="openAddPlaylistModal"
-          ><svg-icon icon-class="plus" />{{ $t('library.newPlayList') }}
+          ><IconPlus />{{ $t('library.newPlayList') }}
         </button>
         <button
           v-show="currentTab === 'cloudDisk'"
           class="tab-button"
           @click="selectUploadFiles"
-          ><svg-icon icon-class="arrow-up-alt" /> 上传歌曲
+          ><IconArrowUpAlt /> 上传歌曲
         </button>
       </div>
 
@@ -178,13 +175,22 @@ import NProgress from 'nprogress'
 import ContextMenu from '@/components/ContextMenu.vue'
 import TrackList from '@/components/TrackList.vue'
 import CoverRow from '@/components/CoverRow.vue'
-import SvgIcon from '@/components/SvgIcon.vue'
 import MvRow from '@/components/MvRow.vue'
 import { resizeImage } from '@/utils/filters'
+import { IconPlay, IconDropdown, IconPlus, IconArrowUpAlt } from '@/components/icons'
 
 export default {
   name: 'Library',
-  components: { SvgIcon, CoverRow, TrackList, MvRow, ContextMenu },
+  components: {
+    CoverRow,
+    TrackList,
+    MvRow,
+    ContextMenu,
+    IconPlay,
+    IconDropdown,
+    IconPlus,
+    IconArrowUpAlt
+  },
   data () {
     return {
       show: false,

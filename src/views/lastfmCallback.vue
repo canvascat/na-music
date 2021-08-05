@@ -2,7 +2,7 @@
   <div class="lastfm-callback">
     <div class="section-1">
       <img src="/img/logos/yesplaymusic.png" />
-      <svg-icon icon-class="x"></svg-icon>
+      <IconX />
       <img src="/img/logos/lastfm.png" />
     </div>
     <div class="message">{{ message }}</div>
@@ -12,9 +12,11 @@
 
 <script>
 import { authGetSession } from '@/api/lastfm'
+import { IconX } from '@/components/icons'
 
 export default {
   name: 'LastfmCallback',
+  components: { IconX },
   data () {
     return { message: '请稍等...', done: false }
   },

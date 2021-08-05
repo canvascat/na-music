@@ -71,15 +71,11 @@
                   :title="$t('player.like')"
                   @click="likeATrack(player.currentTrack.id)"
                 >
-                  <svg-icon
-                    :icon-class="
-                      player.isCurrentTrackLiked ? 'heart-solid' : 'heart'
-                    "
-                  />
+                  <IconHeartSolid v-if="player.isCurrentTrackLiked" />
+                  <IconHeart v-else />
                 </button-icon>
                 <!-- <button-icon @click="openMenu" title="Menu"
-                  ><svg-icon icon-class="more"
-                /></button-icon> -->
+                  ><IconMore /></button-icon> -->
               </div>
             </div>
             <div class="progress-bar">
@@ -112,14 +108,8 @@
                 :class="{ active: player.repeatMode !== 'off' }"
                 @click="player.switchRepeatMode"
               >
-                <svg-icon
-                  v-show="player.repeatMode !== 'one'"
-                  icon-class="repeat"
-                />
-                <svg-icon
-                  v-show="player.repeatMode === 'one'"
-                  icon-class="repeat-1"
-                />
+                <IconRepeat1 v-if="player.repeatMode === 'one'" />
+                <IconRepeat v-else />
               </button-icon>
               <div class="middle">
                 <button-icon
@@ -127,27 +117,28 @@
                   :title="$t('player.previous')"
                   @click="player.playPrevTrack"
                 >
-                  <svg-icon icon-class="previous" />
+                  <IconPrevious />
                 </button-icon>
                 <button-icon
                   v-show="player.isPersonalFM"
                   title="不喜欢"
                   @click="player.moveToFMTrash"
                 >
-                  <svg-icon icon-class="thumbs-down" />
+                  <IconThumbsDown />
                 </button-icon>
                 <button-icon
                   id="play"
                   :title="$t(player.playing ? 'player.pause' : 'player.play')"
                   @click="player.playOrPause"
                 >
-                  <svg-icon :icon-class="player.playing ? 'pause' : 'play'" />
+                  <IconPause v-if="player.playing" />
+                  <IconPlay v-else />
                 </button-icon>
                 <button-icon
                   :title="$t('player.next')"
                   @click="player.playNextTrack"
                 >
-                  <svg-icon icon-class="next" />
+                  <IconNext />
                 </button-icon>
               </div>
               <button-icon
@@ -156,7 +147,7 @@
                 :class="{ active: player.shuffle }"
                 @click="player.switchShuffle"
               >
-                <svg-icon icon-class="shuffle" />
+                <IconShuffle />
               </button-icon>
             </div>
           </div>
@@ -188,7 +179,7 @@
       </div>
       <div class="close-button" @click="toggleLyrics">
         <button>
-          <svg-icon icon-class="arrow-down" />
+          <IconArrowDown />
         </button>
       </div>
     </div>
@@ -207,12 +198,36 @@ import { lyricParser } from '@/utils/lyrics'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import * as Vibrant from 'node-vibrant'
 import Color from 'color'
+import {
+  IconHeart,
+  IconHeartSolid,
+  IconRepeat1,
+  IconRepeat,
+  IconPrevious,
+  IconThumbsDown,
+  IconPlay,
+  IconPause,
+  IconNext,
+  IconShuffle,
+  IconArrowDown
+} from '@/components/icons'
 
 export default {
   name: 'Lyrics',
   components: {
     VueSlider,
-    ButtonIcon
+    ButtonIcon,
+    IconHeart,
+    IconHeartSolid,
+    IconRepeat1,
+    IconRepeat,
+    IconPrevious,
+    IconThumbsDown,
+    IconPlay,
+    IconPause,
+    IconNext,
+    IconShuffle,
+    IconArrowDown
   },
   data () {
     return {

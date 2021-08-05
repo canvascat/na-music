@@ -17,10 +17,8 @@
         @click.right="openMenu"
       />
       <div class="info">
-        <div class="title" @click.right="openMenu"
-          ><span v-if="playlist.privacy === 10" class="lock-icon">
-            <svg-icon icon-class="lock" /></span
-          >{{ playlist.name }}</div
+        <div class="title" @click.right="openMenu">
+          <span v-if="playlist.privacy === 10" class="lock-icon"><IconLock /></span>{{ playlist.name }}</div
         >
         <div class="artist">
           Playlist by
@@ -53,13 +51,12 @@
           {{ playlist.description }}
         </div>
         <div class="buttons">
-          <ButtonTwoTone icon-class="play" @click="playPlaylistByID()">
+          <ButtonTwoTone @click="playPlaylistByID()">
+            <template #icon><IconPlay /></template>
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone
             v-if="playlist.creator.userId !== data.user.userId"
-            :icon-class="playlist.subscribed ? 'heart-solid' : 'heart'"
-            :icon-button="true"
             :horizontal-padding="0"
             :color="playlist.subscribed ? 'blue' : 'grey'"
             :text-color="playlist.subscribed ? '#335eea' : ''"
@@ -67,21 +64,19 @@
               playlist.subscribed ? 'var(--color-secondary-bg)' : ''
             "
             @click="likePlaylist"
-          >
+          ><template #icon><IconHeartSolid v-if="playlist.subscribed" /><IconHeart v-else /></template>
           </ButtonTwoTone>
           <ButtonTwoTone
-            icon-class="more"
-            :icon-button="true"
             :horizontal-padding="0"
             color="grey"
             @click="openMenu"
-          >
+          ><template #icon><IconMore /></template>
           </ButtonTwoTone>
         </div>
       </div>
       <div v-if="displaySearchInPlaylist" class="search-box">
         <div class="container" :class="{ active: inputFocus }">
-          <svg-icon icon-class="search" />
+          <IconSearch />
           <div class="input">
             <input
               v-model.trim="inputSearchKeyWords"
@@ -111,16 +106,13 @@
       <div class="buttons">
         <ButtonTwoTone
           class="play-button"
-          icon-class="play"
           color="grey"
           @click="playPlaylistByID()"
-        >
+        > <template #icon><IconPlay /></template>
           {{ $t('common.play') }}
         </ButtonTwoTone>
         <ButtonTwoTone
           v-if="playlist.creator.userId !== data.user.userId"
-          :icon-class="playlist.subscribed ? 'heart-solid' : 'heart'"
-          :icon-button="true"
           :horizontal-padding="0"
           :color="playlist.subscribed ? 'blue' : 'grey'"
           :text-color="playlist.subscribed ? '#335eea' : ''"
@@ -128,15 +120,13 @@
             playlist.subscribed ? 'var(--color-secondary-bg)' : ''
           "
           @click="likePlaylist"
-        >
+        ><template #icon><IconHeartSolid v-if="playlist.subscribed" /><IconHeart v-else /></template>
         </ButtonTwoTone>
         <ButtonTwoTone
-          icon-class="more"
-          :icon-button="true"
           :horizontal-padding="0"
           color="grey"
           @click="openMenu"
-        >
+        ><template #icon><IconMore /></template>
         </ButtonTwoTone>
       </div>
     </div>
@@ -149,7 +139,7 @@
       </h1>
       <div class="search-box-likepage" @click="searchInPlaylist()">
         <div class="container" :class="{ active: inputFocus }">
-          <svg-icon icon-class="search" />
+          <IconSearch />
           <div class="input" :style="{ width: searchInputWidth }">
             <input
               v-if="displaySearchInPlaylist"
@@ -236,6 +226,7 @@ import ContextMenu from '@/components/ContextMenu.vue'
 import TrackList from '@/components/TrackList.vue'
 import Cover from '@/components/Cover.vue'
 import Modal from '@/components/Modal.vue'
+import { IconLock, IconSearch, IconHeart, IconHeartSolid, IconMore, IconPlay } from '@/components/icons'
 import { resizeImage, formatDate } from '@/utils/filters'
 
 const specialPlaylist = {
@@ -332,7 +323,13 @@ export default defineComponent({
     ButtonTwoTone,
     TrackList,
     Modal,
-    ContextMenu
+    ContextMenu,
+    IconLock,
+    IconSearch,
+    IconHeart,
+    IconHeartSolid,
+    IconMore,
+    IconPlay
   },
   directives: {
     focus: {

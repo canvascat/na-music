@@ -8,9 +8,7 @@
     width="25vw"
   >
     <template v-slot:default>
-      <div class="new-playlist-button" @click="newPlaylist"
-        ><svg-icon icon-class="plus" />新建歌单</div
-      >
+      <div class="new-playlist-button" @click="newPlaylist"><IconPlus />新建歌单</div>
       <div
         v-for="playlist in ownPlaylists"
         :key="playlist.id"
@@ -30,13 +28,15 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import Modal from '@/components/Modal.vue'
+import { IconPlus } from '@/components/icons'
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
 import { resizeImage } from '@/utils/filters'
 
 export default {
   name: 'ModalAddTrackToPlaylist',
   components: {
-    Modal
+    Modal,
+    IconPlus
   },
   data () {
     return {

@@ -13,8 +13,8 @@
           {{ mv.data.name }}
           <div class="like-button">
             <button-icon @click="likeMV">
-              <svg-icon v-if="mv.subed" icon-class="heart-solid"></svg-icon>
-              <svg-icon v-else icon-class="heart"></svg-icon>
+              <IconHeartSolid v-if="mv.subed" />
+              <IconHeart v-else />
             </button-icon>
           </div>
         </div>
@@ -42,12 +42,15 @@ import ButtonIcon from '@/components/ButtonIcon.vue'
 import MvRow from '@/components/MvRow.vue'
 import { mapActions } from 'vuex'
 import { formatPlayCount } from '@/utils/filters'
+import { IconHeartSolid, IconHeart } from '@/components/icons'
 
 export default {
   name: 'mv',
   components: {
     MvRow,
-    ButtonIcon
+    ButtonIcon,
+    IconHeartSolid,
+    IconHeart
   },
   beforeRouteUpdate (to, from, next) {
     this.getData(to.params.id)

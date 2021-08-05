@@ -49,14 +49,8 @@
               :title="$t('player.like')"
               @click="likeATrack(player.currentTrack.id)"
             >
-              <svg-icon
-                v-show="!player.isCurrentTrackLiked"
-                icon-class="heart"
-              ></svg-icon>
-              <svg-icon
-                v-show="player.isCurrentTrackLiked"
-                icon-class="heart-solid"
-              ></svg-icon>
+              <IconHeartSolid v-if="player.isCurrentTrackLiked" />
+              <IconHeart v-else />
             </button-icon>
           </div>
         </div>
@@ -69,26 +63,23 @@
             v-show="!player.isPersonalFM"
             :title="$t('player.previous')"
             @click="player.playPrevTrack"
-            ><svg-icon icon-class="previous"
-          /></button-icon>
+            ><IconPrevious /></button-icon>
           <button-icon
             v-show="player.isPersonalFM"
             title="不喜欢"
             @click="player.moveToFMTrash"
-            ><svg-icon icon-class="thumbs-down"
-          /></button-icon>
+            ><IconThumbsDown /></button-icon>
           <button-icon
             class="play"
             :title="$t(player.playing ? 'player.pause' : 'player.play')"
             @click="player.playOrPause"
           >
-            <svg-icon :icon-class="player.playing ? 'pause' : 'play'"
-          /></button-icon>
+            <IconPause v-if="player.playing" /><IconPlay v-else />
+          </button-icon>
           <button-icon
             :title="$t('player.next')"
             @click="player.playNextTrack"
-            ><svg-icon icon-class="next"
-          /></button-icon>
+            ><IconNext /></button-icon>
         </div>
         <div class="blank"></div>
       </div>
@@ -102,8 +93,7 @@
               disabled: player.isPersonalFM
             }"
             @click="goToNextTracksPage"
-            ><svg-icon icon-class="list"
-          /></button-icon>
+            ><IconList /></button-icon>
           <button-icon
             :class="{
               active: player.repeatMode !== 'off',
@@ -116,29 +106,20 @@
             "
             @click="player.switchRepeatMode"
           >
-            <svg-icon
-              v-show="player.repeatMode !== 'one'"
-              icon-class="repeat"
-            />
-            <svg-icon
-              v-show="player.repeatMode === 'one'"
-              icon-class="repeat-1"
-            />
+            <icon-repeat-1 v-if="player.repeatMode === 'one'" />
+            <icon-repeat v-else />
           </button-icon>
           <button-icon
             :class="{ active: player.shuffle, disabled: player.isPersonalFM }"
             :title="$t('player.shuffle')"
             @click="player.switchShuffle"
-            ><svg-icon icon-class="shuffle"
-          /></button-icon>
+            ><IconShuffle /></button-icon>
           <div class="volume-control">
             <button-icon :title="$t('player.mute')" @click="player.mute">
-              <svg-icon v-show="volume > 0.5" icon-class="volume" />
-              <svg-icon v-show="volume === 0" icon-class="volume-mute" />
-              <svg-icon
-                v-show="volume <= 0.5 && volume !== 0"
-                icon-class="volume-half"
-              />
+              <icon-volume v-if="volume > 0.5" />
+              <icon-volume-mute v-else-if="volume === 0" />
+              <!-- volume <= 0.5 && volume !== 0" -->
+              <icon-volume-half v-else />
             </button-icon>
             <div class="volume-bar">
               <vue-slider
@@ -159,8 +140,7 @@
             title="歌词"
             style="margin-left: 12px"
             @click="toggleLyrics"
-            ><svg-icon icon-class="arrow-up"
-          /></button-icon>
+            ><IconArrowUp /></button-icon>
         </div>
       </div>
     </div>
@@ -174,12 +154,42 @@ import '@/assets/css/slider.css'
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import VueSlider from 'vue-slider-component'
 import { resizeImage } from '@/utils/filters'
+import {
+  IconHeart,
+  IconHeartSolid,
+  IconPrevious,
+  IconPause,
+  IconPlay,
+  IconNext,
+  IconList,
+  IconRepeat,
+  IconRepeat1,
+  IconShuffle,
+  IconVolume,
+  IconVolumeMute,
+  IconVolumeHalf,
+  IconArrowUp
+} from '@/components/icons'
 
 export default {
   name: 'Player',
   components: {
     ButtonIcon,
-    VueSlider
+    VueSlider,
+    IconHeart,
+    IconHeartSolid,
+    IconPrevious,
+    IconPause,
+    IconPlay,
+    IconNext,
+    IconList,
+    IconRepeat,
+    IconRepeat1,
+    IconShuffle,
+    IconVolume,
+    IconVolumeMute,
+    IconVolumeHalf,
+    IconArrowUp
   },
   computed: {
     ...mapState(['player', 'settings', 'data']),

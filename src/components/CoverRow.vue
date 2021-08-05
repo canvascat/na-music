@@ -15,9 +15,7 @@
       <div class="text">
         <div v-if="showPlayCount" class="info">
           <span class="play-count"
-            ><svg-icon icon-class="play" />{{
-              formatPlayCount(item.playCount)
-            }}
+            ><IconPlay />{{ formatPlayCount(item.playCount) }}
           </span>
         </div>
         <div class="title" :style="{ fontSize: subTextFontSize }">
@@ -25,8 +23,8 @@
             ><ExplicitSymbol
           /></span>
           <span v-if="isPrivacy(item)" class="lock-icon">
-            <svg-icon icon-class="lock"
-          /></span>
+            <IconLock />
+          </span>
           <router-link :to="getTitleLink(item)">{{ item.name }}</router-link>
         </div>
         <div v-if="type !== 'artist' && subText !== 'none'" class="info">
@@ -41,12 +39,15 @@
 import Cover from '@/components/Cover.vue'
 import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
 import { formatPlayCount } from '@/utils/filters'
+import { IconPlay, IconLock } from '@/components/icons'
 
 export default {
   name: 'CoverRow',
   components: {
     Cover,
-    ExplicitSymbol
+    ExplicitSymbol,
+    IconPlay,
+    IconLock
   },
   props: {
     items: { type: Array, required: true },

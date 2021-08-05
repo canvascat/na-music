@@ -15,19 +15,13 @@
     />
     <div v-if="showOrderNumber" class="no">
       <button v-show="focus && track.playable && !isPlaying" @click="playTrack">
-        <svg-icon
-          icon-class="play"
-          style="height: 14px; width: 14px"
-        ></svg-icon>
+        <IconPlay style="height: 14px; width: 14px" />
       </button>
       <span v-show="(!focus || !track.playable) && !isPlaying">{{
         track.no
       }}</span>
       <button v-show="isPlaying">
-        <svg-icon
-          icon-class="volume"
-          style="height: 16px; width: 16px"
-        ></svg-icon>
+        <IconVolume style="height: 16px; width: 16px" />
       </button>
     </div>
     <div class="title-and-artist">
@@ -66,13 +60,8 @@
 
     <div v-if="showLikeButton" class="actions">
       <button @click="likeThisSong">
-        <svg-icon
-          icon-class="heart"
-          :style="{
-            visibility: focus && !isLiked ? 'visible' : 'hidden'
-          }"
-        ></svg-icon>
-        <svg-icon v-show="isLiked" icon-class="heart-solid"></svg-icon>
+        <IconHeartSolid v-if="isLiked" />
+        <IconHeart v-else-if="focus" />
       </button>
     </div>
     <div v-if="showTrackTime" class="time">
@@ -86,10 +75,11 @@ import ArtistsInLine from '@/components/ArtistsInLine.vue'
 import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
 import { mapState } from 'vuex'
 import { formatTime } from '@/utils/filters'
+import { IconPlay, IconVolume, IconHeartSolid, IconHeart } from '@/components/icons'
 
 export default {
   name: 'TrackListItem',
-  components: { ArtistsInLine, ExplicitSymbol },
+  components: { ArtistsInLine, ExplicitSymbol, IconPlay, IconVolume, IconHeartSolid, IconHeart },
 
   props: {
     trackProp: Object,

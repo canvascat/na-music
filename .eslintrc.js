@@ -19,16 +19,5 @@ module.exports = {
     'camelcase': 0,
     '@typescript-eslint/ban-ts-comment': 0,
     'no-unused-expressions': 0
-  },
-  overrides: [
-    {
-      files: [
-        '**/__tests__/*.{j,t}s?(x)',
-        '**/tests/unit/**/*.spec.{j,t}s?(x)'
-      ],
-      env: {
-        mocha: true
-      }
-    }
-  ]
+  }
 }

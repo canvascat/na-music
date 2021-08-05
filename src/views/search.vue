@@ -74,12 +74,7 @@
     </div>
 
     <div v-show="!haveResult" class="no-results">
-      <div
-        ><svg-icon icon-class="search" />
-        {{
-          keywords.length === 0 ? '输入关键字搜索' : $t('search.noResult')
-        }}</div
-      >
+      <div><IconSearch />{{ keywords.length === 0 ? '输入关键字搜索' : $t('search.noResult') }}</div>
     </div>
   </div>
 </template>
@@ -93,13 +88,15 @@ import NProgress from 'nprogress'
 import TrackList from '@/components/TrackList.vue'
 import MvRow from '@/components/MvRow.vue'
 import CoverRow from '@/components/CoverRow.vue'
+import { IconSearch } from '@/components/icons'
 
 export default {
   name: 'Search',
   components: {
     TrackList,
     MvRow,
-    CoverRow
+    CoverRow,
+    IconSearch
   },
   data () {
     return {

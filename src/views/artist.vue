@@ -24,7 +24,8 @@
           {{ artist.briefDesc }}
         </div>
         <div class="buttons">
-          <ButtonTwoTone icon-class="play" @click="playPopularSongs()">
+          <ButtonTwoTone @click="playPopularSongs()">
+            <template #icon><IconPlay /></template>
             {{ $t('common.play') }}
           </ButtonTwoTone>
           <ButtonTwoTone color="grey" @click="followArtist">
@@ -32,12 +33,11 @@
             <span v-else>{{ $t('artist.follow') }}</span>
           </ButtonTwoTone>
           <ButtonTwoTone
-            icon-class="more"
-            :icon-button="true"
             :horizontal-padding="0"
             color="grey"
             @click="openMenu"
           >
+            <template #icon><IconMore /></template>
           </ButtonTwoTone>
         </div>
       </div>
@@ -193,6 +193,7 @@ import CoverRow from '@/components/CoverRow.vue'
 import Cover from '@/components/Cover.vue'
 import MvRow from '@/components/MvRow.vue'
 import Modal from '@/components/Modal.vue'
+import { IconPlay, IconMore } from '@/components/icons'
 
 export default {
   name: 'Artist',
@@ -203,7 +204,9 @@ export default {
     CoverRow,
     MvRow,
     Modal,
-    ContextMenu
+    ContextMenu,
+    IconPlay,
+    IconMore
   },
   beforeRouteUpdate (to, from, next) {
     this.artist.img1v1Url =

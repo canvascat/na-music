@@ -3,9 +3,7 @@
     <div class="modal" :style="modalStyles" @click.stop>
       <div class="header">
         <div class="title">{{ title }}</div>
-        <button class="close" @click="close"
-          ><svg-icon icon-class="x"
-        /></button>
+        <button class="close" @click="close"><IconX /></button>
       </div>
       <div class="content"><slot></slot></div>
       <div v-if="showFooter" class="footer">
@@ -18,8 +16,11 @@
 </template>
 
 <script>
+import { IconX } from '@/components/icons'
+
 export default {
   name: 'Modal',
+  components: { IconX },
   props: {
     show: Boolean,
     close: Function,

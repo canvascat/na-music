@@ -1,14 +1,14 @@
 <template>
-  <svg-icon icon-class="explicit" :style="svgStyle"></svg-icon>
+  <IconExplicit :style="svgStyle" />
 </template>
 
 <script>
-import SvgIcon from '@/components/SvgIcon.vue'
+import { IconExplicit } from '@/components/icons'
 
 export default {
   name: 'ExplicitSymbol',
   components: {
-    SvgIcon
+    IconExplicit
   },
   props: {
     size: {

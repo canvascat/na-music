@@ -5,7 +5,7 @@
       <div class="section">
         <div class="search-box">
           <div class="container">
-            <svg-icon icon-class="search" />
+            <IconSearch />
             <div class="input">
               <input
                 v-model="keyword"
@@ -58,11 +58,12 @@ import { throttle } from '@/utils/common'
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 import { resizeImage } from '@/utils/filters'
+import { IconSearch } from '@/components/icons'
 
 export default defineComponent({
   name: 'LoginUsername',
   components: {
-    ButtonTwoTone
+    ButtonTwoTone, IconSearch
   },
   data () {
     return {

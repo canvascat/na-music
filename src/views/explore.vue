@@ -16,7 +16,7 @@
         :class="{ active: showCatOptions }"
         @click="showCatOptions = !showCatOptions"
       >
-        <svg-icon icon-class="more"></svg-icon>
+        <IconMore />
       </div>
     </div>
 
@@ -76,14 +76,14 @@ import { playlistCategories } from '@/utils/staticData'
 
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 import CoverRow from '@/components/CoverRow.vue'
-import SvgIcon from '@/components/SvgIcon.vue'
+import { IconMore } from '@/components/icons'
 
 export default {
   name: 'Explore',
   components: {
     CoverRow,
     ButtonTwoTone,
-    SvgIcon
+    IconMore
   },
   beforeRouteUpdate (to, from, next) {
     this.showLoadMoreButton = false

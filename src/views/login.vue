@@ -2,7 +2,7 @@
   <div class="login">
     <div class="section-1">
       <img src="/img/logos/yesplaymusic.png"  alt="yesplaymusic"/>
-      <svg-icon icon-class="x"></svg-icon>
+      <IconX />
       <img src="/img/logos/netease-music.png"  alt="netease-music"/>
     </div>
     <div class="section-2">
@@ -17,7 +17,7 @@
             <div class="title">{{ $t('login.loginText') }}</div>
             <div class="info">{{ $t('login.accessToAll') }}</div>
           </div>
-          <svg-icon icon-class="arrow-right"></svg-icon>
+          <IconArrowRight />
         </div>
       </div>
       <div
@@ -31,7 +31,7 @@
             <div class="title">{{ $t('login.search') }}</div>
             <div class="info">{{ $t('login.readonly') }}</div>
           </div>
-          <svg-icon icon-class="arrow-right"></svg-icon>
+          <IconArrowRight />
         </div>
       </div>
     </div>
@@ -41,12 +41,12 @@
 <script>
 import NProgress from 'nprogress'
 
-import SvgIcon from '@/components/SvgIcon.vue'
+import { IconX, IconArrowRight } from '@/components/icons'
 
 export default {
   name: 'Login',
   components: {
-    SvgIcon
+    IconX, IconArrowRight
   },
   data () {
     return {

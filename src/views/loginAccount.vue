@@ -8,7 +8,7 @@
       <div class="section-2">
         <div v-show="mode === 'phone'" class="input-box">
           <div class="container" :class="{ active: inputFocus === 'phone' }">
-            <svg-icon icon-class="mobile" />
+            <IconMobile />
             <div class="inputs">
               <input
                 id="countryCode"
@@ -34,7 +34,7 @@
 
         <div v-show="mode === 'email'" class="input-box">
           <div class="container" :class="{ active: inputFocus === 'email' }">
-            <svg-icon icon-class="mail" />
+            <IconMail />
             <div class="inputs">
               <input
                 id="email"
@@ -50,7 +50,7 @@
         </div>
         <div v-show="mode !== 'qrCode'" class="input-box">
           <div class="container" :class="{ active: inputFocus === 'password' }">
-            <svg-icon icon-class="lock" />
+            <IconLock />
             <div class="inputs">
               <input
                 id="password"
@@ -119,9 +119,11 @@ import {
   loginQrCodeKey,
   loginQrCodeCheck
 } from '@/api/auth'
+import { IconMobile, IconMail, IconLock } from '@/components/icons'
 
 export default defineComponent({
   name: 'Login',
+  components: { IconMobile, IconMail, IconLock },
   data () {
     return {
       processing: false,

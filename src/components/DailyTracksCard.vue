@@ -12,7 +12,7 @@
       </div>
     </div>
     <button class="play-button" @click.stop="playDailyTracks">
-      <svg-icon icon-class="play" />
+      <IconPlay />
     </button>
   </div>
 </template>
@@ -23,6 +23,7 @@ import { dailyRecommendTracks } from '@/api/playlist'
 import { isAccountLoggedIn } from '@/utils/auth'
 import sample from 'lodash/sample'
 import { noop } from 'lodash'
+import { IconPlay } from '@/components/icons'
 
 const defaultCovers = [
   'https://p2.music.126.net/0-Ybpa8FrDfRgKYCTJD8Xg==/109951164796696795.jpg',
@@ -32,6 +33,7 @@ const defaultCovers = [
 
 export default {
   name: 'DailyTracksCard',
+  components: { IconPlay },
   data () {
     return { useAnimation: false }
   },
