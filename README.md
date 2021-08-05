@@ -5,22 +5,13 @@ https://v3.cn.vuejs.org/guide/migration/array-refs.html#%E8%BF%81%E7%A7%BB%E7%AD
 
 + store type
 + api type
-+ - filters
+
 
 ## Project setup
 ```bash
-yarn install
-# Compiles and hot-reloads for development
-yarn serve
-# Compiles and minifies for production
-yarn build
-# Run your unit tests
-yarn test:unit
-# Run your end-to-end tests
-yarn test:e2e
-# Lints and fixes files
-yarn lint
+yarn
+cd srcipts && tsc
+cd ../
+yarn pi:serve
+yarn dev
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
