@@ -1,7 +1,7 @@
 <template>
   <div class="lastfm-callback">
     <div class="section-1">
-      <img src="/img/logos/lastfm.png" />
+      <img src="/img/lastfm.png" />
     </div>
     <div class="message">{{ message }}</div>
     <button v-show="done" @click="close"> 完成 </button>

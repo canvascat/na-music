@@ -560,6 +560,21 @@
   resolved "https://registry.nlark.com/@vue/shared/download/@vue/shared-3.1.5.tgz"
   integrity sha1-dO46rZldCjmWpruVM9TSgFFO3gM=
 
+"@vueuse/core@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.nlark.com/@vueuse/core/download/@vueuse/core-5.2.0.tgz#c2c0b89d9506fdfca41cd3056e38478226bc5e31"
+  integrity sha1-wsC4nZUG/fykHNMFbjhHgia8XjE=
+  dependencies:
+    "@vueuse/shared" "5.2.0"
+    vue-demi "*"
+
+"@vueuse/shared@5.2.0":
+  version "5.2.0"
+  resolved "https://registry.nlark.com/@vueuse/shared/download/@vueuse/shared-5.2.0.tgz#894921cf5e5fc7f9afa7d7870800b0c9cd265e0c"
+  integrity sha1-iUkhz15fx/mvp9eHCACwyc0mXgw=
+  dependencies:
+    vue-demi "*"
+
 NeteaseCloudMusicApi@^4.0.17:
   version "4.0.17"
   resolved "https://registry.nlark.com/NeteaseCloudMusicApi/download/NeteaseCloudMusicApi-4.0.17.tgz"
@@ -3565,6 +3580,11 @@ vite@^2.4.4:
     rollup "^2.38.5"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vue-demi@*:
+  version "0.11.2"
+  resolved "https://registry.nlark.com/vue-demi/download/vue-demi-0.11.2.tgz#faa06da53887c493a695b997f4fcb4784a667990"
+  integrity sha1-+qBtpTiHxJOmlbmX9Py0eEpmeZA=
 
 vue-eslint-parser@^7.10.0:
   version "7.10.0"

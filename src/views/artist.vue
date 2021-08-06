@@ -182,6 +182,7 @@ import MvRow from '@/components/MvRow.vue'
 import Modal from '@/components/Modal.vue'
 import { IconPlay, IconMore } from '@/components/icons'
 import { useToast } from '@/hook'
+import { useClipboard } from '@vueuse/core'
 
 const [toast] = useToast()
 
@@ -324,14 +325,15 @@ export default {
     openMenu (e) {
       this.$refs.artistMenu.openMenu(e)
     },
-    copyUrl (id) {
-      this.$copyText('https://music.163.com/#/artist?id=' + id)
-        .then(() => {
-          toast(this.$t('toast.copied'))
-        })
-        .catch(error => {
-          toast(`${this.$t('toast.copyFailed')}${error}`)
-        })
+    async copyUrl (id) {
+      const source = 'https://music.163.com/#/artist?id=' + id
+      const { copy } = useClipboard({ source })
+      try {
+        await copy()
+        toast(this.$t('toast.copied'))
+      } catch (error) {
+        toast(`${this.$t('toast.copyFailed')}${error}`)
+      }
     }
   }
 }

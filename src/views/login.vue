@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="section-1">
-      <img src="/img/logos/netease-music.png"  alt="netease-music"/>
+      <img src="/img/netease-music.png"  alt="netease-music"/>
     </div>
     <div class="section-2">
       <div

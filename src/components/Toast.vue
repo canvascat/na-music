@@ -27,26 +27,26 @@ export default defineComponent({
     id: { type: String, default: '' },
     message: {
       type: String,
-      default: '',
+      default: ''
     },
     onClose: {
       type: Function as PropType<() => void>,
-      required: true,
+      required: true
     },
     offset: { type: Number, default: 20 },
-    zIndex: { type: Number, default: 0 },
+    zIndex: { type: Number, default: 0 }
   },
   emits: ['destroy'],
-  setup(props) {
+  setup (props) {
     const customStyle = computed(() => {
       return {
         // top: `${props.offset}px`,
-        zIndex: props.zIndex,
+        zIndex: props.zIndex
       }
     })
     const visible = ref(false)
     let timer = null
-    function startTimer() {
+    function startTimer () {
       if (props.duration > 0) {
         timer = setTimeout(() => {
           if (visible.value) {
@@ -55,11 +55,11 @@ export default defineComponent({
         }, props.duration)
       }
     }
-    function clearTimer() {
+    function clearTimer () {
       clearTimeout(timer)
       timer = null
     }
-    function close() {
+    function close () {
       visible.value = false
     }
 
@@ -75,9 +75,9 @@ export default defineComponent({
       visible,
       close,
       clearTimer,
-      startTimer,
+      startTimer
     }
-  },
+  }
 })
 </script>
 

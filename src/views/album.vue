@@ -141,6 +141,7 @@ import {
   IconExplicit
 } from '@/components/icons'
 import { useToast } from '@/hook'
+import { useClipboard } from '@vueuse/core'
 
 const [toast] = useToast()
 
@@ -284,14 +285,14 @@ export default {
     openMenu (e: MouseEvent) {
       this.$refs.albumMenu.openMenu(e)
     },
-    copyUrl (id: number) {
-      this.$copyText('https://music.163.com/#/album?id=' + id)
-        .then(() => {
-          toast(this.$t('toast.copied'))
-        })
-        .catch(error => {
-          toast(`${this.$t('toast.copyFailed')}${error}`)
-        })
+    async copyUrl (id: number) {
+      const source = 'https://music.163.com/#/album?id=' + id
+      try {
+        await useClipboard({ source }).copy()
+        toast(this.$t('toast.copied'))
+      } catch (error) {
+        toast(`${this.$t('toast.copyFailed')}${error}`)
+      }
     }
   }
 }
