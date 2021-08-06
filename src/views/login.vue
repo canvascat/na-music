@@ -39,12 +39,12 @@
 <script>
 import NProgress from 'nprogress'
 
-import { IconX, IconArrowRight } from '@/components/icons'
+import { IconArrowRight } from '@/components/icons'
 
 export default {
   name: 'Login',
   components: {
-    IconX, IconArrowRight
+    IconArrowRight
   },
   data () {
     return {

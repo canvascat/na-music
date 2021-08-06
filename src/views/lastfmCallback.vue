@@ -10,11 +10,9 @@
 
 <script>
 import { authGetSession } from '@/api/lastfm'
-import { IconX } from '@/components/icons'
 
 export default {
   name: 'LastfmCallback',
-  components: { IconX },
   data () {
     return { message: '请稍等...', done: false }
   },
