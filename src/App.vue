@@ -1,7 +1,7 @@
 <template>
-  <div id="app" :class="{ 'user-select-none': userSelectNone }">
+  <div id="app">
     <Navbar v-if="showNavbar" />
-    <main ref="main" :style="{ overflow: enableScrolling ? 'auto' : 'hidden' }">
+    <main>
       <router-view v-if="keepAlive" v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
@@ -12,9 +12,10 @@
     <transition name="slide-up">
       <Player v-if="enablePlayer" v-show="showPlayer" ref="player" />
     </transition>
-    <Toast />
-    <ModalAddTrackToPlaylist v-if="isAccountLoggedIn" />
-    <ModalNewPlaylist v-if="isAccountLoggedIn" />
+    <template v-if="userState">
+      <ModalAddTrackToPlaylist />
+      <ModalNewPlaylist />
+    </template>
     <transition v-if="enablePlayer" name="slide-up">
       <Lyrics v-show="showLyrics" />
     </transition>
@@ -22,81 +23,76 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, onMounted, onUnmounted } from 'vue'
 import ModalAddTrackToPlaylist from './components/ModalAddTrackToPlaylist.vue'
 import ModalNewPlaylist from './components/ModalNewPlaylist.vue'
 import Navbar from './components/Navbar.vue'
 import Player from './components/Player.vue'
-import Toast from './components/Toast.vue'
 import { isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth'
 import Lyrics from './views/lyrics.vue'
-import { mapState } from 'vuex'
+import { useStore } from './store'
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
   name: 'App',
   components: {
     Navbar,
     Player,
-    Toast,
     ModalAddTrackToPlaylist,
     ModalNewPlaylist,
     Lyrics
   },
-  data() {
+  setup () {
+    const route = useRoute()
+    const store = useStore()
+    const player = store.state.player
+    function handleKeydown (e: KeyboardEvent) {
+      if (e.code !== 'Space') return
+      if ((e.target as HTMLElement).tagName === 'INPUT') return false
+      if (route.name === 'mv') return false
+      e.preventDefault()
+      player.playOrPause()
+    }
+    onMounted(() => {
+      document.addEventListener('keydown', handleKeydown)
+    })
+    onUnmounted(() => {
+      document.removeEventListener('keydown', handleKeydown)
+    })
+    const userState = computed(isAccountLoggedIn)
+    const showLyrics = computed(() => store.state.showLyrics)
+    const settings = computed(() => store.state.settings)
+    const enablePlayer = computed(() => player.enabled && route.name !== 'lastfmCallback')
+    const showNavbar = computed(() => route.name !== 'lastfmCallback')
+    const keepAlive = computed(() => route.meta.keepAlive as boolean)
+    const showPlayer = computed(() => ![
+      'mv',
+      'loginUsername',
+      'login',
+      'loginAccount',
+      'lastfmCallback'
+    ].includes(route.name as string))
+
+    if (isLooseLoggedIn()) {
+      store.dispatch('fetchLikedSongs')
+      store.dispatch('fetchLikedSongsWithDetails')
+      store.dispatch('fetchLikedPlaylist')
+      if (userState.value) {
+        store.dispatch('fetchLikedAlbums')
+        store.dispatch('fetchLikedArtists')
+        store.dispatch('fetchLikedMVs')
+        store.dispatch('fetchCloudDisk')
+      }
+    }
+
     return {
-      userSelectNone: false
-    }
-  },
-  computed: {
-    ...mapState(['showLyrics', 'settings', 'player', 'enableScrolling']),
-    isAccountLoggedIn() {
-      return isAccountLoggedIn()
-    },
-    showPlayer() {
-      return (
-        [
-          'mv',
-          'loginUsername',
-          'login',
-          'loginAccount',
-          'lastfmCallback'
-        ].includes(this.$route.name) === false
-      )
-    },
-    enablePlayer() {
-      return this.player.enabled && this.$route.name !== 'lastfmCallback'
-    },
-    showNavbar() {
-      return this.$route.name !== 'lastfmCallback'
-    },
-    keepAlive() {
-      return this.$route.meta.keepAlive as boolean
-    }
-  },
-  created() {
-    window.addEventListener('keydown', this.handleKeydown)
-    this.fetchData()
-  },
-  methods: {
-    handleKeydown(e) {
-      if (e.code === 'Space') {
-        if (e.target.tagName === 'INPUT') return false
-        if (this.$route.name === 'mv') return false
-        e.preventDefault()
-        this.player.playOrPause()
-      }
-    },
-    fetchData() {
-      if (!isLooseLoggedIn()) return
-      this.$store.dispatch('fetchLikedSongs')
-      this.$store.dispatch('fetchLikedSongsWithDetails')
-      this.$store.dispatch('fetchLikedPlaylist')
-      if (isAccountLoggedIn()) {
-        this.$store.dispatch('fetchLikedAlbums')
-        this.$store.dispatch('fetchLikedArtists')
-        this.$store.dispatch('fetchLikedMVs')
-        this.$store.dispatch('fetchCloudDisk')
-      }
+      userState,
+      showPlayer,
+      showLyrics,
+      settings,
+      enablePlayer,
+      showNavbar,
+      keepAlive
     }
   }
 })
@@ -106,6 +102,7 @@ export default defineComponent({
 #app {
   width: 100%;
   transition: all 0.4s;
+  user-select: none;
 }
 
 main {

@@ -64,11 +64,6 @@ export interface StoreData {
   lastRefreshCookieDate: number
   loginMode: string
 }
-export interface ProxyConfig {
-  protocol: string
-  server: string
-  port?: number
-}
 
 export interface Shortcut {
   id: string
@@ -85,18 +80,11 @@ export interface StoreSetting {
   lyricFontSize: number
   outputDevice: string
   showPlaylistsByAppleMusic: boolean
-  enableUnblockNeteaseMusic: boolean
   automaticallyCacheSongs: boolean
   cacheLimit: false | number
-  nyancatStyle: boolean
   showLyricsTranslation: boolean
   lyricsBackground: boolean
-  minimizeToTray: boolean
-  enableDiscordRichPresence: boolean
   enableGlobalShortcut: boolean
-  showLibraryDefault: boolean
-  enabledPlaylistCategories: string[]
-  proxyConfig: ProxyConfig
   shortcuts: Shortcut[]
 }
 

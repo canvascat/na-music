@@ -45,14 +45,13 @@ import { computed, onMounted, ref, defineComponent } from 'vue'
 import store from '@/store'
 import { useRouter } from 'vue-router'
 
-async function createCoverColor(cover: string) {
-  const palette = await new Vibrant(cover, { colorCount: 1 }).getPalette()
-  const rgb = palette.Vibrant.rgb
+async function createCoverColor (cover: string) {
+  const rgb = await Vibrant.from(cover).maxColorCount(1).getPalette().then(p => p.Vibrant.rgb)
   const color = Color.rgb(rgb).darken(0.1).rgb().string()
   const color2 = Color.rgb(rgb).lighten(0.28).rotate(-30).rgb().string()
   return `linear-gradient(to top left, ${color}, ${color2})`
 }
-function normlizeURL(url?: string) {
+function normlizeURL (url?: string) {
   if (!url) return ''
   return url.replace('http://', 'https://') + '?param=512y512'
 }
@@ -68,10 +67,10 @@ export default defineComponent({
     IconNext,
     IconFm
   },
-  setup() {
+  setup () {
     const background = ref('')
     const player = store.state.player
-    async function updateBackground() {
+    async function updateBackground () {
       console.log(player.personalFMTrack, '----')
       background.value = await createCoverColor(normlizeURL(player.personalFMTrack?.album?.picUrl))
     }
@@ -82,19 +81,19 @@ export default defineComponent({
     const isPlaying = computed(() => player.playing && player.isPersonalFM)
     const artists = computed(() => track.value?.artists || [])
     const nextTrackCover = computed(() => normlizeURL(player.personalFMNextTrack?.album?.picUrl))
-    function play() {
+    function play () {
       player.playPersonalFM()
     }
-    function next() {
+    function next () {
       player.playNextTrack(true)
       updateBackground()
     }
     const router = useRouter()
-    function goToAlbum() {
+    function goToAlbum () {
       if (!this.track?.album.id) return
       router.push({ path: '/album/' + this.track.album.id })
     }
-    function moveToFMTrash() {
+    function moveToFMTrash () {
       player.moveToFMTrash()
       updateBackground()
     }

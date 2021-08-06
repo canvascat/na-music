@@ -2,7 +2,7 @@
   <div v-show="show" class="home">
     <div v-if="settings.showPlaylistsByAppleMusic !== false" class="index-row first-row">
       <div class="title">by Apple Music</div>
-      <CoverRow :type="'playlist'" :items="byAppleMusic" sub-text="appleMusic" :image-size="1024" />
+      <CoverRow type="playlist" :items="byAppleMusic" sub-text="appleMusic" :image-size="1024" />
     </div>
     <div class="index-row">
       <div class="title">
@@ -13,7 +13,7 @@
           }}
         </router-link>
       </div>
-      <CoverRow :type="'playlist'" :items="recommendPlaylist" sub-text="copywriter" />
+      <CoverRow type="playlist" :items="recommendPlaylist" sub-text="copywriter" />
     </div>
     <div class="index-row">
       <div class="title">For You</div>
@@ -54,13 +54,13 @@ import NProgress from 'nprogress'
 import CoverRow from '@/components/CoverRow.vue'
 import FMCard from '@/components/FMCard.vue'
 import DailyTracksCard from '@/components/DailyTracksCard.vue'
-import { random } from 'lodash'
 import store from '@/store'
+import { randomSlice } from '@/utils/common'
 
 export default defineComponent({
   name: 'Home',
   components: { CoverRow, DailyTracksCard, FMCard },
-  setup() {
+  setup () {
     const settings = store.state.settings
     const DailyTracksCardRef = ref()
     const show = ref(false)
@@ -69,7 +69,7 @@ export default defineComponent({
     const topList = ref([])
     const recommendArtists = ref([])
     NProgress.start()
-    function loadData() {
+    function loadData () {
       const lang = settings.musicLanguage
       fetchRecommendPlaylist({ limit: 10 }).then(data => {
         recommendPlaylist.value = data.result
@@ -79,22 +79,16 @@ export default defineComponent({
       newAlbums({ area: lang ?? 'ALL', limit: 10 }).then(data => {
         newReleasesAlbum.value = data.albums
       })
-
       toplistOfArtists({ zh: 1, ea: 2, jp: 4, kr: 3 }[lang]).then(data => {
-        // 随机取6个当作推荐艺人
-        const artists = data.list.artists
-        recommendArtists.value = [...Array(6)].map(() => artists.splice(random(artists.length), 1)[0])
+        recommendArtists.value = randomSlice(data.list.artists, 6)
       })
       toplists().then(data => {
-        const ids = [19723756, 180106, 60198, 3812895, 60131]
-        topList.value = data.list.filter(item => ids.includes(item.id))
+        topList.value = randomSlice(data.list, 5)
       })
       countDBSize()
       DailyTracksCardRef.value.loadDailyTracks()
     }
-    onActivated(() => {
-      loadData()
-    })
+    onActivated(loadData)
     return {
       settings,
       show,

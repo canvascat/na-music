@@ -3,7 +3,7 @@
     class="track"
     :class="trackClass"
     :style="trackStyle"
-    :title="showUnavailableSongInGreyStyle ? track.reason : ''"
+    :title="track.reason"
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
@@ -34,9 +34,7 @@
               :exclude="$parent.albumObject.artist.name"
               prefix="-"
           /></span>
-          <span v-if="isAlbum && track.mark === 1318912" class="explicit-symbol"
-            ><ExplicitSymbol
-          /></span>
+          <span v-if="isAlbum && track.mark === 1318912" class="explicit-symbol"><IconExplicit /></span>
           <span v-if="isTranslate" :title="translate" class="translate">
             ({{ translate }})
           </span>
@@ -45,8 +43,7 @@
           <span
             v-if="track.mark === 1318912"
             class="explicit-symbol before-artist"
-            ><ExplicitSymbol :size="15"
-          /></span>
+            ><IconExplicit /></span>
           <ArtistsInLine :artists="artists" />
         </div>
       </div>
@@ -72,14 +69,14 @@
 
 <script>
 import ArtistsInLine from '@/components/ArtistsInLine.vue'
-import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
 import { mapState } from 'vuex'
 import { formatTime } from '@/utils/filters'
-import { IconPlay, IconVolume, IconHeartSolid, IconHeart } from '@/components/icons'
+import { IconPlay, IconVolume, IconHeartSolid, IconHeart, IconExplicit } from '@/components/icons'
+import store from '@/store'
 
 export default {
   name: 'TrackListItem',
-  components: { ArtistsInLine, ExplicitSymbol, IconPlay, IconVolume, IconHeartSolid, IconHeart },
+  components: { ArtistsInLine, IconExplicit, IconPlay, IconVolume, IconHeartSolid, IconHeart },
 
   props: {
     trackProp: Object,
@@ -137,7 +134,7 @@ export default {
       return this.$parent.liked.songs.includes(this.track?.id)
     },
     isPlaying () {
-      return this.$store.state.player.currentTrack.id === this.track?.id
+      return store.state.player.currentTrack.id === this.track?.id
     },
     trackClass () {
       const trackClass = [this.type]
@@ -154,13 +151,6 @@ export default {
         (this.hover && this.$parent.rightClickedTrack.id === 0) ||
         this.isMenuOpened
       )
-    },
-    showUnavailableSongInGreyStyle () {
-      return true
-      // TODO: DELETE
-      // return process.env.IS_ELECTRON
-      //   ? !this.$store.state.settings.enableUnblockNeteaseMusic
-      //   : true
     },
     showLikeButton () {
       return this.type !== 'tracklist' && this.type !== 'cloudDisk'
@@ -239,6 +229,8 @@ button {
     color: var(--color-text);
     .svg-icon {
       margin-bottom: -3px;
+      width: 16px;
+      height: 1px;
     }
   }
 
@@ -246,6 +238,8 @@ button {
     margin-right: 2px;
     .svg-icon {
       margin-bottom: -3px;
+      width: 15px;
+      height: 15px;
     }
   }
 

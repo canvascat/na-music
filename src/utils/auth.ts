@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 import { logout } from '@/api/auth'
-import store from '@/store'
+import { store } from '@/store'
 
 export function doLogout () {
   logout()

@@ -1,4 +1,4 @@
-import store from '@/store'
+import { store } from '@/store'
 import request from '@/utils/request'
 import { mapTrackPlayableStatus } from '@/utils/common'
 import {
@@ -32,7 +32,7 @@ export async function getTrackDetail (ids: string | number) {
       songs: Song[],
       privileges: Privilege[]
     }>('/song/detail', { params: { ids } })
-    data.songs.map(song => {
+    data.songs.forEach(song => {
       const privileges = data.privileges.find(t => t.id === song.id)
       cacheTrackDetail(song, privileges)
     })

@@ -18,13 +18,14 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import { dailyRecommendTracks } from '@/api/playlist'
 import { isAccountLoggedIn } from '@/utils/auth'
 import sample from 'lodash/sample'
 import noop from 'lodash/noop'
 import { IconPlay } from '@/components/icons'
 import { useToast } from '@/hook'
+import store from '@/store'
 
 const [toast] = useToast()
 
@@ -37,38 +38,37 @@ const defaultCovers = [
 export default {
   name: 'DailyTracksCard',
   components: { IconPlay },
-  data() {
+  data () {
     return { useAnimation: false }
   },
   computed: {
     ...mapState(['dailyTracks']),
-    coverUrl() {
+    coverUrl () {
       return `${this.dailyTracks[0]?.al.picUrl || sample(defaultCovers)
         }?param=1024y1024`
     }
   },
-  created() {
+  created () {
     if (this.dailyTracks.length === 0) this.loadDailyTracks()
   },
   methods: {
-    ...mapMutations(['updateDailyTracks']),
-    loadDailyTracks() {
+    loadDailyTracks () {
       if (!isAccountLoggedIn()) return
       dailyRecommendTracks()
         .then(result => {
-          this.updateDailyTracks(result.data.dailySongs)
+          store.commit('updateDailyTracks', result.data.dailySongs)
         }, noop)
     },
-    goToDailyTracks() {
+    goToDailyTracks () {
       this.$router.push({ name: 'dailySongs' })
     },
-    playDailyTracks() {
+    playDailyTracks () {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
       }
       const trackIDs = this.dailyTracks.map(t => t.id)
-      this.$store.state.player.replacePlaylist(
+      store.state.player.replacePlaylist(
         trackIDs,
         '/daily/songs',
         'url',

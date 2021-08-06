@@ -1,8 +1,6 @@
 <template>
   <div class="login">
     <div class="section-1">
-      <img src="/img/logos/yesplaymusic.png"  alt="yesplaymusic"/>
-      <IconX />
       <img src="/img/logos/netease-music.png"  alt="netease-music"/>
     </div>
     <div class="section-2">

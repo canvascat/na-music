@@ -1,8 +1,6 @@
 <template>
   <div class="lastfm-callback">
     <div class="section-1">
-      <img src="/img/logos/yesplaymusic.png" />
-      <IconX />
       <img src="/img/logos/lastfm.png" />
     </div>
     <div class="message">{{ message }}</div>

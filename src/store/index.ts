@@ -1,15 +1,19 @@
-import { createStore } from 'vuex'
+import { createStore, Store, useStore as _useStore } from 'vuex'
 import { state } from './state'
 import { mutations } from './mutations'
 import { actions } from './actions'
 import { changeAppearance } from '@/utils/common'
 // vuex 自定义插件
 import saveToLocalStorage from './plugins/localStorage'
+import type { InjectionKey } from 'vue'
 import type { State } from './type'
 
 const plugins = [saveToLocalStorage]
 
-const store = createStore<State>({
+export const key: InjectionKey<Store<State>> = Symbol('STORE_KEY')
+export const useStore = () => _useStore(key)
+
+export const store = createStore<State>({
   state,
   mutations,
   actions,

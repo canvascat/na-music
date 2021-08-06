@@ -15,13 +15,14 @@ import { useToast } from '@/hook'
 const [toast] = useToast()
 
 type TrackID = number | 'first'
-
-export default class {
+// 关|开|单曲循环
+type RepeatMode = 'off' | 'on' | 'one'
+export class Player {
   // 播放器状态
   private _playing = false; // 是否正在播放中
   private _progress = 0; // 当前播放歌曲的进度
   private _enabled = false; // 是否启用Player
-  private _repeatMode = 'off'; // off | on | one
+  private _repeatMode: RepeatMode = 'off'; // off | on | one
   private _shuffle = false; // true | false
   private _volume = 1; // 0 to 1
   private _volumeBeforeMuted = 1; // 用于保存静音前的音量
@@ -41,19 +42,40 @@ export default class {
   // howler (https://github.com/goldfire/howler.js)
   private _howler: Howl = null;
   constructor () {
-    Object.defineProperty(this, '_howler', {
-      enumerable: false
-    })
+    Object.defineProperty(this, '_howler', { enumerable: false })
     // init
-    this._init()
+    // this._init()
     // Object.defineProperty(window, 'yesplaymusic', { value: { player: this } })
+  }
+
+  async init () {
+    this._loadSelfFromLocalStorage()
+    Howler.autoUnlock = false
+    Howler.usingWebAudio = true
+    Howler.volume(this.volume)
+
+    if (this._enabled) {
+      // 恢复当前播放歌曲
+      this._replaceCurrentTrack(this._currentTrack.id, false).then(() => {
+        this._howler?.seek(+localStorage.getItem('playerCurrentTrackTime') || 0)
+      }) // update audio source and init howler
+      this._initMediaSession()
+    }
+
+    this._setIntervals()
+
+    // 初始化私人FM
+    if (!this._personalFMTrack || !this._personalFMNextTrack) {
+      const { data: fms } = await personalFM()
+      ;[this._personalFMTrack, this._personalFMNextTrack] = fms
+    }
   }
 
   get repeatMode () {
     return this._repeatMode
   }
 
-  set repeatMode (mode) {
+  set repeatMode (mode: RepeatMode) {
     if (this._isPersonalFM) return
     if (!['off', 'on', 'one'].includes(mode)) {
       console.warn("repeatMode: invalid args, must be 'on' | 'off' | 'one'")
@@ -157,29 +179,6 @@ export default class {
 
   get isCurrentTrackLiked () {
     return store.state.liked.songs.includes(this.currentTrack.id)
-  }
-
-  private async _init () {
-    this._loadSelfFromLocalStorage()
-    Howler.autoUnlock = false
-    Howler.usingWebAudio = true
-    Howler.volume(this.volume)
-
-    if (this._enabled) {
-      // 恢复当前播放歌曲
-      this._replaceCurrentTrack(this._currentTrack.id, false).then(() => {
-        this._howler?.seek(+localStorage.getItem('playerCurrentTrackTime') || 0)
-      }) // update audio source and init howler
-      this._initMediaSession()
-    }
-
-    this._setIntervals()
-
-    // 初始化私人FM
-    if (!this._personalFMTrack || !this._personalFMNextTrack) {
-      const { data: fms } = await personalFM()
-      ;[this._personalFMTrack, this._personalFMNextTrack] = fms
-    }
   }
 
   private _setIntervals () {
@@ -603,11 +602,6 @@ export default class {
     fmTrash(this._personalFMTrack.id)
   }
 
-  // TODO: DELETE
-  sendSelfToIpcMain () {
-    return false
-  }
-
   switchRepeatMode () {
     if (this._repeatMode === 'on') {
       this.repeatMode = 'one'
@@ -623,7 +617,7 @@ export default class {
   }
 
   clearPlayNextList () {
-    this._playNextList = []
+    this._playNextList.length = 0
   }
 
   removeTrackFromQueue (index: number) {

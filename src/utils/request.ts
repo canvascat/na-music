@@ -13,11 +13,6 @@ service.interceptors.request.use((config) => {
   //   config.params.cookie = `MUSIC_U=${Cookies.get('MUSIC_U')};`;
   // }
 
-  const proxy = JSON.parse(localStorage.getItem('settings')).proxyConfig
-  if (['HTTP', 'HTTPS'].includes(proxy.protocol)) {
-    config.params.proxy = `${proxy.protocol}://${proxy.server}:${proxy.port}`
-  }
-
   return config
 })
 

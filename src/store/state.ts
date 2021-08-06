@@ -2,7 +2,7 @@ import initLocalStorage from './initLocalStorage'
 import pkg from '../../package.json'
 import { updateApp } from '@/utils/updateApp'
 import type { State } from './type'
-import Player from '@/utils/Player'
+import { Player } from '@/utils/Player'
 
 if (localStorage.getItem('appVersion') === null) {
   localStorage.setItem('settings', JSON.stringify(initLocalStorage.settings))
@@ -17,14 +17,12 @@ const player = new Proxy(new Player(), {
     target[prop] = val
     if (prop === '_howler') return true
     target.saveSelfToLocalStorage()
-    target.sendSelfToIpcMain()
     return true
   }
 })
 
 export const state: State = {
   showLyrics: false,
-  enableScrolling: true,
   liked: {
     songs: [],
     songsWithDetails: [], // 只有前12首

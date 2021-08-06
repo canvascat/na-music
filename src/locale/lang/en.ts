@@ -151,11 +151,8 @@ export default {
     clearSongsCache: 'Clear Songs Cache',
     cacheCount: 'Cached {song} songs ({size})',
     showLyricsTranslation: 'Show lyrics translation',
-    minimizeToTray: 'Minimize to tray',
     showPlaylistsByAppleMusic: 'Show playlists by Apple Music',
-    enableDiscordRichPresence: 'Enable Discord Rich Presence',
     enableGlobalShortcut: 'Enable Global Shortcut',
-    showLibraryDefault: 'Show library default',
     lyricsBackground: {
       text: 'Show Lyrics Background',
       off: 'Off',

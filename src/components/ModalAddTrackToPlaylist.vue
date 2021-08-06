@@ -3,7 +3,6 @@
     class="add-track-to-playlist-modal"
     :show="show"
     :close="close"
-    :show-footer="false"
     title="添加到歌单"
     width="25vw"
   >
@@ -28,7 +27,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import Modal from '@/components/Modal.vue'
 import { IconPlus } from '@/components/icons'
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
@@ -43,7 +42,7 @@ export default {
     Modal,
     IconPlus
   },
-  data() {
+  data () {
     return {
       playlists: []
     }
@@ -51,23 +50,18 @@ export default {
   computed: {
     ...mapState(['modals', 'data', 'liked']),
     show: {
-      get() {
+      get () {
         return this.modals.addTrackToPlaylistModal.show
       },
-      set(value) {
+      set (value) {
         this.updateModal({
           modalName: 'addTrackToPlaylistModal',
           key: 'show',
           value
         })
-        if (value) {
-          this.$store.commit('enableScrolling', false)
-        } else {
-          this.$store.commit('enableScrolling', true)
-        }
       }
     },
-    ownPlaylists() {
+    ownPlaylists () {
       return this.liked.playlists.filter(
         p =>
           p.creator.userId === this.data.user.userId &&
@@ -78,10 +72,10 @@ export default {
   methods: {
     resizeImage,
     ...mapMutations(['updateModal']),
-    close() {
+    close () {
       this.show = false
     },
-    addTrackToPlaylist(playlistID) {
+    addTrackToPlaylist (playlistID) {
       addOrRemoveTrackFromPlaylist({
         op: 'add',
         pid: playlistID,
@@ -95,7 +89,7 @@ export default {
         }
       })
     },
-    newPlaylist() {
+    newPlaylist () {
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'afterCreateAddTrackID',

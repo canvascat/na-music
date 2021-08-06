@@ -29,7 +29,11 @@
 </template>
 
 <script>
+
 import { IconPlay } from '@/components/icons'
+import { useStore } from '@/store'
+
+const store = useStore()
 
 export default {
   components: { IconPlay },
@@ -76,7 +80,7 @@ export default {
   },
   methods: {
     play () {
-      const player = this.$store.state.player
+      const player = store.state.player
       const playActions = {
         album: player.playAlbumByID,
         playlist: player.playPlaylistByID,

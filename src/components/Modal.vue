@@ -6,9 +6,7 @@
         <button class="close" @click="close"><IconX /></button>
       </div>
       <div class="content"><slot></slot></div>
-      <div v-if="showFooter" class="footer">
-        <!-- <button>取消</button>
-        <button class="primary">确定</button> -->
+      <div v-if="$slots.footer" class="footer">
         <slot name="footer"></slot>
       </div>
     </div>
@@ -27,10 +25,6 @@ export default {
     title: {
       type: String,
       default: 'Title'
-    },
-    showFooter: {
-      type: Boolean,
-      default: true
     },
     width: {
       type: String,

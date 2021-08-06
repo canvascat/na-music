@@ -72,6 +72,7 @@ import ContextMenu from '@/components/ContextMenu.vue'
 import locale from '@/locale'
 import { resizeImage } from '@/utils/filters'
 import { useToast } from '@/hook'
+import store from '@/store'
 
 const [toast] = useToast()
 
@@ -133,7 +134,7 @@ export default {
       default: 'id'
     }
   },
-  data() {
+  data () {
     return {
       rightClickedTrack: {
         id: 0,
@@ -147,21 +148,21 @@ export default {
   },
   computed: {
     ...mapState(['liked', 'player']),
-    isRightClickedTrackLiked() {
+    isRightClickedTrackLiked () {
       return this.liked.songs.includes(this.rightClickedTrack?.id)
     },
-    rightClickedTrackComputed() {
+    rightClickedTrackComputed () {
       return this.type === 'cloudDisk'
         ? {
-          id: 0,
-          name: '',
-          ar: [{ name: '' }],
-          al: { picUrl: '' }
-        }
+            id: 0,
+            name: '',
+            ar: [{ name: '' }],
+            al: { picUrl: '' }
+          }
         : this.rightClickedTrack
     }
   },
-  created() {
+  created () {
     if (this.type === 'tracklist') {
       this.listStyles = {
         display: 'grid',
@@ -174,12 +175,12 @@ export default {
     resizeImage,
     ...mapMutations(['updateModal']),
     ...mapActions(['nextTrack', 'likeATrack']),
-    openMenu(e, track, index = -1) {
+    openMenu (e, track, index = -1) {
       this.rightClickedTrack = track
       this.rightClickedTrackIndex = index
       this.$refs.menu.openMenu(e)
     },
-    closeMenu() {
+    closeMenu () {
       this.rightClickedTrack = {
         id: 0,
         name: '',
@@ -188,7 +189,7 @@ export default {
       }
       this.rightClickedTrackIndex = -1
     },
-    playThisList(trackID) {
+    playThisList (trackID) {
       if (this.dbclickTrackFunc === 'default') {
         this.playThisListDefault(trackID)
       } else if (this.dbclickTrackFunc === 'none') {
@@ -208,7 +209,7 @@ export default {
         this.player.replacePlaylist(trackIDs, this.id, 'cloudDisk', trackID)
       }
     },
-    playThisListDefault(trackID) {
+    playThisListDefault (trackID) {
       if (this.type === 'playlist') {
         this.player.playPlaylistByID(this.id, trackID)
       } else if (this.type === 'album') {
@@ -218,16 +219,16 @@ export default {
         this.player.replacePlaylist(trackIDs, this.id, 'artist', trackID)
       }
     },
-    play() {
+    play () {
       this.player.addTrackToPlayNext(this.rightClickedTrack.id, true)
     },
-    addToQueue() {
+    addToQueue () {
       this.player.addTrackToPlayNext(this.rightClickedTrack.id)
     },
-    like() {
+    like () {
       this.likeATrack(this.rightClickedTrack.id)
     },
-    addTrackToPlaylist() {
+    addTrackToPlaylist () {
       if (!isAccountLoggedIn()) {
         toast(locale.t('toast.needToLogin'))
         return
@@ -243,7 +244,7 @@ export default {
         value: this.rightClickedTrack.id
       })
     },
-    removeTrackFromPlaylist() {
+    removeTrackFromPlaylist () {
       if (!isAccountLoggedIn()) {
         toast(locale.t('toast.needToLogin'))
         return
@@ -264,12 +265,12 @@ export default {
         })
       }
     },
-    removeTrackFromQueue() {
-      this.$store.state.player.removeTrackFromQueue(
+    removeTrackFromQueue () {
+      store.state.player.removeTrackFromQueue(
         this.rightClickedTrackIndex
       )
     },
-    removeTrackFromCloudDisk() {
+    removeTrackFromCloudDisk () {
       if (confirm(`确定要从云盘删除 ${this.rightClickedTrack.songName}？`)) {
         const trackID = this.rightClickedTrack.songId
         cloudDiskTrackDelete(trackID).then(data => {
@@ -279,7 +280,7 @@ export default {
           const newCloudDisk = this.liked.cloudDisk.filter(
             t => t.songId !== trackID
           )
-          this.$store.commit('updateLikedXXX', {
+          store.commit('updateLikedXXX', {
             name: 'cloudDisk',
             data: newCloudDisk
           })

@@ -26,7 +26,7 @@ export default {
   components: {
     Modal
   },
-  data() {
+  data () {
     return {
       title: '',
       privatePlaylist: false
@@ -35,33 +35,28 @@ export default {
   computed: {
     ...mapState(['modals']),
     show: {
-      get() {
+      get () {
         return this.modals.newPlaylistModal.show
       },
-      set(value) {
+      set (value) {
         this.updateModal({
           modalName: 'newPlaylistModal',
           key: 'show',
           value
         })
-        if (value) {
-          this.$store.commit('enableScrolling', false)
-        } else {
-          this.$store.commit('enableScrolling', true)
-        }
       }
     }
   },
   methods: {
     ...mapMutations(['updateModal', 'updateData']),
     ...mapActions(['fetchLikedPlaylist']),
-    close() {
+    close () {
       this.show = false
       this.title = ''
       this.privatePlaylist = false
       this.resetAfterCreateAddTrackID()
     },
-    createPlaylist() {
+    createPlaylist () {
       const params = { name: this.title }
       if (this.private) params.type = 10
       createPlaylist(params).then(data => {
@@ -87,7 +82,7 @@ export default {
         }
       })
     },
-    resetAfterCreateAddTrackID() {
+    resetAfterCreateAddTrackID () {
       this.updateModal({
         modalName: 'newPlaylistModal',
         key: 'AfterCreateAddTrackID',

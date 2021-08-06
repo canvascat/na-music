@@ -33,7 +33,7 @@
         </div>
         <div class="date-and-count">
           <span v-if="album.mark === 1056768" class="explicit-symbol">
-            <ExplicitSymbol />
+            <IconExplicit />
           </span>
           <span :title="formatDate(album.publishTime)">
             {{
@@ -93,7 +93,6 @@
     <Modal
       :show="showFullDescription"
       :close="toggleFullDescription"
-      :show-footer="false"
       :click-outside-hide="true"
       :title="$t('album.albumDesc')"
     >
@@ -119,7 +118,7 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import NProgress from 'nprogress'
 import { getArtistAlbum } from '@/api/artist'
 import { getTrackDetail } from '@/api/track'
@@ -128,7 +127,6 @@ import { splitSoundtrackAlbumTitle, splitAlbumTitle } from '@/utils/common'
 import { isAccountLoggedIn } from '@/utils/auth'
 import { resizeImage, formatAlbumType, formatDate, formatTime } from '@/utils/filters'
 
-import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
 import ButtonTwoTone from '@/components/ButtonTwoTone.vue'
 import ContextMenu from '@/components/ContextMenu.vue'
 import TrackList from '@/components/TrackList.vue'
@@ -139,7 +137,8 @@ import {
   IconPlay,
   IconHeartSolid,
   IconHeart,
-  IconMore
+  IconMore,
+  IconExplicit
 } from '@/components/icons'
 import { useToast } from '@/hook'
 
@@ -151,7 +150,7 @@ export default {
     Cover,
     ButtonTwoTone,
     TrackList,
-    ExplicitSymbol,
+    IconExplicit,
     CoverRow,
     Modal,
     ContextMenu,
@@ -160,12 +159,12 @@ export default {
     IconHeart,
     IconMore
   },
-  beforeRouteUpdate(to, from, next) {
+  beforeRouteUpdate (to, from, next) {
     this.show = false
     this.loadData(to.params.id)
     next()
   },
-  data() {
+  data () {
     return {
       show: false,
       album: {
@@ -185,12 +184,12 @@ export default {
   },
   computed: {
     ...mapState(['player', 'data']),
-    albumTime() {
+    albumTime () {
       let time = 0
       this.tracks.map(t => (time = time + t.dt))
       return time
     },
-    filteredMoreAlbums() {
+    filteredMoreAlbums () {
       const moreAlbums = this.moreAlbums.filter(a => a.id !== this.album.id)
       const realAlbums = moreAlbums.filter(a => a.type === '专辑')
       const eps = moreAlbums.filter(
@@ -208,7 +207,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.loadData(this.$route.params.id)
   },
   methods: {
@@ -216,10 +215,10 @@ export default {
     formatDate,
     formatTime,
     formatAlbumType,
-    playAlbumByID(id, trackID = 'first') {
+    playAlbumByID (id, trackID = 'first') {
       this.$store.state.player.playAlbumByID(id, trackID)
     },
-    likeAlbum(toast = false) {
+    likeAlbum (show = false) {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
@@ -229,20 +228,17 @@ export default {
         t: this.dynamicDetail.isSub ? 0 : 1
       })
         .then(data => {
-          if (data.code === 200) {
-            this.dynamicDetail.isSub = !this.dynamicDetail.isSub
-            if (toast === true) {
-              toast(
-                this.dynamicDetail.isSub ? '已保存到音乐库' : '已从音乐库删除'
-              )
-            }
-          }
+          if (data.code !== 200) return
+          this.dynamicDetail.isSub = !this.dynamicDetail.isSub
+          if (!show) return
+          const message = this.dynamicDetail.isSub ? '已保存到音乐库' : '已从音乐库删除'
+          toast(message)
         })
         .catch(error => {
           toast(`${error.response.data.message || error}`)
         })
     },
-    formatTitle() {
+    formatTitle () {
       const splitTitle = splitSoundtrackAlbumTitle(this.album.name)
       const splitTitle2 = splitAlbumTitle(splitTitle.title)
       this.title = splitTitle2.title
@@ -255,7 +251,7 @@ export default {
             : splitTitle.subtitle
       }
     },
-    loadData(id) {
+    loadData (id) {
       setTimeout(() => {
         if (!this.show) NProgress.start()
       }, 1000)
@@ -281,18 +277,14 @@ export default {
         this.dynamicDetail = data
       })
     },
-    toggleFullDescription() {
+    toggleFullDescription () {
       this.showFullDescription = !this.showFullDescription
-      if (this.showFullDescription) {
-        this.$store.commit('enableScrolling', false)
-      } else {
-        this.$store.commit('enableScrolling', true)
-      }
+      // TODO: change scroll
     },
-    openMenu(e) {
+    openMenu (e: MouseEvent) {
       this.$refs.albumMenu.openMenu(e)
     },
-    copyUrl(id) {
+    copyUrl (id: number) {
       this.$copyText('https://music.163.com/#/album?id=' + id)
         .then(() => {
           toast(this.$t('toast.copied'))
@@ -373,6 +365,8 @@ export default {
   margin-right: 4px;
   .svg-icon {
     margin-bottom: -3px;
+    width: 16px;
+    height: 16px;
   }
 }
 

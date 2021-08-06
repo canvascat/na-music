@@ -144,7 +144,6 @@
     <Modal
       :show="showFullDescription"
       :close="toggleFullDescription"
-      :show-footer="false"
       :click-outside-hide="true"
       :title="$t('artist.artistDesc')"
     >
@@ -162,7 +161,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import {
   getArtist,
   getArtistAlbum,
@@ -199,12 +198,12 @@ export default {
     IconPlay,
     IconMore
   },
-  beforeRouteUpdate(to, from, next) {
+  beforeRouteUpdate (to, from, next) {
     this.artist.img1v1Url =
       'https://p1.music.126.net/VnZiScyynLG7atLIZ2YPkw==/18686200114669622.jpg'
     this.loadData(to.params.id, next)
   },
-  data() {
+  data () {
     return {
       show: false,
       artist: {
@@ -231,15 +230,15 @@ export default {
   },
   computed: {
     ...mapState(['player']),
-    albums() {
+    albums () {
       return this.albumsData.filter(a => a.type === '专辑')
     },
-    eps() {
+    eps () {
       return this.albumsData.filter(a =>
         ['EP/Single', 'EP', 'Single'].includes(a.type)
       )
     },
-    latestMV() {
+    latestMV () {
       const mv = this.mvs[0] || {}
       return {
         id: mv.id || mv.vid,
@@ -249,7 +248,7 @@ export default {
       }
     }
   },
-  activated() {
+  activated () {
     if (this.artist?.id?.toString() !== this.$route.params.id) {
       this.loadData(this.$route.params.id)
     }
@@ -258,12 +257,11 @@ export default {
     formatAlbumType,
     formatDate,
     resizeImage,
-    loadData(id, next = undefined) {
+    loadData (id, next = undefined) {
       setTimeout(() => {
         if (!this.show) NProgress.start()
       }, 1000)
       this.show = false
-      this.$parent.$refs.main.scrollTo({ top: 0 })
       getArtist(id).then(data => {
         this.artist = data.artist
         this.popularTracks = data.hotSongs
@@ -283,16 +281,16 @@ export default {
         this.similarArtists = data.artists
       })
     },
-    goToAlbum(id) {
+    goToAlbum (id) {
       this.$router.push({
         name: 'album',
         params: { id }
       })
     },
-    goToMv(id) {
+    goToMv (id) {
       this.$router.push({ path: '/mv/' + id })
     },
-    playPopularSongs(trackID = 'first') {
+    playPopularSongs (trackID = 'first') {
       const trackIDs = this.popularTracks.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
@@ -301,7 +299,7 @@ export default {
         trackID
       )
     },
-    followArtist() {
+    followArtist () {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
@@ -313,24 +311,20 @@ export default {
         if (data.code === 200) this.artist.followed = !this.artist.followed
       })
     },
-    scrollTo(div, block = 'center') {
+    scrollTo (div, block = 'center') {
       document.getElementById(div).scrollIntoView({
         behavior: 'smooth',
         block
       })
     },
-    toggleFullDescription() {
+    toggleFullDescription () {
       this.showFullDescription = !this.showFullDescription
-      if (this.showFullDescription) {
-        this.$store.commit('enableScrolling', false)
-      } else {
-        this.$store.commit('enableScrolling', true)
-      }
+      // TODO: change scroll
     },
-    openMenu(e) {
+    openMenu (e) {
       this.$refs.artistMenu.openMenu(e)
     },
-    copyUrl(id) {
+    copyUrl (id) {
       this.$copyText('https://music.163.com/#/artist?id=' + id)
         .then(() => {
           toast(this.$t('toast.copied'))

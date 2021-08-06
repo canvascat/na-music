@@ -174,7 +174,6 @@
     <Modal
       :show="showFullDescription"
       :close="toggleFullDescription"
-      :show-footer="false"
       :click-outside-hide="true"
       title="歌单介绍"
     >{{ playlist.description }}</Modal>
@@ -209,7 +208,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapMutations, mapActions, mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import NProgress from 'nprogress'
 import {
   getPlaylistDetail,
@@ -227,7 +226,7 @@ import Modal from '@/components/Modal.vue'
 import { IconLock, IconSearch, IconHeart, IconHeartSolid, IconMore, IconPlay } from '@/components/icons'
 import { resizeImage, formatDate } from '@/utils/filters'
 import { useToast } from '@/hook'
-import { specialPlaylist } from '@/const';
+import { specialPlaylist } from '@/const'
 
 const [toast] = useToast()
 
@@ -248,12 +247,12 @@ export default defineComponent({
   },
   directives: {
     focus: {
-      mounted(el) {
+      mounted (el) {
         el.focus()
       }
     }
   },
-  data() {
+  data () {
     return {
       show: false,
       playlist: {
@@ -279,19 +278,19 @@ export default defineComponent({
   },
   computed: {
     ...mapState(['player', 'data']),
-    isLikeSongsPage() {
+    isLikeSongsPage () {
       return this.$route.name === 'likedSongs'
     },
-    specialPlaylistInfo() {
+    specialPlaylistInfo () {
       return specialPlaylist[this.playlist.id]
     },
-    isUserOwnPlaylist() {
+    isUserOwnPlaylist () {
       return (
         this.playlist.creator.userId === this.data.user.userId &&
         this.playlist.id !== this.data.likedSongPlaylistID
       )
     },
-    filteredTracks() {
+    filteredTracks () {
       return this.tracks.filter(
         track =>
           (track.name &&
@@ -312,7 +311,7 @@ export default defineComponent({
       )
     }
   },
-  created() {
+  created () {
     if (this.$route.name === 'likedSongs') {
       this.loadData(this.data.likedSongPlaylistID)
     } else {
@@ -326,7 +325,7 @@ export default defineComponent({
     resizeImage,
     formatDate,
     ...mapMutations(['appendTrackToPlayerList']),
-    playPlaylistByID(trackID = 'first') {
+    playPlaylistByID (trackID = 'first') {
       const trackIDs = this.playlist.trackIds.map(t => t.id)
       this.$store.state.player.replacePlaylist(
         trackIDs,
@@ -335,7 +334,7 @@ export default defineComponent({
         trackID
       )
     },
-    likePlaylist(showToast = false) {
+    likePlaylist (showToast = false) {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
@@ -357,7 +356,7 @@ export default defineComponent({
         })
       })
     },
-    loadData(id, next = undefined) {
+    loadData (id, next = undefined) {
       this.id = id
       getPlaylistDetail(this.id, true)
         .then(data => {
@@ -376,15 +375,11 @@ export default defineComponent({
           }
         })
     },
-    loadMore(loadNum = 100) {
-      let trackIDs = this.playlist.trackIds.filter((t, index) => {
-        if (
-          index > this.lastLoadedTrackIndex &&
-          index <= this.lastLoadedTrackIndex + loadNum
-        ) {
-          return t
-        }
-      })
+    loadMore (loadNum = 100) {
+      let trackIDs = this.playlist.trackIds.filter((t, index) =>
+        index > this.lastLoadedTrackIndex &&
+        index <= this.lastLoadedTrackIndex + loadNum && t
+      )
       trackIDs = trackIDs.map(t => t.id)
       getTrackDetail(trackIDs.join(',')).then(data => {
         this.tracks.push(...data.songs)
@@ -393,10 +388,10 @@ export default defineComponent({
         this.hasMore = this.lastLoadedTrackIndex + 1 !== this.playlist.trackIds.length
       })
     },
-    openMenu(e) {
+    openMenu (e) {
       this.$refs.playlistMenu.openMenu(e)
     },
-    deletePlaylist() {
+    deletePlaylist () {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
@@ -413,10 +408,10 @@ export default defineComponent({
         })
       }
     },
-    editPlaylist() {
+    editPlaylist () {
       alert('此功能开发中')
     },
-    searchInPlaylist() {
+    searchInPlaylist () {
       this.displaySearchInPlaylist =
         !this.displaySearchInPlaylist || this.isLikeSongsPage
       if (this.displaySearchInPlaylist === false) {
@@ -427,26 +422,22 @@ export default defineComponent({
         this.loadMore(500)
       }
     },
-    removeTrack(trackID) {
+    removeTrack (trackID) {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
       }
       this.tracks = this.tracks.filter(t => t.id !== trackID)
     },
-    inputDebounce() {
+    inputDebounce () {
       if (this.debounceTimeout) clearTimeout(this.debounceTimeout)
       this.debounceTimeout = setTimeout(() => {
         this.searchKeyWords = this.inputSearchKeyWords
       }, 600)
     },
-    toggleFullDescription() {
+    toggleFullDescription () {
       this.showFullDescription = !this.showFullDescription
-      if (this.showFullDescription) {
-        this.$store.commit('enableScrolling', false)
-      } else {
-        this.$store.commit('enableScrolling', true)
-      }
+      // TODO: change scroll
     }
   }
 })
@@ -554,6 +545,7 @@ export default defineComponent({
     animation-duration: 0.8s;
     animation-name: letterSpacing4;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     -webkit-background-clip: text;
     // background-image: linear-gradient(
     //   225deg,

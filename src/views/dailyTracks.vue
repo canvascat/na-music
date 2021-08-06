@@ -42,7 +42,6 @@ export default {
     } else {
       this.show = true
     }
-    this.$parent.$refs.main.scrollTo(0, 0)
   },
   methods: {
     ...mapMutations(['updateDailyTracks']),
@@ -94,6 +93,7 @@ export default {
     animation-duration: 0.8s;
     animation-name: letterSpacing4;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     -webkit-background-clip: text;
     // background-image: linear-gradient(
     //   225deg,

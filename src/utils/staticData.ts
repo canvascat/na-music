@@ -30,7 +30,7 @@ export const byAppleMusic = [
     id: 5277778542
   }
 ]
-
+// allBigCats: ['语种', '风格', '场景', '情感', '主题'],
 export const playlistCategories = [
   {
     name: '全部',
@@ -418,3 +418,9 @@ export const playlistCategories = [
     bigCat: '主题'
   }
 ]
+
+const o = Object.create(null)
+playlistCategories.forEach(item => {
+  (o[item.bigCat] ??= []).push(item.name)
+})
+Object.entries(o).map((items, title) => ({ title, items }))

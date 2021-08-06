@@ -6,9 +6,6 @@ import type { State } from './type'
 export const mutations: MutationTree<State> = {
   updateLikedXXX (state, { name, data }) {
     state.liked[name] = data
-    if (name === 'songs') {
-      state.player.sendSelfToIpcMain()
-    }
   },
   changeLang (state, lang) {
     state.settings.lang = lang
@@ -28,26 +25,8 @@ export const mutations: MutationTree<State> = {
   updateData (state, { key, value }) {
     state.data[key] = value
   },
-  togglePlaylistCategory (state, name) {
-    const index = state.settings.enabledPlaylistCategories.findIndex(
-      c => c === name
-    )
-    if (index !== -1) {
-      state.settings.enabledPlaylistCategories = state.settings.enabledPlaylistCategories.filter(
-        c => c !== name
-      )
-    } else {
-      state.settings.enabledPlaylistCategories.push(name)
-    }
-  },
   updateModal (state, { modalName, key, value }) {
     state.modals[modalName][key] = value
-    if (key === 'show') {
-      // 100ms的延迟是为等待右键菜单blur之后再disableScrolling
-      value === true
-        ? setTimeout(() => (state.enableScrolling = false), 100)
-        : (state.enableScrolling = true)
-    }
   },
   toggleLyrics (state) {
     state.showLyrics = !state.showLyrics
@@ -68,8 +47,5 @@ export const mutations: MutationTree<State> = {
   },
   restoreDefaultShortcuts (state) {
     state.settings.shortcuts = cloneDeep(shortcuts)
-  },
-  enableScrolling (state, status = null) {
-    state.enableScrolling = status || !state.enableScrolling
   }
 }

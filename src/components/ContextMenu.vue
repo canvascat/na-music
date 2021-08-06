@@ -40,7 +40,6 @@ export default {
       if (this.$parent.closeMenu !== undefined) {
         this.$parent.closeMenu()
       }
-      this.$store.commit('enableScrolling', true)
     },
 
     openMenu (e) {
@@ -52,7 +51,6 @@ export default {
         }.bind(this)
       )
       e.preventDefault()
-      this.$store.commit('enableScrolling', false)
     }
   }
 }

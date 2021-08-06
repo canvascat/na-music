@@ -1,8 +1,8 @@
 import * as API from 'NeteaseCloudMusicApi'
-import express, { Express } from 'express'
+import * as express from 'express'
 import { join } from 'path'
 
-export function registerAllRouter (app: Express) {
+export function registerAllRouter (app: express.Express) {
   app.set('trust proxy', true)
   // CORS & Preflight request
   app.use((req, res, next) => {

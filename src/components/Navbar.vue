@@ -61,10 +61,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { mapState } from "vuex";
-import { isLooseLoggedIn, doLogout } from "@/utils/auth";
-import ContextMenu from "@/components/ContextMenu.vue";
+import { defineComponent } from 'vue'
+import { mapState } from 'vuex'
+import { isLooseLoggedIn, doLogout } from '@/utils/auth'
+import ContextMenu from '@/components/ContextMenu.vue'
 import {
   IconArrowLeft,
   IconArrowRight,
@@ -72,14 +72,14 @@ import {
   IconSettings,
   IconLogin,
   IconLogout,
-  IconGithub,
-} from "@/components/icons"
+  IconGithub
+} from '@/components/icons'
 
 // icons by https://github.com/microsoft/vscode-codicons
 // import 'vscode-codicons/dist/codicon.css'
 
 export default defineComponent({
-  name: "Navbar",
+  name: 'Navbar',
 
   components: {
     ContextMenu,
@@ -89,67 +89,67 @@ export default defineComponent({
     IconSettings,
     IconLogin,
     IconLogout,
-    IconGithub,
+    IconGithub
   },
 
   // setup () {
 
   // },
-  data() {
+  data () {
     return {
       inputFocus: false,
-      langs: ["zh-CN", "zh-TW", "en", "tr"],
-      keywords: "",
+      langs: ['zh-CN', 'zh-TW', 'en', 'tr'],
+      keywords: '',
       isWindowMaximized: false
-    };
+    }
   },
   computed: {
-    ...mapState(["settings", "data"]),
-    isLooseLoggedIn() {
-      return isLooseLoggedIn();
+    ...mapState(['settings', 'data']),
+    isLooseLoggedIn () {
+      return isLooseLoggedIn()
     },
-    avatarUrl() {
+    avatarUrl () {
       return this.data?.user?.avatarUrl && this.isLooseLoggedIn
         ? `${this.data?.user?.avatarUrl}?param=512y512`
-        : "http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60";
-    },
+        : 'http://s4.music.126.net/style/web2/img/default/default_avatar.jpg?param=60y60'
+    }
   },
 
   methods: {
-    go(n: number) {
+    go (n: number) {
       this.$router.go(n)
     },
-    doSearch() {
-      if (!this.keywords) return;
+    doSearch () {
+      if (!this.keywords) return
       if (
-        this.$route.name === "search" &&
+        this.$route.name === 'search' &&
         this.$route.params.keywords === this.keywords
       ) {
-        return;
+        return
       }
       this.$router.push({
-        name: "search",
-        params: { keywords: this.keywords },
-      });
+        name: 'search',
+        params: { keywords: this.keywords }
+      })
     },
-    showUserProfileMenu(e: MouseEvent) {
-      this.$refs.userProfileMenu.openMenu(e);
+    showUserProfileMenu (e: MouseEvent) {
+      this.$refs.userProfileMenu.openMenu(e)
     },
-    logout() {
-      if (!confirm("确定要退出登录吗？")) return;
-      doLogout();
-      this.$router.push({ name: "home" });
+    logout () {
+      if (!confirm('确定要退出登录吗？')) return
+      doLogout()
+      this.$router.push({ name: 'home' })
     },
-    toSettings() {
-      this.$router.push({ name: "settings" });
+    toSettings () {
+      this.$router.push({ name: 'settings' })
     },
-    toGitHub() {
+    toGitHub () {
       // window.open('xxxx')
     },
-    toLogin() {
-      this.$router.push({ name: "login" });
-    },
-  },
+    toLogin () {
+      this.$router.push({ name: 'login' })
+    }
+  }
 })
 </script>
 

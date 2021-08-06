@@ -1,10 +1,6 @@
-import { playlistCategories } from '@/utils/staticData'
 import shortcuts from '@/utils/shortcuts'
 
 console.debug('[debug][initLocalStorage.js]')
-const enabledPlaylistCategories = playlistCategories
-  .filter(c => c.enable)
-  .map(c => c.name)
 
 const localStorage = {
   player: {},
@@ -16,22 +12,11 @@ const localStorage = {
     lyricFontSize: 28,
     outputDevice: 'default',
     showPlaylistsByAppleMusic: true,
-    enableUnblockNeteaseMusic: true,
     automaticallyCacheSongs: false,
     cacheLimit: false,
-    nyancatStyle: false,
     showLyricsTranslation: true,
     lyricsBackground: true,
-    minimizeToTray: false,
-    enableDiscordRichPresence: false,
     enableGlobalShortcut: true,
-    showLibraryDefault: false,
-    enabledPlaylistCategories,
-    proxyConfig: {
-      protocol: 'noProxy',
-      server: '',
-      port: null
-    },
     shortcuts: shortcuts
   },
   data: {

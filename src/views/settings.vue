@@ -95,9 +95,9 @@
           </select>
         </div>
       </div>
-
-      <h3 v-if="isElectron">缓存</h3>
-      <div v-if="isElectron" class="item">
+      <template v-if="isElectron">
+      <h3>缓存</h3>
+      <div class="item">
         <div class="left">
           <div class="title">{{ $t('settings.automaticallyCacheSongs') }}</div>
         </div>
@@ -113,7 +113,7 @@
           </div>
         </div>
       </div>
-      <div v-if="isElectron" class="item">
+      <div class="item">
         <div class="left">
           <div class="title">{{ $t('settings.cacheLimit.text') }}</div>
         </div>
@@ -128,6 +128,7 @@
           </select>
         </div>
       </div>
+      </template>
 
       <h3>歌词</h3>
       <div class="item">
@@ -189,80 +190,8 @@
           <button v-else @click="lastfmConnect()">授权连接</button>
         </div>
       </div>
-      <div v-if="isElectron" class="item">
-        <div class="left">
-          <div class="title">
-            启用
-            <a
-              href="https://github.com/nondanee/UnblockNeteaseMusic"
-              target="blank"
-            >UnblockNeteaseMusic</a>
-          </div>
-        </div>
-        <div class="right">
-          <div class="toggle">
-            <input
-              id="enable-unblock-netease-music"
-              v-model="enableUnblockNeteaseMusic"
-              type="checkbox"
-              name="enable-unblock-netease-music"
-            />
-            <label for="enable-unblock-netease-music"></label>
-          </div>
-        </div>
-      </div>
-      <div v-if="isElectron" class="item">
-        <div class="left">
-          <div class="title">{{ $t('settings.enableDiscordRichPresence') }}</div>
-        </div>
-        <div class="right">
-          <div class="toggle">
-            <input
-              id="enable-discord-rich-presence"
-              v-model="enableDiscordRichPresence"
-              type="checkbox"
-              name="enable-discord-rich-presence"
-            />
-            <label for="enable-discord-rich-presence"></label>
-          </div>
-        </div>
-      </div>
 
       <h3>其他</h3>
-      <div v-if="isElectron && !isMac" class="item">
-        <div class="left">
-          <div class="title">{{ $t('settings.minimizeToTray') }}</div>
-        </div>
-        <div class="right">
-          <div class="toggle">
-            <input
-              id="minimize-to-tray"
-              v-model="minimizeToTray"
-              type="checkbox"
-              name="minimize-to-tray"
-            />
-            <label for="minimize-to-tray"></label>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="isElectron" class="item">
-        <div class="left">
-          <div class="title">{{ $t('settings.showLibraryDefault') }}</div>
-        </div>
-        <div class="right">
-          <div class="toggle">
-            <input
-              id="show-library-default"
-              v-model="showLibraryDefault"
-              type="checkbox"
-              name="show-library-default"
-            />
-            <label for="show-library-default"></label>
-          </div>
-        </div>
-      </div>
-
       <div class="item">
         <div class="left">
           <div class="title">{{ $t('settings.showPlaylistsByAppleMusic') }}</div>
@@ -277,52 +206,6 @@
             />
             <label for="show-playlists-by-apple-music"></label>
           </div>
-        </div>
-      </div>
-      <div class="item">
-        <div class="left">
-          <div class="title" style="transform: scaleX(-1)">🐈️ 🏳️‍🌈</div>
-        </div>
-        <div class="right">
-          <div class="toggle">
-            <input id="nyancat-style" v-model="nyancatStyle" type="checkbox" name="nyancat-style" />
-            <label for="nyancat-style"></label>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="isElectron">
-        <h3>代理</h3>
-        <div class="item">
-          <div class="left">
-            <div class="title">代理协议</div>
-          </div>
-          <div class="right">
-            <select v-model="proxyProtocol">
-              <option value="noProxy">关闭代理</option>
-              <option value="HTTP">HTTP 代理</option>
-              <option value="HTTPS">HTTPS 代理</option>
-              <!-- <option value="SOCKS"> SOCKS 代理 </option> -->
-            </select>
-          </div>
-        </div>
-        <div id="proxy-form" :class="{ disabled: proxyProtocol === 'noProxy' }">
-          <input
-            v-model="proxyServer"
-            class="text-input"
-            placeholder="服务器地址"
-            :disabled="proxyProtocol === 'noProxy'"
-          />
-          <input
-            v-model="proxyPort"
-            class="text-input"
-            placeholder="端口"
-            type="number"
-            min="1"
-            max="65535"
-            :disabled="proxyProtocol === 'noProxy'"
-          />
-          <button>更新代理</button>
         </div>
       </div>
 
@@ -415,7 +298,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 import { isLooseLoggedIn, doLogout } from '@/utils/auth'
 import { auth as lastfmAuth } from '@/api/lastfm'
 import { changeAppearance, bytesToSize } from '@/utils/common'
@@ -427,16 +310,17 @@ import { useToast } from '@/hook'
 const [toast] = useToast()
 
 const validShortcutCodes = ['=', '-', '~', '[', ']', ';', "'", ',', '.', '/']
-
+// navigator.mediaDevices()
 export default {
   name: 'Settings',
   components: { IconLogout },
-  data() {
+  data () {
     return {
       tracksCache: {
         size: '0KB',
         length: 0
       },
+      // TODO:
       allOutputDevices: [
         {
           deviceId: 'default',
@@ -453,20 +337,20 @@ export default {
   },
   computed: {
     ...mapState(['player', 'settings', 'data', 'lastfm']),
-    isElectron() {
+    isElectron () {
       // TODO: DELETE
       return false
     },
-    isMac() {
+    isMac () {
       return /macintosh|mac os x/i.test(navigator.userAgent)
     },
-    version() {
+    version () {
       return pkg.version
     },
-    showUserInfo() {
+    showUserInfo () {
       return isLooseLoggedIn() && this.data.user.nickname
     },
-    recordedShortcutComputed() {
+    recordedShortcutComputed () {
       let shortcut = []
       this.recordedShortcut.map(e => {
         if (e.keyCode >= 65 && e.keyCode <= 90) {
@@ -513,19 +397,19 @@ export default {
     },
 
     lang: {
-      get() {
+      get () {
         return this.settings.lang
       },
-      set(lang) {
+      set (lang) {
         this.$i18n.locale = lang
         this.$store.commit('changeLang', lang)
       }
     },
     musicLanguage: {
-      get() {
+      get () {
         return this.settings.musicLanguage ?? 'all'
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'musicLanguage',
           value
@@ -533,11 +417,11 @@ export default {
       }
     },
     appearance: {
-      get() {
+      get () {
         if (this.settings.appearance === undefined) return 'auto'
         return this.settings.appearance
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'appearance',
           value
@@ -546,27 +430,27 @@ export default {
       }
     },
     musicQuality: {
-      get() {
+      get () {
         if (this.settings.musicQuality === undefined) return 320000
         return this.settings.musicQuality
       },
-      set(value) {
+      set (value) {
         if (value === this.settings.musicQuality) return
         this.$store.commit('changeMusicQuality', value)
         this.clearCache()
       }
     },
     lyricFontSize: {
-      get() {
+      get () {
         if (this.settings.lyricFontSize === undefined) return 28
         return this.settings.lyricFontSize
       },
-      set(value) {
+      set (value) {
         this.$store.commit('changeLyricFontSize', value)
       }
     },
     outputDevice: {
-      get() {
+      get () {
         const isValidDevice = this.allOutputDevices.find(
           device => device.deviceId === this.settings.outputDevice
         )
@@ -576,54 +460,31 @@ export default {
         ) { return 'default' } // Default deviceId
         return this.settings.outputDevice
       },
-      set(deviceId) {
+      set (deviceId) {
         if (deviceId === this.settings.outputDevice || deviceId === undefined) { return }
         this.$store.commit('changeOutputDevice', deviceId)
         this.player.setOutputDevice()
       }
     },
-    enableUnblockNeteaseMusic: {
-      get() {
-        const value = this.settings.enableUnblockNeteaseMusic
-        return value !== undefined ? value : true
-      },
-      set(value) {
-        this.$store.commit('updateSettings', {
-          key: 'enableUnblockNeteaseMusic',
-          value
-        })
-      }
-    },
+
     showPlaylistsByAppleMusic: {
-      get() {
+      get () {
         if (this.settings.showPlaylistsByAppleMusic === undefined) return true
         return this.settings.showPlaylistsByAppleMusic
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'showPlaylistsByAppleMusic',
           value
         })
       }
     },
-    nyancatStyle: {
-      get() {
-        if (this.settings.nyancatStyle === undefined) return false
-        return this.settings.nyancatStyle
-      },
-      set(value) {
-        this.$store.commit('updateSettings', {
-          key: 'nyancatStyle',
-          value
-        })
-      }
-    },
     automaticallyCacheSongs: {
-      get() {
+      get () {
         if (this.settings.automaticallyCacheSongs === undefined) return false
         return this.settings.automaticallyCacheSongs
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'automaticallyCacheSongs',
           value
@@ -634,10 +495,10 @@ export default {
       }
     },
     showLyricsTranslation: {
-      get() {
+      get () {
         return this.settings.showLyricsTranslation
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'showLyricsTranslation',
           value
@@ -645,126 +506,51 @@ export default {
       }
     },
     lyricsBackground: {
-      get() {
+      get () {
         return this.settings.lyricsBackground || false
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'lyricsBackground',
           value
         })
       }
     },
-    minimizeToTray: {
-      get() {
-        return this.settings.minimizeToTray
-      },
-      set(value) {
-        this.$store.commit('updateSettings', {
-          key: 'minimizeToTray',
-          value
-        })
-      }
-    },
-    enableDiscordRichPresence: {
-      get() {
-        return this.settings.enableDiscordRichPresence
-      },
-      set(value) {
-        this.$store.commit('updateSettings', {
-          key: 'enableDiscordRichPresence',
-          value
-        })
-      }
-    },
     enableGlobalShortcut: {
-      get() {
+      get () {
         return this.settings.enableGlobalShortcut
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'enableGlobalShortcut',
           value
         })
       }
     },
-    showLibraryDefault: {
-      get() {
-        return this.settings.showLibraryDefault || false
-      },
-      set(value) {
-        this.$store.commit('updateSettings', {
-          key: 'showLibraryDefault',
-          value
-        })
-      }
-    },
     cacheLimit: {
-      get() {
+      get () {
         return this.settings.cacheLimit || false
       },
-      set(value) {
+      set (value) {
         this.$store.commit('updateSettings', {
           key: 'cacheLimit',
           value
         })
       }
     },
-    proxyProtocol: {
-      get() {
-        return this.settings.proxyConfig?.protocol || 'noProxy'
-      },
-      set(value) {
-        const config = this.settings.proxyConfig || {}
-        config.protocol = value
-        if (value === 'noProxy') {
-          toast('已关闭代理')
-        }
-        this.$store.commit('updateSettings', {
-          key: 'proxyConfig',
-          value: config
-        })
-      }
-    },
-    proxyServer: {
-      get() {
-        return this.settings.proxyConfig?.server || ''
-      },
-      set(value) {
-        const config = this.settings.proxyConfig || {}
-        config.server = value
-        this.$store.commit('updateSettings', {
-          key: 'proxyConfig',
-          value: config
-        })
-      }
-    },
-    proxyPort: {
-      get() {
-        return this.settings.proxyConfig?.port || ''
-      },
-      set(value) {
-        const config = this.settings.proxyConfig || {}
-        config.port = value
-        this.$store.commit('updateSettings', {
-          key: 'proxyConfig',
-          value: config
-        })
-      }
-    },
-    isLastfmConnected() {
+    isLastfmConnected () {
       return this.lastfm.key !== undefined
     }
   },
-  created() {
+  created () {
     this.countDBSize('tracks')
   },
-  activated() {
+  activated () {
     this.countDBSize('tracks')
   },
   methods: {
     // TODO: DELETE
-    getAllOutputDevices() {
+    getAllOutputDevices () {
       navigator.mediaDevices.enumerateDevices().then(devices => {
         this.allOutputDevices = devices.filter(device => {
           return device.kind === 'audiooutput'
@@ -784,11 +570,11 @@ export default {
         }
       })
     },
-    logout() {
+    logout () {
       doLogout()
       this.$router.push({ name: 'home' })
     },
-    countDBSize() {
+    countDBSize () {
       countDBSize().then(data => {
         if (data === undefined) {
           this.tracksCache = {
@@ -801,12 +587,12 @@ export default {
         this.tracksCache.length = data.length
       })
     },
-    clearCache() {
+    clearCache () {
       clearDB().then(() => {
         this.countDBSize()
       })
     },
-    lastfmConnect() {
+    lastfmConnect () {
       lastfmAuth()
       const lastfmChecker = setInterval(() => {
         const session = localStorage.getItem('lastfm')
@@ -816,15 +602,15 @@ export default {
         }
       }, 1000)
     },
-    lastfmDisconnect() {
+    lastfmDisconnect () {
       localStorage.removeItem('lastfm')
       this.$store.commit('updateLastfm', {})
     },
 
-    clickOutside() {
+    clickOutside () {
       this.exitRecordShortcut()
     },
-    formatShortcut(shortcut) {
+    formatShortcut (shortcut) {
       shortcut = shortcut
         .replaceAll('+', ' + ')
         .replace('Up', '↑')
@@ -846,14 +632,14 @@ export default {
       // }
       return shortcut.replace('CommandOrControl', 'Ctrl')
     },
-    readyToRecordShortcut(id, type) {
+    readyToRecordShortcut (id, type) {
       if (type === 'globalShortcut' && this.enableGlobalShortcut === false) {
         return
       }
       this.shortcutInput = { id, type, recording: true }
       this.recordedShortcut = []
     },
-    handleShortcutKeydown(e) {
+    handleShortcutKeydown (e) {
       if (this.shortcutInput.recording === false) return
       e.preventDefault()
       if (this.recordedShortcut.find(s => s.keyCode === e.keyCode)) return
@@ -868,14 +654,14 @@ export default {
         this.saveShortcut()
       }
     },
-    handleShortcutKeyup(e) {
+    handleShortcutKeyup (e) {
       if (this.recordedShortcut.find(s => s.keyCode === e.keyCode)) {
         this.recordedShortcut = this.recordedShortcut.filter(
           s => s.keyCode !== e.keyCode
         )
       }
     },
-    saveShortcut() {
+    saveShortcut () {
       const { id, type } = this.shortcutInput
       const payload = {
         id,
@@ -886,11 +672,11 @@ export default {
       toast('快捷键已保存')
       this.recordedShortcut = []
     },
-    exitRecordShortcut() {
+    exitRecordShortcut () {
       this.shortcutInput = { id: '', type: '', recording: false }
       this.recordedShortcut = []
     },
-    restoreDefaultShortcuts() {
+    restoreDefaultShortcuts () {
       this.$store.commit('restoreDefaultShortcuts')
     }
   }

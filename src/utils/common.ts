@@ -3,10 +3,11 @@ import { refreshCookie } from '@/api/auth'
 import { dailySignin } from '@/api/user'
 import dayjs from 'dayjs'
 import store from '@/store'
-import { random } from 'lodash'
 import type { Privilege, Song } from '@/api/types'
+import { KEYWORD_ALBUM_TITLE, KEYWORD_SOUNDTRACK_ALBUM_TITLE } from '@/const'
+import { random } from 'lodash'
 
-export function isTrackPlayable(track: Song) {
+export function isTrackPlayable (track: Song) {
   const result = {
     playable: true,
     reason: ''
@@ -38,7 +39,7 @@ export function isTrackPlayable(track: Song) {
   return result
 }
 
-export function mapTrackPlayableStatus(tracks: Song[], privileges: Privilege[] = []) {
+export function mapTrackPlayableStatus (tracks: Song[], privileges: Privilege[] = []) {
   if (tracks?.length === undefined) return tracks
   return tracks.map(t => {
     const privilege = privileges.find(item => item.id === t.id) || {} as Privilege
@@ -54,53 +55,34 @@ export function mapTrackPlayableStatus(tracks: Song[], privileges: Privilege[] =
   })
 }
 
-/** TODO: lodash  */
-export const randomNum = random
-
-/** */
-export function shuffleAList(list) {
-  const sortsList = list.map(t => t.sort)
-  for (let i = 1; i < sortsList.length; i++) {
-    const random = Math.floor(Math.random() * (i + 1));
-    [sortsList[i], sortsList[random]] = [sortsList[random], sortsList[i]]
-  }
-  // shuffle(list.map(t => t.sort))
-  const newSorts = {}
-  list.map(track => {
-    newSorts[track.id] = sortsList.pop()
-  })
-  return newSorts
-}
-
-export function updateHttps(url?: string) {
+export function updateHttps (url?: string) {
   if (!url) return ''
   return url.replace(/^http:/, 'https:')
 }
-
-export function dailyTask() {
+// TODO: 每日任务, 先删除
+export function dailyTask () {
   const lastDate = store.state.data.lastRefreshCookieDate
-  if (
-    isAccountLoggedIn() &&
-    (lastDate === undefined || lastDate !== dayjs().date())
-  ) {
-    console.debug('[debug][common.js] execute dailyTask')
-    refreshCookie().then(() => {
-      console.debug('[debug][common.js] 刷新cookie')
-      store.commit('updateData', {
-        key: 'lastRefreshCookieDate',
-        value: dayjs().date()
-      })
+  if (!isAccountLoggedIn()) return
+  // TODO: 这里获取的是每月的号数,应该需要保存年月日
+  const today = dayjs().date()
+  if (lastDate === today) return
+  console.debug('[debug][common.js] execute dailyTask')
+  refreshCookie().then(() => {
+    console.debug('[debug][common.js] 刷新cookie')
+    store.commit('updateData', {
+      key: 'lastRefreshCookieDate',
+      value: today
     })
-    dailySignin(0).catch(() => {
-      console.debug('[debug][common.js] 手机端重复签到')
-    })
-    dailySignin(1).catch(() => {
-      console.debug('[debug][common.js] PC端重复签到')
-    })
-  }
+  })
+  dailySignin(0).catch(() => {
+    console.debug('[debug][common.js] 手机端重复签到')
+  })
+  dailySignin(1).catch(() => {
+    console.debug('[debug][common.js] PC端重复签到')
+  })
 }
 
-export function changeAppearance(appearance?: string) {
+export function changeAppearance (appearance?: string) {
   if (appearance === 'auto' || appearance === undefined) {
     appearance = window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
@@ -113,93 +95,48 @@ export function changeAppearance(appearance?: string) {
   )
 }
 
-export function splitSoundtrackAlbumTitle(title: string) {
-  const keywords = [
-    'Music from the Original Motion Picture Score',
-    'The Original Motion Picture Soundtrack',
-    'Original MGM Motion Picture Soundtrack',
-    'Complete Original Motion Picture Score',
-    'Original Music From The Motion Picture',
-    'Music From The Disney+ Original Movie',
-    'Original Music From The Netflix Film',
-    'Original Score to the Motion Picture',
-    'Original Motion Picture Soundtrack',
-    'Soundtrack from the Motion Picture',
-    'Original Television Soundtrack',
-    'Original Motion Picture Score',
-    'Music From the Motion Picture',
-    'Music From The Motion Picture',
-    'Complete Motion Picture Score',
-    'Music from the Motion Picture',
-    'Original Videogame Soundtrack',
-    'La Bande Originale du Film',
-    'Music from the Miniseries',
-    'Bande Originale du Film',
-    'Die Original Filmmusik',
-    'Original Soundtrack',
-    'Complete Score',
-    'Original Score'
-  ]
-  for (const keyword of keywords) {
-    if (title.includes(keyword) === false) continue
-    return {
-      title: title
-        .replace(`(${keyword})`, '')
-        .replace(`: ${keyword}`, '')
-        .replace(`[${keyword}]`, '')
-        .replace(`- ${keyword}`, '')
-        .replace(`${keyword}`, ''),
-      subtitle: keyword
-    }
+function splitTitle (val: string, keys: string[] | readonly string[]) {
+  for (const subtitle of keys) {
+    if (val.includes(subtitle) === false) continue
+    const title = [`(${subtitle})`, `: ${subtitle}`, `[${subtitle}]`, `- ${subtitle}`, `${subtitle}`]
+      .reduce((txt, searchText) => txt.replace(searchText, ''), val)
+    return { title, subtitle }
   }
-  return {
-    title: title,
-    subtitle: ''
-  }
+  return { title: val, subtitle: '' }
 }
 
-export function splitAlbumTitle(title: string) {
-  const keywords = [
-    'Bonus Tracks Edition',
-    'Complete Edition',
-    'Deluxe Edition',
-    'Deluxe Version',
-    'Tour Edition'
-  ]
-  for (const keyword of keywords) {
-    if (title.includes(keyword) === false) continue
-    return {
-      title: title
-        .replace(`(${keyword})`, '')
-        .replace(`: ${keyword}`, '')
-        .replace(`[${keyword}]`, '')
-        .replace(`- ${keyword}`, '')
-        .replace(`${keyword}`, ''),
-      subtitle: keyword
-    }
+export function splitSoundtrackAlbumTitle (title: string) {
+  return splitTitle(title, KEYWORD_SOUNDTRACK_ALBUM_TITLE)
+}
+
+export function splitAlbumTitle (title: string) {
+  return splitTitle(title, KEYWORD_ALBUM_TITLE)
+}
+
+function fixNum (n: number, limit = 2) {
+  limit = 10 ** limit
+  return Math.round(n * limit) / limit
+}
+
+export function bytesToSize (b: number) {
+  const K = 1 << 10 // 1024
+  const units = ['B', 'K', 'M', 'G']
+  for (let i = 0; i < units.length; i++) {
+    if (b < K) return fixNum(b) + units[i]
+    b /= K
   }
-  return {
-    title: title,
-    subtitle: ''
-  }
+  return `${fixNum(b)}T`
 }
 
-export function bytesToSize(bytes: number) {
-  const marker = 1024 // Change to 1000 if required
-  const decimal = 2 // Change as required
-  const kiloBytes = marker
-  const megaBytes = marker * marker
-  const gigaBytes = marker * marker * marker
-
-  const lang = store.state.settings.lang
-
-  if (bytes < kiloBytes) return bytes + (lang === 'en' ? ' Bytes' : '字节')
-  else if (bytes < megaBytes) { return (bytes / kiloBytes).toFixed(decimal) + ' KB' } else if (bytes < gigaBytes) { return (bytes / megaBytes).toFixed(decimal) + ' MB' } else return (bytes / gigaBytes).toFixed(decimal) + ' GB'
+export function formatTrackTime (value: number) {
+  const sec = value % 60
+  const min = (value - sec) / 60
+  return `${min}:${String(sec).padStart(2, '0')}`
 }
 
-export function formatTrackTime(value: number) {
-  if (!value) return ''
-  const min = ~~((value / 60) % 60)
-  const sec = (~~(value % 60)).toString().padStart(2, '0')
-  return `${min}:${sec}`
+export function randomSlice<T> (list: T[], limit = 1) {
+  const tmp = Array.from(list)
+  return Array.from(Array(limit), () => tmp.splice(random(tmp.length - 1), 1)[0])
 }
+
+export const sleep = <T = void>(t = 0, result?: T): Promise<T> => new Promise(resolve => setTimeout(resolve, t, result))

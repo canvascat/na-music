@@ -27,10 +27,9 @@ let zIndex = 2000
 
 // TODO: Since Notify.ts is basically the same like this file. So we could do some encapsulation against them to
 // reduce code duplication.
-export function Toast(
-  opts: ToastParams = {} as ToastParams,
+export function Toast (
+  opts: ToastParams = {} as ToastParams
 ): ToastHandle {
-
   if (typeof opts === 'string') {
     opts = { message: opts }
   }
@@ -53,7 +52,7 @@ export function Toast(
     },
     offset: verticalOffset,
     id,
-    zIndex: zIndex++,
+    zIndex: zIndex++
   }
 
   const container = document.createElement('div')
@@ -63,7 +62,7 @@ export function Toast(
   const vm = createVNode(
     ToastConstructor,
     options,
-    null,
+    null
   )
 
   // clean message element preventing mem leak
@@ -82,11 +81,11 @@ export function Toast(
   return {
     // instead of calling the onClose function directly, setting this value so that we can have the full lifecycle
     // for out component, so that all closing steps will not be skipped.
-    close: () => (vm.component.proxy as ComponentPublicInstance<{visible: boolean;}>).visible = false,
+    close: () => ((vm.component.proxy as ComponentPublicInstance<{visible: boolean;}>).visible = false)
   }
 }
 
-export function close(id: string, userOnClose?: (vm: VNode) => void): void {
+export function close (id: string, userOnClose?: (vm: VNode) => void): void {
   const idx = instances.findIndex(({ vm }) => {
     const { id: _id } = vm.component.props
     return id === _id
@@ -107,13 +106,13 @@ export function close(id: string, userOnClose?: (vm: VNode) => void): void {
   if (len < 1) return
   for (let i = idx; i < len; i++) {
     const pos =
-      parseInt(instances[i].vm.el.style['top'], 10) - removedHeight - 16
+      parseInt(instances[i].vm.el.style.top, 10) - removedHeight - 16
 
     instances[i].vm.component.props.offset = pos
   }
 }
 
-export function closeAll(): void {
+export function closeAll (): void {
   for (let i = instances.length - 1; i >= 0; i--) {
     const instance = instances[i].vm.component as any
     instance.ctx.close()

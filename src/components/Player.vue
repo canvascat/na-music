@@ -2,10 +2,6 @@
   <div class="player" @click="toggleLyrics">
     <div
       class="progress-bar"
-      :class="{
-        nyancat: settings.nyancatStyle,
-        'nyancat-stop': settings.nyancatStyle && !player.playing
-      }"
       @click.stop
     >
       <vue-slider
@@ -195,21 +191,21 @@ export default {
   },
   computed: {
     ...mapState(['player', 'settings', 'data']),
-    currentTrack() {
+    currentTrack () {
       return this.player.currentTrack
     },
     volume: {
-      get() {
+      get () {
         return this.player.volume
       },
-      set(value) {
+      set (value) {
         this.player.volume = value
       }
     },
-    playing() {
+    playing () {
       return this.player.playing
     },
-    audioSource() {
+    audioSource () {
       return this.player._howler?._src.includes('kuwo.cn')
         ? '音源来自酷我音乐'
         : ''
@@ -219,19 +215,19 @@ export default {
     resizeImage,
     ...mapMutations(['toggleLyrics']),
     ...mapActions(['likeATrack']),
-    goToNextTracksPage() {
+    goToNextTracksPage () {
       if (this.player.isPersonalFM) return
       this.$route.name === 'next'
         ? this.$router.go(-1)
         : this.$router.push({ name: 'next' })
     },
-    formatTrackTime(value) {
+    formatTrackTime (value) {
       if (!value) return ''
       const min = ~~((value / 60) % 60)
       const sec = (~~(value % 60)).toString().padStart(2, '0')
       return `${min}:${sec}`
     },
-    goToList() {
+    goToList () {
       if (this.player.playlistSource.id === this.data.likedSongPlaylistID) {
         this.$router.push({ path: '/library/liked-songs' })
       } else if (this.player.playlistSource.type === 'url') {
@@ -248,11 +244,11 @@ export default {
         })
       }
     },
-    goToAlbum() {
+    goToAlbum () {
       if (this.player.currentTrack.al.id === 0) return
       this.$router.push({ path: '/album/' + this.player.currentTrack.al.id })
     },
-    goToArtist(id) {
+    goToArtist (id) {
       this.$router.push({ path: '/artist/' + id })
     }
   }

@@ -152,8 +152,8 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
-import { randomNum, dailyTask } from '@/utils/common'
+import { mapMutations, mapState } from 'vuex'
+import random from 'lodash/random'
 import { isAccountLoggedIn } from '@/utils/auth'
 import { uploadSong } from '@/api/user'
 import { getLyric } from '@/api/track'
@@ -180,7 +180,7 @@ export default {
     IconPlus,
     IconArrowUpAlt
   },
-  data() {
+  data () {
     return {
       show: false,
       likedSongs: [],
@@ -190,22 +190,22 @@ export default {
   },
   computed: {
     ...mapState(['data', 'liked']),
-    text() {
+    text () {
       const all = this.$t('contextMenu.allPlaylists')
       const mine = this.$t('contextMenu.minePlaylists')
       const liked = this.$t('contextMenu.likedPlaylists')
-      return map = { all, mine, linked }
+      const map = { all, mine, liked }
       return map[this.playlistFilter]
     },
-    pickedLyric() {
+    pickedLyric () {
       if (this.lyric === undefined) return ''
       let lyric = this.lyric.split('\n')
       lyric = lyric.filter(l => {
         return !(l.includes('作词') || l.includes('作曲'))
       })
-      let lineIndex = randomNum(0, lyric.length - 1)
+      let lineIndex = random(0, lyric.length - 1)
       while (lineIndex + 4 > lyric.length) {
-        lineIndex = randomNum(0, lyric.length - 1)
+        lineIndex = random(0, lyric.length - 1)
       }
       return [
         lyric[lineIndex].split(']')[1],
@@ -213,10 +213,10 @@ export default {
         lyric[lineIndex + 2].split(']')[1]
       ]
     },
-    playlistFilter() {
+    playlistFilter () {
       return this.data.libraryPlaylistFilter || 'all'
     },
-    filterPlaylists() {
+    filterPlaylists () {
       const playlists = this.liked.playlists
       const userId = this.data.user.userId
       if (this.playlistFilter === 'mine') {
@@ -227,20 +227,19 @@ export default {
       return playlists
     }
   },
-  created() {
+  created () {
     setTimeout(() => {
       if (!this.show) NProgress.start()
     }, 1000)
     this.loadData()
   },
-  activated() {
+  activated () {
     this.loadData()
-    dailyTask()
   },
   methods: {
     resizeImage,
     ...mapMutations(['updateModal', 'updateData']),
-    loadData() {
+    loadData () {
       if (this.liked.songsWithDetails.length > 0) {
         NProgress.done()
         this.show = true
@@ -260,33 +259,32 @@ export default {
       this.$store.dispatch('fetchLikedMVs')
       this.$store.dispatch('fetchCloudDisk')
     },
-    playLikedSongs() {
+    playLikedSongs () {
       this.$store.state.player.playPlaylistByID(
         this.liked.playlists[0].id,
         'first',
         true
       )
     },
-    updateCurrentTab(tab) {
+    updateCurrentTab (tab) {
       if (!isAccountLoggedIn() && tab !== 'playlists') {
         toast(this.$t('toast.needToLogin'))
         return
       }
       this.currentTab = tab
-      this.$parent.$refs.main.scrollTo({ top: 375, behavior: 'smooth' })
     },
-    goToLikedSongsList() {
+    goToLikedSongsList () {
       this.$router.push({ path: '/library/liked-songs' })
     },
-    getRandomLyric() {
+    getRandomLyric () {
       if (this.liked.songs.length === 0) return
       getLyric(
-        this.liked.songs[randomNum(0, this.liked.songs.length - 1)]
+        this.liked.songs[random(0, this.liked.songs.length - 1)]
       ).then(data => {
         if (data.lrc !== undefined) this.lyric = data.lrc.lyric
       })
     },
-    openAddPlaylistModal() {
+    openAddPlaylistModal () {
       if (!isAccountLoggedIn()) {
         toast(this.$t('toast.needToLogin'))
         return
@@ -297,17 +295,17 @@ export default {
         value: true
       })
     },
-    openPlaylistTabMenu(e) {
+    openPlaylistTabMenu (e) {
       this.$refs.playlistTabMenu.openMenu(e)
     },
-    changePlaylistFilter(type) {
+    changePlaylistFilter (type) {
       this.updateData({ key: 'libraryPlaylistFilter', value: type })
       window.scrollTo({ top: 375, behavior: 'smooth' })
     },
-    selectUploadFiles() {
+    selectUploadFiles () {
       this.$refs.cloudDiskUploadInput.click()
     },
-    uploadSongToCloudDisk(e) {
+    uploadSongToCloudDisk (e) {
       const files = e.target.files
       uploadSong(files[0]).then(result => {
         if (result.code === 200) {

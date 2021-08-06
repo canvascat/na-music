@@ -20,8 +20,7 @@
         </div>
         <div class="title" :style="{ fontSize: subTextFontSize }">
           <span v-if="isExplicit(item)" class="explicit-symbol"
-            ><ExplicitSymbol
-          /></span>
+            ><IconExplicit /></span>
           <span v-if="isPrivacy(item)" class="lock-icon">
             <IconLock />
           </span>
@@ -37,15 +36,14 @@
 
 <script>
 import Cover from '@/components/Cover.vue'
-import ExplicitSymbol from '@/components/ExplicitSymbol.vue'
 import { formatPlayCount } from '@/utils/filters'
-import { IconPlay, IconLock } from '@/components/icons'
+import { IconPlay, IconLock, IconExplicit } from '@/components/icons'
 
 export default {
   name: 'CoverRow',
   components: {
     Cover,
-    ExplicitSymbol,
+    IconExplicit,
     IconPlay,
     IconLock
   },
@@ -173,6 +171,8 @@ export default {
   float: right;
   .svg-icon {
     margin-bottom: -3px;
+    width: 16px;
+    height: 16px;
   }
 }
 

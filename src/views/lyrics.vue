@@ -307,13 +307,7 @@ export default {
       this.getCoverColor()
     },
     showLyrics (show) {
-      if (show) {
-        this.setLyricsInterval()
-        this.$store.commit('enableScrolling', false)
-      } else {
-        clearInterval(this.lyricsInterval)
-        this.$store.commit('enableScrolling', true)
-      }
+      show ? this.setLyricsInterval() : clearInterval(this.lyricsInterval)
     }
   },
   created () {

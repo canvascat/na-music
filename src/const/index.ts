@@ -84,3 +84,39 @@ export const specialPlaylist = {
     gradient: 'gradient-radar'
   }
 }
+
+export const KEYWORD_ALBUM_TITLE = Object.freeze([
+  'Bonus Tracks Edition',
+  'Complete Edition',
+  'Deluxe Edition',
+  'Deluxe Version',
+  'Tour Edition'
+])
+export const KEYWORD_SOUNDTRACK_ALBUM_TITLE = Object.freeze([
+  'Music from the Original Motion Picture Score',
+  'The Original Motion Picture Soundtrack',
+  'Original MGM Motion Picture Soundtrack',
+  'Complete Original Motion Picture Score',
+  'Original Music From The Motion Picture',
+  'Music From The Disney+ Original Movie',
+  'Original Music From The Netflix Film',
+  'Original Score to the Motion Picture',
+  'Original Motion Picture Soundtrack',
+  'Soundtrack from the Motion Picture',
+  'Original Television Soundtrack',
+  'Original Motion Picture Score',
+  'Music From the Motion Picture',
+  'Music From The Motion Picture',
+  'Complete Motion Picture Score',
+  'Music from the Motion Picture',
+  'Original Videogame Soundtrack',
+  'La Bande Originale du Film',
+  'Music from the Miniseries',
+  'Bande Originale du Film',
+  'Die Original Filmmusik',
+  'Original Soundtrack',
+  'Complete Score',
+  'Original Score'
+])
+
+export const EXPLORE_ITEMS = [{ title: 'static', items: ['全部', '推荐歌单', '精品歌单', '官方', '排行榜'] }, { title: '语种', items: ['华语', '欧美', '日语', '韩语', '粤语'] }, { title: '风格', items: ['流行', '摇滚', '民谣', '电子', '舞曲', '说唱', '轻音乐', '爵士', '乡村', 'R&B/Soul', '古典', '民族', '英伦', '金属', '朋克', '蓝调', '雷鬼', '世界音乐', '拉丁', 'New Age', '古风', '后摇', 'Bossa Nova'] }, { title: '场景', items: ['清晨', '夜晚', '学习', '工作', '午休', '下午茶', '地铁', '驾车', '运动', '旅行', '散步', '酒吧'] }, { title: '情感', items: ['怀旧', '清新', '浪漫', '伤感', '治愈', '放松', '孤独', '感动', '兴奋', '快乐', '安静', '思念'] }, { title: '主题', items: ['综艺', '影视原声', 'ACG', '儿童', '校园', '游戏', '70后', '80后', '90后', '网络歌曲', 'KTV', '经典', '翻唱', '吉他', '钢琴', '器乐', '榜单', '00后'] }]
