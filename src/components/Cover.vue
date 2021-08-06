@@ -29,11 +29,8 @@
 </template>
 
 <script>
-
 import { IconPlay } from '@/components/icons'
-import { useStore } from '@/store'
-
-const store = useStore()
+import { store } from '@/store'
 
 export default {
   components: { IconPlay },
@@ -81,6 +78,7 @@ export default {
   methods: {
     play () {
       const player = store.state.player
+      console.log(player, '---')
       const playActions = {
         album: player.playAlbumByID,
         playlist: player.playPlaylistByID,
@@ -104,7 +102,7 @@ export default {
   position: relative;
 }
 img {
-  border-radius: 0.75em;
+  border-radius: var(--cover-radius);
   width: 100%;
   user-select: none;
   aspect-ratio: 1 / 1;
@@ -163,7 +161,7 @@ img {
   transform: scale(0.92, 0.96);
   z-index: -1;
   background-size: cover;
-  border-radius: 0.75em;
+  border-radius: var(--cover-radius);
   aspect-ratio: 1 / 1;
 }
 

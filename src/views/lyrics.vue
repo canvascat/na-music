@@ -598,7 +598,7 @@ export default {
   }
 
   img {
-    border-radius: 0.75em;
+    border-radius: var(--cover-radius);
     width: 54vh;
     height: 54vh;
     user-select: none;
@@ -614,7 +614,7 @@ export default {
     transform: scale(0.92, 0.96);
     z-index: -1;
     background-size: cover;
-    border-radius: 0.75em;
+    border-radius: var(--cover-radius);
   }
 }
 

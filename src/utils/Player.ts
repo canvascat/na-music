@@ -185,7 +185,7 @@ export class Player {
     // 同步播放进度
     // TODO: 如果 _progress 在别的地方被改变了，这个定时器会覆盖之前改变的值，是bug
     setInterval(() => {
-      if (this._howler === null) return
+      if (!this._howler) return
       this._progress = this._howler.seek() as number
       localStorage.setItem('playerCurrentTrackTime', (this._progress).toString())
     }, 1000)
@@ -297,31 +297,29 @@ export class Player {
     return source
   }
 
-  private _replaceCurrentTrack (
+  private async _replaceCurrentTrack (
     id: number,
     autoplay = true,
     ifUnplayableThen = 'playNextTrack'
   ) {
     if (autoplay && this._currentTrack.name) {
-      this._scrobble(this.currentTrack, this._howler?.seek())
+      await this._scrobble(this.currentTrack, this._howler?.seek())
     }
-    return getTrackDetail(id).then(data => {
-      const track = data.songs[0]
-      this._currentTrack = track
-      this._updateMediaSessionMetaData(track)
-      return this._getAudioSource(track).then(source => {
-        if (source) {
-          this._playAudioSource(source, autoplay)
-          this._cacheNextTrack()
-          return source
-        } else {
-          toast(`无法播放 ${track.name}`)
-          ifUnplayableThen === 'playNextTrack'
-            ? this.playNextTrack()
-            : this.playPrevTrack()
-        }
-      })
-    })
+    const data = await getTrackDetail(id)
+    const track = data.songs[0]
+    this._currentTrack = track
+    this._updateMediaSessionMetaData(track)
+    const source = await this._getAudioSource(track)
+    if (source) {
+      this._playAudioSource(source, autoplay)
+      this._cacheNextTrack()
+      return source
+    } else {
+      toast(`无法播放 ${track.name}`)
+      ifUnplayableThen === 'playNextTrack'
+        ? this.playNextTrack()
+        : this.playPrevTrack()
+    }
   }
 
   private _cacheNextTrack () {
@@ -526,9 +524,9 @@ export class Player {
   }
 
   replacePlaylist (
-    trackIDs,
-    playlistSourceID,
-    playlistSourceType,
+    trackIDs: number[],
+    playlistSourceID: number,
+    playlistSourceType: string,
     autoPlayTrackID: TrackID = 'first'
   ) {
     this._isPersonalFM = false
@@ -548,11 +546,10 @@ export class Player {
     }
   }
 
-  playAlbumByID (id: number, trackID: TrackID = 'first') {
-    getAlbum(id).then(data => {
-      const trackIDs = data.songs.map(t => t.id)
-      this.replacePlaylist(trackIDs, id, 'album', trackID)
-    })
+  async playAlbumByID (id: number, trackID: TrackID = 'first') {
+    const data = await getAlbum(id)
+    const trackIDs = data.songs.map(t => t.id)
+    this.replacePlaylist(trackIDs, id, 'album', trackID)
   }
 
   playPlaylistByID (id: number, trackID: TrackID, noCache = false) {
@@ -565,21 +562,20 @@ export class Player {
     })
   }
 
-  playArtistByID (id: number, trackID: TrackID = 'first') {
-    getArtist(id).then(data => {
-      const trackIDs = data.hotSongs.map(t => t.id)
-      this.replacePlaylist(trackIDs, id, 'artist', trackID)
-    })
+  async playArtistByID (id: number, trackID: TrackID = 'first') {
+    const data = await getArtist(id)
+    const trackIDs = data.hotSongs.map(t => t.id)
+    this.replacePlaylist(trackIDs, id, 'artist', trackID)
   }
 
-  playTrackOnListByID (id, listName = 'default') {
+  playTrackOnListByID (id: number, listName = 'default') {
     if (listName === 'default') {
       this._current = this._list.findIndex(t => t === id)
     }
     this._replaceCurrentTrack(id)
   }
 
-  addTrackToPlayNext (trackID, playNow = false) {
+  addTrackToPlayNext (trackID: number, playNow = false) {
     this._playNextList.push(trackID)
     if (playNow) this.playNextTrack()
   }

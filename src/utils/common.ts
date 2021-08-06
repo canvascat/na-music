@@ -129,7 +129,7 @@ export function bytesToSize (b: number) {
 }
 
 export function formatTrackTime (value: number) {
-  const sec = value % 60
+  const sec = (value >>= 0) % 60
   const min = (value - sec) / 60
   return `${min}:${String(sec).padStart(2, '0')}`
 }

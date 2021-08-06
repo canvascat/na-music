@@ -150,7 +150,7 @@ export default {
   }
 }
 img {
-  border-radius: 0.75em;
+  border-radius: var(--cover-radius);
   width: 100%;
   user-select: none;
 }
@@ -164,7 +164,7 @@ img {
   transform: scale(0.9, 0.9);
   z-index: -1;
   background-size: cover;
-  border-radius: 0.75em;
+  border-radius: var(--cover-radius);
 }
 
 .fade-enter-active,

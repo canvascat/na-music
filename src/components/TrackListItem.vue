@@ -207,8 +207,11 @@ button {
   display: flex;
   align-items: center;
   padding: 8px;
-  border-radius: 12px;
+  border-radius: 6px;
   user-select: none;
+  &:nth-child(2n) {
+    background-color: var(--tracklistAltRowColor);
+  }
 
   .no {
     display: flex;

@@ -35,52 +35,52 @@ export default {
   components: {
     TrackList
   },
-  data() {
+  data () {
     return {
       tracks: []
     }
   },
   computed: {
     ...mapState(['player']),
-    currentTrack() {
+    currentTrack () {
       return this.player.currentTrack
     },
-    playerShuffle() {
+    playerShuffle () {
       return this.player.shuffle
     },
-    filteredTracks() {
+    filteredTracks () {
       const trackIDs = this.player.list.slice(
         this.player.current + 1,
         this.player.current + 100
       )
       return this.tracks.filter(t => trackIDs.includes(t.id))
     },
-    playNextList() {
+    playNextList () {
       return this.player.playNextList
     },
-    playNextTracks() {
+    playNextTracks () {
       return this.playNextList.map(tid => {
         return this.tracks.find(t => t.id === tid)
       })
     }
   },
   watch: {
-    currentTrack() {
+    currentTrack () {
       this.loadTracks()
     },
-    playerShuffle() {
+    playerShuffle () {
       this.loadTracks()
     },
-    playNextList() {
+    playNextList () {
       this.loadTracks()
     }
   },
-  activated() {
+  activated () {
     this.loadTracks()
   },
   methods: {
     ...mapActions(['playTrackOnListByID']),
-    loadTracks() {
+    loadTracks () {
       // 获取播放列表当前歌曲后100首歌
       const trackIDs = this.player.list.slice(
         this.player.current + 1,
