@@ -8,89 +8,64 @@
       </div>
     </template>
     <template v-slot:footer>
-      <button class="primary block" @click="createPlaylist">创建</button>
+      <button class="primary block" @click="submitCreatePlaylist">创建</button>
     </template>
   </Modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
 import Modal from '@/components/Modal.vue'
-import { mapMutations, mapState, mapActions } from 'vuex'
 import { createPlaylist, addOrRemoveTrackFromPlaylist } from '@/api/playlist'
 import { useToast } from '@/hook'
+import store from '@/store'
 
 const [toast] = useToast()
 
-export default {
+export default defineComponent({
   name: 'ModalNewPlaylist',
   components: {
     Modal
   },
-  data () {
-    return {
-      title: '',
-      privatePlaylist: false
-    }
+  props: {
+    show: Boolean
   },
-  computed: {
-    ...mapState(['modals']),
-    show: {
-      get () {
-        return this.modals.newPlaylistModal.show
-      },
-      set (value) {
-        this.updateModal({
-          modalName: 'newPlaylistModal',
-          key: 'show',
-          value
-        })
+  emits: ['update:show'],
+  setup (prop, context) {
+    const title = ref('')
+    const privatePlaylist = ref(false)
+
+    async function submitCreatePlaylist () {
+      const params: Record<string, any> = { name: title.value }
+      if (privatePlaylist.value) params.type = 10
+      let data = await createPlaylist(params)
+      if (data.code !== 200) return
+      const tracks = 123
+      data = await addOrRemoveTrackFromPlaylist({ op: 'add', pid: data.id, tracks })
+      if (data.body.code === 200) {
+        toast(this.$t('toast.savedToPlaylist'))
+      } else {
+        toast(data.body.message)
       }
-    }
-  },
-  methods: {
-    ...mapMutations(['updateModal', 'updateData']),
-    ...mapActions(['fetchLikedPlaylist']),
-    close () {
-      this.show = false
-      this.title = ''
-      this.privatePlaylist = false
       this.resetAfterCreateAddTrackID()
-    },
-    createPlaylist () {
-      const params = { name: this.title }
-      if (this.private) params.type = 10
-      createPlaylist(params).then(data => {
-        if (data.code === 200) {
-          if (this.modals.newPlaylistModal.afterCreateAddTrackID !== 0) {
-            addOrRemoveTrackFromPlaylist({
-              op: 'add',
-              pid: data.id,
-              tracks: this.modals.newPlaylistModal.afterCreateAddTrackID
-            }).then(data => {
-              if (data.body.code === 200) {
-                toast(this.$t('toast.savedToPlaylist'))
-              } else {
-                toast(data.body.message)
-              }
-              this.resetAfterCreateAddTrackID()
-            })
-          }
-          this.close()
-          toast('成功创建歌单')
-          this.updateData({ key: 'libraryPlaylistFilter', value: 'mine' })
-          this.fetchLikedPlaylist()
-        }
-      })
-    },
-    resetAfterCreateAddTrackID () {
-      this.updateModal({
-        modalName: 'newPlaylistModal',
-        key: 'AfterCreateAddTrackID',
-        value: 0
-      })
+      close()
+      toast('成功创建歌单')
+      store.dispatch('updateData', { key: 'libraryPlaylistFilter', value: 'mine' })
+      store.dispatch('fetchLikedPlaylist')
+    }
+    function close () {
+      context.emit('update:show', false)
+      title.value = ''
+      privatePlaylist.value = false
+      // modal.newPlaylistModal.AfterCreateAddTrackID = 0
+    }
+    return {
+      submitCreatePlaylist,
+      privatePlaylist,
+      title
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

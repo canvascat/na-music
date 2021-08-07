@@ -173,7 +173,6 @@ export default {
   },
   methods: {
     resizeImage,
-    ...mapMutations(['updateModal']),
     ...mapActions(['nextTrack', 'likeATrack']),
     openMenu (e, track, index = -1) {
       this.rightClickedTrack = track
@@ -231,18 +230,9 @@ export default {
     addTrackToPlaylist () {
       if (!isAccountLoggedIn()) {
         toast(locale.t('toast.needToLogin'))
-        return
+        // return
       }
-      this.updateModal({
-        modalName: 'addTrackToPlaylistModal',
-        key: 'show',
-        value: true
-      })
-      this.updateModal({
-        modalName: 'addTrackToPlaylistModal',
-        key: 'selectedTrackID',
-        value: this.rightClickedTrack.id
-      })
+      // TODO: 添加歌单
     },
     removeTrackFromPlaylist () {
       if (!isAccountLoggedIn()) {

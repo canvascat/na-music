@@ -16,16 +16,16 @@
         :tooltip-formatter="formatTrackTime"
         :lazy="true"
         :silent="true"
-      ></vue-slider>
+      />
     </div>
     <div class="controls">
       <div class="playing">
         <div class="container" @click.stop>
           <img
             :src="resizeImage(currentTrack.al && currentTrack.al.picUrl, 224)"
-            @click="goToAlbum"
             alt="cover"
-          />
+            @click="goToAlbum"
+          >
           <div class="track-info" :title="audioSource">
             <div class="name" @click="goToList">{{ currentTrack.name }}</div>
             <div class="artist">
@@ -127,7 +127,7 @@
                 :duration="0"
                 tooltip="none"
                 :dot-size="12"
-              ></vue-slider>
+              />
             </div>
           </div>
 

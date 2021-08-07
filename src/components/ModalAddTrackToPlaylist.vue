@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapState } from 'vuex'
 import Modal from '@/components/Modal.vue'
 import { IconPlus } from '@/components/icons'
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
@@ -49,18 +49,6 @@ export default {
   },
   computed: {
     ...mapState(['modals', 'data', 'liked']),
-    show: {
-      get () {
-        return this.modals.addTrackToPlaylistModal.show
-      },
-      set (value) {
-        this.updateModal({
-          modalName: 'addTrackToPlaylistModal',
-          key: 'show',
-          value
-        })
-      }
-    },
     ownPlaylists () {
       return this.liked.playlists.filter(
         p =>
@@ -71,7 +59,6 @@ export default {
   },
   methods: {
     resizeImage,
-    ...mapMutations(['updateModal']),
     close () {
       this.show = false
     },
@@ -90,17 +77,7 @@ export default {
       })
     },
     newPlaylist () {
-      this.updateModal({
-        modalName: 'newPlaylistModal',
-        key: 'afterCreateAddTrackID',
-        value: this.modals.addTrackToPlaylistModal.selectedTrackID
-      })
       this.close()
-      this.updateModal({
-        modalName: 'newPlaylistModal',
-        key: 'show',
-        value: true
-      })
     }
   }
 }

@@ -185,7 +185,8 @@ export default {
       show: false,
       likedSongs: [],
       lyric: undefined,
-      currentTab: 'playlists'
+      currentTab: 'playlists',
+      showCreateNew: false
     }
   },
   computed: {
@@ -238,7 +239,7 @@ export default {
   },
   methods: {
     resizeImage,
-    ...mapMutations(['updateModal', 'updateData']),
+    ...mapMutations(['updateData']),
     loadData () {
       if (this.liked.songsWithDetails.length > 0) {
         NProgress.done()
@@ -289,11 +290,7 @@ export default {
         toast(this.$t('toast.needToLogin'))
         return
       }
-      this.updateModal({
-        modalName: 'newPlaylistModal',
-        key: 'show',
-        value: true
-      })
+      this.showCreateNew = true
     },
     openPlaylistTabMenu (e) {
       this.$refs.playlistTabMenu.openMenu(e)

@@ -36,16 +36,6 @@ export const state: State = {
     clickObjectID: 0,
     showMenu: false
   },
-  modals: {
-    addTrackToPlaylistModal: {
-      show: false,
-      selectedTrackID: 0
-    },
-    newPlaylistModal: {
-      show: false,
-      afterCreateAddTrackID: 0
-    }
-  },
   dailyTracks: [],
   lastfm: JSON.parse(localStorage.getItem('lastfm')) || {},
   player,

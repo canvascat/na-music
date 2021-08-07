@@ -25,9 +25,6 @@ export const mutations: MutationTree<State> = {
   updateData (state, { key, value }) {
     state.data[key] = value
   },
-  updateModal (state, { modalName, key, value }) {
-    state.modals[modalName][key] = value
-  },
   toggleLyrics (state) {
     state.showLyrics = !state.showLyrics
   },

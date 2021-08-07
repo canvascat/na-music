@@ -5,7 +5,8 @@
   "scripts": {
     "api:serve": "node scripts/lib/server.js",
     "dev": "vite",
-    "lint": "vue-tsc --noEmit",
+    "lint": "eslint ./src --ext .vue,.ts,.tsx",
+    "lint-fix": "eslint --fix ./src --ext .vue,.ts,.tsx",
     "build": "vite build",
     "serve": "vite preview"
   },

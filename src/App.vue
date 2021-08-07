@@ -7,25 +7,21 @@
           <component :is="Component" />
         </keep-alive>
       </router-view>
-      <router-view v-else></router-view>
+      <router-view v-else />
     </main>
-    <transition name="slide-up">
-      <Player v-if="enablePlayer" v-show="showPlayer" ref="player" />
-    </transition>
-    <template v-if="userState">
-      <ModalAddTrackToPlaylist />
-      <ModalNewPlaylist />
+    <template v-if="enablePlayer">
+      <transition name="slide-up">
+        <Player v-show="showPlayer" />
+      </transition>
+      <transition name="slide-up">
+        <Lyrics v-show="showLyrics" />
+      </transition>
     </template>
-    <transition v-if="enablePlayer" name="slide-up">
-      <Lyrics v-show="showLyrics" />
-    </transition>
   </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, onUnmounted } from 'vue'
-import ModalAddTrackToPlaylist from './components/ModalAddTrackToPlaylist.vue'
-import ModalNewPlaylist from './components/ModalNewPlaylist.vue'
 import Navbar from './components/Navbar.vue'
 import Player from './components/Player.vue'
 import { isAccountLoggedIn, isLooseLoggedIn } from '@/utils/auth'
@@ -38,8 +34,6 @@ export default defineComponent({
   components: {
     Navbar,
     Player,
-    ModalAddTrackToPlaylist,
-    ModalNewPlaylist,
     Lyrics
   },
   setup () {
