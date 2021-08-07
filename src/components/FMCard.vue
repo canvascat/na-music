@@ -46,7 +46,7 @@ import store from '@/store'
 import { useRouter } from 'vue-router'
 
 async function createCoverColor (cover: string) {
-  const rgb = await Vibrant.from(cover).maxColorCount(1).getPalette().then(p => p.Vibrant.rgb)
+  const rgb = await Vibrant.from(cover).maxColorCount(3).getPalette().then(p => p.Vibrant.rgb)
   const color = Color.rgb(rgb).darken(0.1).rgb().string()
   const color2 = Color.rgb(rgb).lighten(0.28).rotate(-30).rgb().string()
   return `linear-gradient(to top left, ${color}, ${color2})`

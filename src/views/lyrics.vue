@@ -381,18 +381,19 @@ export default {
     moveToFMTrash () {
       this.player.moveToFMTrash()
     },
-    getCoverColor () {
+    async getCoverColor () {
       if (this.settings.lyricsBackground !== true) return
       const cover = this.currentTrack.al?.picUrl + '?param=1024y1024'
-      // Vibrant.from(cover, { colorCount: 1 })
-      new Vibrant(cover, { colorCount: 1 })
-        .getPalette()
-        .then(palette => {
-          const originColor = Color.rgb(palette.DarkMuted.rgb)
-          const color = originColor.darken(0.1).rgb().string()
-          const color2 = originColor.lighten(0.28).rotate(-30).rgb().string()
-          this.background = `linear-gradient(to top left, ${color}, ${color2})`
-        })
+      /*
+       * if (pixels.length === 0 || opts.colorCount < 2 || opts.colorCount > 256) {
+       *   throw new Error("Wrong MMCQ parameters");
+       * }
+      */
+      const palette = await Vibrant.from(cover).maxColorCount(3).getPalette()
+      const originColor = Color.rgb(palette.DarkMuted.rgb)
+      const color = originColor.darken(0.1).rgb().string()
+      const color2 = originColor.lighten(0.28).rotate(-30).rgb().string()
+      this.background = `linear-gradient(to top left, ${color}, ${color2})`
     }
   }
 }
