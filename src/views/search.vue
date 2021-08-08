@@ -12,7 +12,12 @@
             }}
           </router-link>
         </div>
-        <CoverRow type="artist" :column-number="3" :items="artists.slice(0, 3)" gap="34px 24px" />
+        <CoverRow
+          type="artist"
+          :column-number="3"
+          :items="artists.slice(0, 3)"
+          gap="34px 24px"
+        />
       </div>
 
       <div class="albums">
@@ -33,7 +38,6 @@
           :column-number="3"
           sub-text-font-size="14px"
           gap="34px 24px"
-          :play-button-size="26"
         />
       </div>
     </div>
@@ -84,7 +88,6 @@
         :column-number="6"
         sub-text-font-size="14px"
         gap="34px 24px"
-        :play-button-size="26"
       />
     </div>
 
@@ -97,10 +100,9 @@
   </div>
 </template>
 
-<script>
-import { mapActions } from 'vuex'
+<script lang="ts">
 import { getTrackDetail } from '@/api/track'
-import { search } from '@/api/others'
+import { search, SEARCH_TYPES } from '@/api/others'
 import NProgress from 'nprogress'
 
 import TrackList from '@/components/TrackList.vue'
@@ -108,10 +110,14 @@ import MvRow from '@/components/MvRow.vue'
 import CoverRow from '@/components/CoverRow.vue'
 import { IconSearch } from '@/components/icons'
 import { useToast } from '@/hook'
+import { computed, defineComponent, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { sleep } from '@/utils/common'
+import { debouncedWatch } from '@vueuse/shared'
 
 const [toast] = useToast()
 
-export default {
+export default defineComponent({
   name: 'Search',
   components: {
     TrackList,
@@ -119,126 +125,87 @@ export default {
     CoverRow,
     IconSearch
   },
-  data() {
+  setup () {
+    const show = ref(false)
+    const tracks = ref([])
+    const artists = ref([])
+    const albums = ref([])
+    const playlists = ref([])
+    const musicVideos = ref([])
+    const route = useRoute()
+    const keywords = computed(() => route.params.keywords as string ?? '')
+    const haveResult = computed(() => tracks.value.length +
+    artists.value.length +
+        albums.value.length +
+        playlists.value.length +
+    musicVideos.value.length > 0)
+    debouncedWatch(keywords, val => {
+      if (!val) return
+      getData()
+    }, { debounce: 600, immediate: true })
+
+    async function searchResult (type: SEARCH_TYPES = SEARCH_TYPES.ALL) {
+      try {
+        const { result } = await search({ keywords: keywords.value, type, limit: 16 })
+        return { result, type }
+      } catch (error) {
+        toast(error.response.data.msg || error.response.data.message)
+      }
+    }
+    // TODO: 添加防抖
+    async function getData () {
+      sleep(1000).then(() => !show.value && NProgress.start())
+      show.value = false
+      const results = await Promise.all([
+        searchResult(SEARCH_TYPES.ARTISTS),
+        searchResult(SEARCH_TYPES.ALBUMS),
+        searchResult(SEARCH_TYPES.TRACKS),
+        searchResult(SEARCH_TYPES.MUSIC_VIDEOS),
+        searchResult(SEARCH_TYPES.PLAYLISTS),
+      ])
+      results.forEach(item => {
+        const type = item.type
+        const result = item.result
+        switch (type) {
+          // case SEARCH_TYPES.ALL:
+          //   this.result = result
+          //   break
+          case SEARCH_TYPES.MUSIC_VIDEOS:
+            musicVideos.value = result.mvs ?? []
+            break
+          case SEARCH_TYPES.ARTISTS:
+            artists.value = result.artists ?? []
+            break
+          case SEARCH_TYPES.ALBUMS:
+            albums.value = result.albums ?? []
+            break
+          case SEARCH_TYPES.TRACKS:
+            getTracksDetail((result.songs ?? []).map(t => t.id).join(','))
+            break
+          case SEARCH_TYPES.PLAYLISTS:
+            playlists.value = result.playlists ?? []
+            break
+        }
+      })
+      NProgress.done()
+      show.value = true
+    }
+    async function getTracksDetail (ids: string) {
+      const { songs } = await getTrackDetail(ids)
+      tracks.value = songs
+    }
     return {
-      show: false,
-      tracks: [],
-      artists: [],
-      albums: [],
-      playlists: [],
-      musicVideos: []
-    }
-  },
-  computed: {
-    keywords() {
-      return this.$route.params.keywords ?? ''
-    },
-    haveResult() {
-      return (
-        this.tracks.length +
-        this.artists.length +
-        this.albums.length +
-        this.playlists.length +
-        this.musicVideos.length >
-        0
-      )
-    }
-  },
-  watch: {
-    keywords(newKeywords) {
-      if (newKeywords.length === 0) return
-      this.getData()
-    }
-  },
-  created() {
-    this.getData()
-  },
-  methods: {
-    playTrackInSearchResult(id) {
-      const track = this.tracks.find(t => t.id === id)
-      this.$store.state.player.appendTrackToPlayerList(track, true)
-    },
-    search(type = 'all') {
-      const typeTable = {
-        all: 1018,
-        musicVideos: 1004,
-        tracks: 1,
-        albums: 10,
-        artists: 100,
-        playlists: 1000
-      }
-      return search({
-        keywords: this.keywords,
-        type: typeTable[type],
-        limit: 16
-      })
-        .then(result => {
-          return { result: result.result, type }
-        })
-        .catch(err => {
-          toast(err.response.data.msg || err.response.data.message)
-        })
-    },
-    getData() {
-      setTimeout(() => {
-        if (!this.show) NProgress.start()
-      }, 1000)
-      this.show = false
-
-      const requestAll = requests => {
-        const keywords = this.keywords
-        Promise.all(requests).then(results => {
-          if (keywords !== this.keywords) return
-          results.map(result => {
-            const searchType = result.type
-            if (result.result === undefined) return
-            result = result.result
-            switch (searchType) {
-              case 'all':
-                this.result = result
-                break
-              case 'musicVideos':
-                this.musicVideos = result.mvs ?? []
-                break
-              case 'artists':
-                this.artists = result.artists ?? []
-                break
-              case 'albums':
-                this.albums = result.albums ?? []
-                break
-              case 'tracks':
-                this.tracks = result.songs ?? []
-                this.getTracksDetail()
-                break
-              case 'playlists':
-                this.playlists = result.playlists ?? []
-                break
-            }
-          })
-          NProgress.done()
-          this.show = true
-        })
-      }
-
-      const requests = [
-        this.search('artists'),
-        this.search('albums'),
-        this.search('tracks')
-      ]
-      const requests2 = [this.search('musicVideos'), this.search('playlists')]
-
-      requestAll(requests)
-      requestAll(requests2)
-    },
-    getTracksDetail() {
-      const trackIDs = this.tracks.map(t => t.id)
-      if (trackIDs.length === 0) return
-      getTrackDetail(trackIDs.join(',')).then(result => {
-        this.tracks = result.songs
-      })
+      show,
+      tracks,
+      artists,
+      albums,
+      playlists,
+      musicVideos,
+      keywords,
+      haveResult
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

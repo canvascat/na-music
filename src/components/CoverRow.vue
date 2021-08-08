@@ -10,17 +10,19 @@
         :id="item.id"
         :image-url="getImageUrl(item)"
         :type="type"
-        :play-button-size="type === 'artist' ? 26 : playButtonSize"
       />
       <div class="text">
         <div v-if="showPlayCount" class="info">
-          <span class="play-count"
-            ><IconPlay />{{ formatPlayCount(item.playCount) }}
+          <span
+            class="play-count"
+          ><IconPlay />{{ formatPlayCount(item.playCount) }}
           </span>
         </div>
         <div class="title" :style="{ fontSize: subTextFontSize }">
-          <span v-if="isExplicit(item)" class="explicit-symbol"
-            ><IconExplicit /></span>
+          <span
+            v-if="isExplicit(item)"
+            class="explicit-symbol"
+          ><IconExplicit /></span>
           <span v-if="isPrivacy(item)" class="lock-icon">
             <IconLock />
           </span>
@@ -54,8 +56,7 @@ export default {
     subTextFontSize: { type: String, default: '16px' },
     showPlayCount: { type: Boolean, default: false },
     columnNumber: { type: Number, default: 6 },
-    gap: { type: String, default: '44px 24px' },
-    playButtonSize: { type: Number, default: 22 }
+    gap: { type: String, default: '44px 24px' }
   },
   computed: {
     rowStyles () {

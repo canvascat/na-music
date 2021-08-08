@@ -2,7 +2,7 @@
   <div v-show="show" class="artist-page">
     <div class="artist-info">
       <div class="head">
-        <img :src="resizeImage(artist.img1v1Url, 1024)" alt="cover" />
+        <img :src="resizeImage(artist.img1v1Url, 1024)" alt="cover">
       </div>
       <div>
         <div class="name">{{ artist.name }}</div>
@@ -44,8 +44,6 @@
             :id="latestRelease.id"
             :image-url="resizeImage(latestRelease.picUrl)"
             type="album"
-            :fixed-size="128"
-            :play-button-size="30"
           />
           <div class="info">
             <div class="name">
@@ -69,7 +67,7 @@
             @mouseleave="mvHover = false"
             @click="goToMv(latestMV.id)"
           >
-            <img :src="latestMV.coverUrl" alt="mv" />
+            <img :src="latestMV.coverUrl" alt="mv">
             <transition name="fade">
               <div
                 v-show="mvHover"
@@ -108,12 +106,17 @@
     </div>
     <div v-if="albums.length !== 0" id="albums" class="albums">
       <div class="section-title">{{ $t('artist.albums') }}</div>
-      <CoverRow :type="'album'" :items="albums" :sub-text="'releaseYear'" :show-play-button="true" />
+      <CoverRow
+        :type="'album'"
+        :items="albums"
+        :sub-text="'releaseYear'"
+        :show-play-button="true"
+      />
     </div>
     <div v-if="mvs.length !== 0" id="mvs" class="mvs">
       <div class="section-title">
         MVs
-        <router-link v-show="hasMoreMV" :to="`/artist/${this.artist.id}/mv`">
+        <router-link v-show="hasMoreMV" :to="`/artist/${artist.id}/mv`">
           {{
             $t('home.seeMore')
           }}

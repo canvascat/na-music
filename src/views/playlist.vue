@@ -7,10 +7,7 @@
         :show-play-button="true"
         :always-show-shadow="true"
         :click-cover-to-play="true"
-        :fixed-size="288"
         type="playlist"
-        :cover-hover="false"
-        :play-button-size="18"
         @click.right="openMenu"
       />
       <div class="info">
@@ -86,7 +83,7 @@
               @input="inputDebounce()"
               @focus="inputFocus = true"
               @blur="inputFocus = false"
-            />
+            >
           </div>
         </div>
       </div>
@@ -130,7 +127,7 @@
 
     <div v-if="isLikeSongsPage" class="user-info">
       <h1>
-        <img class="avatar" :src="resizeImage(data.user.avatarUrl)" alt="avatar" />
+        <img class="avatar" :src="resizeImage(data.user.avatarUrl)" alt="avatar">
         {{
           data.user.nickname
         }}{{ $t('library.sLikedSongs') }}
@@ -147,7 +144,7 @@
               @input="inputDebounce()"
               @focus="inputFocus = true"
               @blur="inputFocus = false"
-            />
+            >
           </div>
         </div>
       </div>
@@ -168,7 +165,9 @@
         color="grey"
         :loading="loadingMore"
         @click="loadMore(100)"
-      >{{ $t('explore.loadMore') }}</ButtonTwoTone>
+      >
+        {{ $t('explore.loadMore') }}
+      </ButtonTwoTone>
     </div>
 
     <Modal
@@ -176,7 +175,9 @@
       :close="toggleFullDescription"
       :click-outside-hide="true"
       title="歌单介绍"
-    >{{ playlist.description }}</Modal>
+    >
+      {{ playlist.description }}
+    </Modal>
 
     <ContextMenu ref="playlistMenu">
       <!-- <div class="item">{{ $t('contextMenu.addToQueue') }}</div> -->
@@ -196,12 +197,16 @@
         v-if="playlist.creator.userId === data.user.userId"
         class="item"
         @click="editPlaylist"
-      >编辑歌单信息</div>
+      >
+        编辑歌单信息
+      </div>
       <div
         v-if="playlist.creator.userId === data.user.userId"
         class="item"
         @click="deletePlaylist"
-      >删除歌单</div>
+      >
+        删除歌单
+      </div>
     </ContextMenu>
   </div>
 </template>

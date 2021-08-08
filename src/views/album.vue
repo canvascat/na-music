@@ -7,10 +7,7 @@
         :show-play-button="true"
         :always-show-shadow="true"
         :click-cover-to-play="true"
-        :fixed-size="288"
         type="album"
-        :cover-hover="false"
-        :play-button-size="18"
         @click.right="openMenu"
       />
       <div class="info">
@@ -72,7 +69,12 @@
         </div>
       </div>
     </div>
-    <TrackList :id="album.id" :tracks="tracks" :type="'album'" :album-object="album" />
+    <TrackList
+      :id="album.id"
+      :tracks="tracks"
+      :type="'album'"
+      :album-object="album"
+    />
     <div class="extra-info">
       <div class="album-time"></div>
       <div class="release-date">

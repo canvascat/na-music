@@ -56,7 +56,7 @@
             :title="$t('player.previous')"
             @click="player.playPrevTrack"
           >
-            <IconPrevious />
+            <IconPrev />
           </button-icon>
           <button-icon v-show="player.isPersonalFM" title="不喜欢" @click="player.moveToFMTrash">
             <IconThumbsDown />
@@ -152,7 +152,7 @@ import { resizeImage } from '@/utils/filters'
 import {
   IconHeart,
   IconHeartSolid,
-  IconPrevious,
+  IconPrev,
   IconPause,
   IconPlay,
   IconNext,
@@ -178,7 +178,7 @@ export default defineComponent({
     VueSlider,
     IconHeart,
     IconHeartSolid,
-    IconPrevious,
+    IconPrev,
     IconPause,
     IconPlay,
     IconNext,
@@ -372,16 +372,9 @@ export default defineComponent({
   justify-content: center;
   align-items: center;
   padding: 0 8px;
-  .button-icon {
-    margin: 0 8px;
-  }
-  .play {
-    height: 42px;
-    width: 42px;
-    .svg-icon {
-      width: 24px;
-      height: 24px;
-    }
+  .svg-icon {
+    width: 24px;
+    height: 24px;
   }
 }
 

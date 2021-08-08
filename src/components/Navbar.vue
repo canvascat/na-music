@@ -1,10 +1,10 @@
 <template>
   <nav>
     <div class="navigation-buttons">
-      <button class="button-icon" @click="go(1)" title="back">
+      <button class="button-icon" title="back" @click="go(1)">
         <IconArrowLeft />
       </button>
-      <button class="button-icon" @click="go(-1)" title="forward">
+      <button class="button-icon" title="forward" @click="go(-1)">
         <IconArrowRight />
       </button>
     </div>
@@ -13,11 +13,15 @@
       <router-link
         to="/explore"
         :class="{ active: $route.name === 'explore' }"
-      >{{ $t("nav.explore") }}</router-link>
+      >
+        {{ $t("nav.explore") }}
+      </router-link>
       <router-link
         to="/library"
         :class="{ active: $route.name === 'library' }"
-      >{{ $t("nav.library") }}</router-link>
+      >
+        {{ $t("nav.library") }}
+      </router-link>
     </div>
     <div class="right-part">
       <div class="search-box">
@@ -31,11 +35,16 @@
               @keydown.enter="doSearch"
               @focus="inputFocus = true"
               @blur="inputFocus = false"
-            />
+            >
           </div>
         </div>
       </div>
-      <img class="avatar" :src="avatarUrl" @click="showUserProfileMenu" alt="avatar" />
+      <img
+        class="avatar"
+        :src="avatarUrl"
+        alt="avatar"
+        @click="showUserProfileMenu"
+      >
     </div>
   </nav>
 
@@ -52,7 +61,7 @@
       <IconLogout />
       {{ $t("library.userProfileMenu.logout") }}
     </div>
-    <hr />
+    <hr>
     <div class="item" @click="toGitHub">
       <IconGithub />
       {{ $t("nav.github") }}

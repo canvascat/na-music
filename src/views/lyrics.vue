@@ -18,11 +18,11 @@
         <div
           class="top-right"
           :style="{ backgroundImage: `url(${bgImageUrl})` }"
-        />
+        ></div>
         <div
           class="bottom-left"
           :style="{ backgroundImage: `url(${bgImageUrl})` }"
-        />
+        ></div>
       </div>
       <div
         v-if="settings.lyricsBackground === true"
@@ -34,7 +34,7 @@
         <div>
           <div class="cover">
             <div class="cover-container">
-              <img :src="imageUrl"  alt="cover"/>
+              <img :src="imageUrl" alt="cover">
               <div
                 class="shadow"
                 :style="{ backgroundImage: `url(${imageUrl})` }"
@@ -48,21 +48,24 @@
                   <router-link
                     :to="`/${player.playlistSource.type}/${player.playlistSource.id}`"
                     @click="toggleLyrics"
-                    >{{ currentTrack.name }}
+                  >
+                    {{ currentTrack.name }}
                   </router-link>
                 </div>
                 <div class="subtitle">
                   <router-link
                     :to="`/artist/${artist.id}`"
                     @click="toggleLyrics"
-                    >{{ artist.name }}
+                  >
+                    {{ artist.name }}
                   </router-link>
                   -
                   <router-link
                     :to="`/album/${album.id}`"
                     :title="album.name"
                     @click="toggleLyrics"
-                    >{{ album.name }}
+                  >
+                    {{ album.name }}
                   </router-link>
                 </div>
               </div>
@@ -93,7 +96,7 @@
                   :tooltip-formatter="formatTrackTime"
                   :lazy="true"
                   :silent="true"
-                ></vue-slider>
+                />
               </div>
               <span>{{ formatTrackTime(player.currentTrackDuration) }}</span>
             </div>
@@ -117,7 +120,7 @@
                   :title="$t('player.previous')"
                   @click="player.playPrevTrack"
                 >
-                  <IconPrevious />
+                  <IconPrev />
                 </button-icon>
                 <button-icon
                   v-show="player.isPersonalFM"
@@ -127,12 +130,11 @@
                   <IconThumbsDown />
                 </button-icon>
                 <button-icon
-                  id="play"
                   :title="$t(player.playing ? 'player.pause' : 'player.play')"
                   @click="player.playOrPause"
                 >
-                  <IconPause v-if="player.playing" />
-                  <IconPlay v-else />
+                  <IconPause v-if="player.playing" key="pause" />
+                  <IconPlay v-else key="play" />
                 </button-icon>
                 <button-icon
                   :title="$t('player.next')"
@@ -172,8 +174,9 @@
               }"
               @click="clickLyricLine(line.time)"
               @dblclick="clickLyricLine(line.time, true)"
-              ><span v-html="formatLine(line)"></span
-            ></div>
+            >
+              <span v-html="formatLine(line)"></span>
+            </div>
           </div>
         </transition>
       </div>
@@ -203,7 +206,7 @@ import {
   IconHeartSolid,
   IconRepeat1,
   IconRepeat,
-  IconPrevious,
+  IconPrev,
   IconThumbsDown,
   IconPlay,
   IconPause,
@@ -221,7 +224,7 @@ export default {
     IconHeartSolid,
     IconRepeat1,
     IconRepeat,
-    IconPrevious,
+    IconPrev,
     IconThumbsDown,
     IconPlay,
     IconPause,
@@ -571,20 +574,10 @@ export default {
         display: flex;
         align-items: center;
 
-        button {
-          margin: 0 8px;
-        }
-
-        button#play .svg-icon {
-          height: 28px;
-          width: 28px;
-          padding: 2px;
-        }
-
         .svg-icon {
           opacity: 0.88;
-          height: 22px;
-          width: 22px;
+          height: 28px;
+          width: 28px;
         }
       }
     }

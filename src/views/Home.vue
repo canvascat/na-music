@@ -2,7 +2,13 @@
   <div v-show="show" class="home">
     <div v-if="settings.showPlaylistsByAppleMusic !== false" class="index-row first-row">
       <div class="title">by Apple Music</div>
-      <CoverRow type="playlist" :items="byAppleMusic" :column-number="5" sub-text="appleMusic" :image-size="1024" />
+      <CoverRow
+        type="playlist"
+        :items="byAppleMusic"
+        :column-number="5"
+        sub-text="appleMusic"
+        :image-size="1024"
+      />
     </div>
     <div class="index-row">
       <div class="title">
@@ -36,7 +42,12 @@
         {{ $t('home.charts') }}
         <router-link to="/explore?category=排行榜">{{ $t('home.seeMore') }}</router-link>
       </div>
-      <CoverRow type="playlist" :items="topList" sub-text="updateFrequency" :image-size="1024" />
+      <CoverRow
+        type="playlist"
+        :items="topList"
+        sub-text="updateFrequency"
+        :image-size="1024"
+      />
     </div>
   </div>
 </template>
@@ -132,6 +143,7 @@ export default defineComponent({
     font-size: 13px;
     font-weight: 600;
     opacity: 0.68;
+    color: var(--color-primary);
   }
 }
 
