@@ -272,23 +272,16 @@ export class Player {
     return t ? URL.createObjectURL(new Blob([t.source])) : null
   }
 
-  private _getAudioSourceFromNetease (track) {
-    if (isAccountLoggedIn()) {
-      return getMP3(track.id).then(result => {
-        if (!result.data[0]) return null
-        if (!result.data[0].url) return null
-        if (result.data[0].freeTrialInfo !== null) return null // 跳过只能试听的歌曲
-        const source = result.data[0].url.replace(/^http:/, 'https:')
-        if (store.state.settings.automaticallyCacheSongs) {
-          cacheTrackSource(track, source, result.data[0].br)
-        }
-        return source
-      })
-    } else {
-      return new Promise(resolve => {
-        resolve(`https://music.163.com/song/media/outer/url?id=${track.id}`)
-      })
+  private async _getAudioSourceFromNetease (track) {
+    if (!isAccountLoggedIn()) return `https://music.163.com/song/media/outer/url?id=${track.id}`
+    const result = await getMP3(track.id)
+    if (!result.data[0]?.url) return null
+    if (result.data[0].freeTrialInfo !== null) return null // 跳过只能试听的歌曲
+    const source = result.data[0].url.replace(/^http:/, 'https:')
+    if (store.state.settings.automaticallyCacheSongs) {
+      cacheTrackSource(track, source, result.data[0].br)
     }
+    return source
   }
 
   private async _getAudioSource (track: Song) {
@@ -523,6 +516,7 @@ export class Player {
     sounds[0]._node.setSinkId(store.state.settings.outputDevice)
   }
 
+  /** 替换歌单播放 */
   replacePlaylist (
     trackIDs: number[],
     playlistSourceID: number,
@@ -580,16 +574,14 @@ export class Player {
     if (playNow) this.playNextTrack()
   }
 
-  playPersonalFM () {
+  /** 播放私人电台 */
+  async playPersonalFM () {
     this._isPersonalFM = true
     if (!this._enabled) this._enabled = true
     if (this._currentTrack.id !== this._personalFMTrack.id) {
-      this._replaceCurrentTrack(this._personalFMTrack.id).then(() =>
-        this.playOrPause()
-      )
-    } else {
-      this.playOrPause()
+      await this._replaceCurrentTrack(this._personalFMTrack.id)
     }
+    this.playOrPause()
   }
 
   moveToFMTrash () {
