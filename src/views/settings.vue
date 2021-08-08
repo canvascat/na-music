@@ -3,7 +3,7 @@
     <div class="container">
       <div v-if="showUserInfo" class="user">
         <div class="left">
-          <img class="avatar" :src="data.user.avatarUrl" />
+          <img class="avatar" :src="data.user.avatarUrl">
           <div class="info">
             <div class="nickname">{{ data.user.nickname }}</div>
             <div class="extra-info">
@@ -76,54 +76,40 @@
           </select>
         </div>
       </div>
-      <div v-if="isElectron" class="item">
-        <div class="left">
-          <div class="title">{{ $t('settings.deviceSelector') }}</div>
-        </div>
-        <div class="right">
-          <select v-model="outputDevice">
-            <option
-              v-for="device in allOutputDevices"
-              :key="device.deviceId"
-              :value="device.deviceId"
-              :selected="device.deviceId === outputDevice"
-            >{{ $t(device.label) }}</option>
-          </select>
-        </div>
-      </div>
+
       <template v-if="isElectron">
-      <h3>缓存</h3>
-      <div class="item">
-        <div class="left">
-          <div class="title">{{ $t('settings.automaticallyCacheSongs') }}</div>
-        </div>
-        <div class="right">
-          <div class="toggle">
-            <input
-              id="automatically-cache-songs"
-              v-model="automaticallyCacheSongs"
-              type="checkbox"
-              name="automatically-cache-songs"
-            />
-            <label for="automatically-cache-songs"></label>
+        <h3>缓存</h3>
+        <div class="item">
+          <div class="left">
+            <div class="title">{{ $t('settings.automaticallyCacheSongs') }}</div>
+          </div>
+          <div class="right">
+            <div class="toggle">
+              <input
+                id="automatically-cache-songs"
+                v-model="automaticallyCacheSongs"
+                type="checkbox"
+                name="automatically-cache-songs"
+              >
+              <label for="automatically-cache-songs"></label>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="item">
-        <div class="left">
-          <div class="title">{{ $t('settings.cacheLimit.text') }}</div>
+        <div class="item">
+          <div class="left">
+            <div class="title">{{ $t('settings.cacheLimit.text') }}</div>
+          </div>
+          <div class="right">
+            <select v-model="cacheLimit">
+              <option :value="false">{{ $t('settings.cacheLimit.none') }}</option>
+              <option :value="512">500MB</option>
+              <option :value="1024">1GB</option>
+              <option :value="2048">2GB</option>
+              <option :value="4096">4GB</option>
+              <option :value="8192">8GB</option>
+            </select>
+          </div>
         </div>
-        <div class="right">
-          <select v-model="cacheLimit">
-            <option :value="false">{{ $t('settings.cacheLimit.none') }}</option>
-            <option :value="512">500MB</option>
-            <option :value="1024">1GB</option>
-            <option :value="2048">2GB</option>
-            <option :value="4096">4GB</option>
-            <option :value="8192">8GB</option>
-          </select>
-        </div>
-      </div>
       </template>
 
       <h3>歌词</h3>
@@ -138,7 +124,7 @@
               v-model="showLyricsTranslation"
               type="checkbox"
               name="show-lyrics-translation"
-            />
+            >
             <label for="show-lyrics-translation"></label>
           </div>
         </div>
@@ -199,7 +185,7 @@
               v-model="showPlaylistsByAppleMusic"
               type="checkbox"
               name="show-playlists-by-apple-music"
-            />
+            >
             <label for="show-playlists-by-apple-music"></label>
           </div>
         </div>
@@ -218,7 +204,7 @@
                 v-model="enableGlobalShortcut"
                 type="checkbox"
                 name="enable-enable-global-shortcut"
-              />
+              >
               <label for="enable-enable-global-shortcut"></label>
             </div>
           </div>
@@ -265,7 +251,7 @@
                     enableGlobalShortcut,
                 }"
                 @click.stop="
-                readyToRecordShortcut(shortcut.id, 'globalShortcut')
+                  readyToRecordShortcut(shortcut.id, 'globalShortcut')
                 "
               >
                 {{
@@ -316,13 +302,6 @@ export default {
         size: '0KB',
         length: 0
       },
-      // TODO:
-      allOutputDevices: [
-        {
-          deviceId: 'default',
-          label: 'settings.permissionRequired'
-        }
-      ],
       shortcutInput: {
         id: '',
         type: '',
@@ -445,23 +424,6 @@ export default {
         this.$store.commit('changeLyricFontSize', value)
       }
     },
-    outputDevice: {
-      get () {
-        const isValidDevice = this.allOutputDevices.find(
-          device => device.deviceId === this.settings.outputDevice
-        )
-        if (
-          this.settings.outputDevice === undefined ||
-          isValidDevice === undefined
-        ) { return 'default' } // Default deviceId
-        return this.settings.outputDevice
-      },
-      set (deviceId) {
-        if (deviceId === this.settings.outputDevice || deviceId === undefined) { return }
-        this.$store.commit('changeOutputDevice', deviceId)
-        this.player.setOutputDevice()
-      }
-    },
 
     showPlaylistsByAppleMusic: {
       get () {
@@ -545,27 +507,6 @@ export default {
     this.countDBSize('tracks')
   },
   methods: {
-    // TODO: DELETE
-    getAllOutputDevices () {
-      navigator.mediaDevices.enumerateDevices().then(devices => {
-        this.allOutputDevices = devices.filter(device => {
-          return device.kind === 'audiooutput'
-        })
-        if (
-          this.allOutputDevices.length > 0 &&
-          this.allOutputDevices[0].label !== ''
-        ) {
-          this.withoutAudioPriviledge = false
-        } else {
-          this.allOutputDevices = [
-            {
-              deviceId: 'default',
-              label: 'settings.permissionRequired'
-            }
-          ]
-        }
-      })
-    },
     logout () {
       doLogout()
       this.$router.push({ name: 'home' })

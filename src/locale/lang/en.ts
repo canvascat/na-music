@@ -139,8 +139,6 @@ export default {
       large: 'Large (Default)',
       xlarge: 'X-Large'
     },
-    deviceSelector: 'Audio Output Device',
-    permissionRequired: 'Microphone Permission Required',
     appearance: {
       text: 'Appearance',
       auto: 'Auto',

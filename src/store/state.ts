@@ -21,6 +21,8 @@ const player = new Proxy(new Player(), {
   }
 })
 
+;(window as any).player = player
+
 export const state: State = {
   showLyrics: false,
   liked: {

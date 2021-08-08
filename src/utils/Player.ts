@@ -56,13 +56,12 @@ export class Player {
 
     if (this._enabled) {
       // 恢复当前播放歌曲
+      console.log(this._currentTrack.id, 'this._currentTrack.id')
       this._replaceCurrentTrack(this._currentTrack.id, false).then(() => {
         this._howler?.seek(+localStorage.getItem('playerCurrentTrackTime') || 0)
       }) // update audio source and init howler
       this._initMediaSession()
     }
-
-    this._setIntervals()
 
     // 初始化私人FM
     if (!this._personalFMTrack || !this._personalFMNextTrack) {
@@ -172,17 +171,6 @@ export class Player {
     return store.state.liked.songs.includes(this.currentTrack.id)
   }
 
-  private _setIntervals () {
-    // 同步播放进度
-    // TODO: 如果 _progress 在别的地方被改变了，这个定时器会覆盖之前改变的值，是bug
-    // 定时保存播放进度 TODO: 应该有个播放时间而不是使用定时器来触发
-    setInterval(() => {
-      if (!this._howler) return
-      this._progress = this._howler.seek() as number
-      localStorage.setItem('playerCurrentTrackTime', (this._progress).toString())
-    }, 1000)
-  }
-
   private _getNextTrack () {
     if (this._playNextList.length > 0) {
       const trackID = this._playNextList.shift()
@@ -242,24 +230,79 @@ export class Player {
     }
   }
 
-  private _playAudioSource (source, autoplay = true) {
+  private _playAudioSource (source: string, autoplay = true) {
     Howler.unload()
     this._howler = new Howl({
       src: [source],
       html5: true,
-      format: ['mp3', 'flac']
+      format: ['mp3', 'flac'],
+      onplay: () => {
+        console.log('play')
+        // this._updateProgress()
+        // Display the duration.
+        // duration.innerHTML = self.formatTime(Math.round(sound.duration()));
+
+        // Start updating the progress of the track.
+        // requestAnimationFrame(self.step.bind(self));
+
+        // Start the wave animation if we have already loaded
+
+      },
+      onload () {
+        console.log('load')
+        // Start the wave animation.
+      },
+      // Stop the wave animation. self.skip('next');
+      onend: this._nextTrackCallback.bind(this),
+      onpause: () => {
+        console.log('pause')
+        // cancelAnimationFrame(this._updateProgress)
+        // Stop the wave animation.
+      },
+      onstop () {
+        console.log('stop')
+        // Stop the wave animation.
+      },
+      onseek (...args: any[]) {
+        console.log('onseek => ', ...args)
+      }
+      // onseek: this._step.bind(this)
     })
     if (autoplay) {
       this.play()
       document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`
     }
-    this.setOutputDevice()
-    this._howler.once('end', () => {
-      this._nextTrackCallback()
-    })
+    this._howler.off('play', this._updateProgress)
+    this._howler.on('play', this._updateProgress)
+    this._howler.once('end', this._nextTrackCallback)
   }
 
-  private async _getAudioSourceFromCache (id) {
+  private _updateProgress () {
+    if (!this._howler?.playing()) return
+    const seek = this._howler.seek() as number
+    if (this._progress !== seek) {
+      localStorage.setItem('playerCurrentTrackTime', (this._progress = seek).toString())
+    }
+    requestAnimationFrame(this._updateProgress)
+  }
+
+  private _step () {
+    // Get the Howl we want to manipulate.
+    const sound = this._howler
+
+    // Determine our current seek position.
+    const seek = sound.seek() || 0
+    console.log('setp => ', seek)
+    // timer.innerHTML = self.formatTime(Math.round(seek));
+    // progress.style.width = (((seek / sound.duration()) * 100) || 0) + '%';
+
+    // If the sound is still playing, continue stepping.
+    // if (sound.playing()) {
+    //   requestAnimationFrame(self.step.bind(self));
+    // }
+  }
+
+  private async _getAudioSourceFromCache (id: number) {
     const t = await getTrackSource(id)
     return t ? URL.createObjectURL(new Blob([t.source])) : null
   }
@@ -277,7 +320,7 @@ export class Player {
   }
 
   private async _getAudioSource (track: Song) {
-    let source = await this._getAudioSourceFromCache(String(track.id))
+    let source = await this._getAudioSourceFromCache(track.id)
     if (!source) source = await this._getAudioSourceFromNetease(track)
     return source
   }
@@ -298,7 +341,6 @@ export class Player {
     if (source) {
       this._playAudioSource(source, autoplay)
       this._cacheNextTrack()
-      return source
     } else {
       toast(`无法播放 ${track.name}`)
       ifUnplayableThen === 'playNextTrack'
@@ -360,9 +402,7 @@ export class Player {
   }
 
   private _updateMediaSessionMetaData (track: Song) {
-    if (!('mediaSession' in navigator)) {
-      return
-    }
+    if (!('mediaSession' in navigator)) return
     const artists = track.ar.map(a => a.name)
     navigator.mediaSession.metadata = new window.MediaMetadata({
       title: track.name,
@@ -379,16 +419,12 @@ export class Player {
   }
 
   private _updateMediaSessionPositionState () {
-    if (!('mediaSession' in navigator)) {
-      return
-    }
-    if ('setPositionState' in navigator.mediaSession) {
-      navigator.mediaSession.setPositionState({
-        duration: ~~(this.currentTrack.dt / 1000),
-        playbackRate: 1.0,
-        position: this.seek()
-      })
-    }
+    const duration = Math.floor(this.currentTrack.dt / 1000)
+    navigator?.mediaSession?.setPositionState({
+      duration,
+      playbackRate: 1.0,
+      position: this.seek()
+    })
   }
 
   private _nextTrackCallback () {
@@ -400,21 +436,13 @@ export class Player {
     }
   }
 
-  private _loadPersonalFMNextTrack () {
-    return personalFM().then(result => {
-      this._personalFMNextTrack = result.data[0]
-      this._cacheNextTrack() // cache next track
-      return this._personalFMNextTrack
-    })
+  private async _loadPersonalFMNextTrack () {
+    const result = await personalFM()
+    this._personalFMNextTrack = result.data[0]
+    this._cacheNextTrack() // cache next track
+    return this._personalFMNextTrack
   }
 
-  // currentTrackID() {
-  //   const { list, current } = this._getListAndCurrent();
-  //   return list[current];
-  // }
-  // appendTrack(trackID: number) {
-  //   this.list.push(trackID);
-  // }
   playNextTrack (isFM = false) {
     if (this._isPersonalFM || isFM === true) {
       this._isPersonalFM = true
@@ -456,14 +484,14 @@ export class Player {
   pause () {
     this._howler?.pause()
     this._playing = false
-    document.title = 'YesPlayMusic'
+    document.title = 'Music'
   }
 
   play () {
     if (this._howler?.playing()) return
     this._howler?.play()
     this._playing = true
-    document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - YesPlayMusic`
+    document.title = `${this._currentTrack.name} · ${this._currentTrack.ar[0].name} - Music`
     if (store.state.lastfm.key !== undefined) {
       trackUpdateNowPlaying({
         artist: this.currentTrack.ar[0].name,
@@ -483,11 +511,11 @@ export class Player {
     }
   }
 
-  seek (time = null) {
-    if (time !== null) {
+  seek (time?: number) {
+    if (time !== undefined) {
       this._howler?.seek(time)
     }
-    return this._howler === null ? 0 : this._howler.seek() as number
+    return this._howler?.seek() as number ?? 0
   }
 
   mute () {
@@ -497,15 +525,6 @@ export class Player {
       this._volumeBeforeMuted = this.volume
       this.volume = 0
     }
-  }
-
-  setOutputDevice () {
-    // TODO: FIX TYPE
-    // @ts-ignore
-    const sounds: any[] = this._howler?._sounds
-    if (!sounds || sounds.length <= 0) return
-    if (sounds[0]._node) return
-    sounds[0]._node.setSinkId(store.state.settings.outputDevice)
   }
 
   /** 替换歌单播放 */
@@ -576,10 +595,11 @@ export class Player {
     this.playOrPause()
   }
 
-  moveToFMTrash () {
+  /** 删除当前FM并播放下一首 */
+  async moveToFMTrash () {
     this._isPersonalFM = true
+    await fmTrash(this._personalFMTrack.id)
     this.playNextTrack()
-    fmTrash(this._personalFMTrack.id)
   }
 
   switchRepeatMode () {
@@ -600,6 +620,7 @@ export class Player {
     this._playNextList.length = 0
   }
 
+  // 删除待播放的
   removeTrackFromQueue (index: number) {
     this._playNextList.splice(index, 1)
   }

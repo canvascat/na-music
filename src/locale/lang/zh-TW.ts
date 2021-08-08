@@ -136,8 +136,6 @@ export default {
       large: '大（預設）',
       xlarge: '超大'
     },
-    deviceSelector: '音訊輸出裝置',
-    permissionRequired: '需要麥克風權限',
     appearance: {
       text: '外觀',
       auto: '自動',

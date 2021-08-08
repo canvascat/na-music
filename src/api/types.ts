@@ -78,7 +78,6 @@ export interface StoreSetting {
   appearance: string
   musicQuality: number
   lyricFontSize: number
-  outputDevice: string
   showPlaylistsByAppleMusic: boolean
   automaticallyCacheSongs: boolean
   cacheLimit: false | number
@@ -89,37 +88,37 @@ export interface StoreSetting {
 }
 
 export interface PlaylistCreator {
-  defaultAvatar: boolean;
-  province: number;
-  authStatus: number;
-  followed: boolean;
-  avatarUrl: string;
-  accountStatus: number;
-  gender: number;
-  city: number;
-  birthday: any;
-  userId: number;
-  userType: number;
-  nickname: string;
-  signature: string;
-  description: string;
-  detailDescription: string;
-  avatarImgId: any;
-  backgroundImgId: any;
-  backgroundUrl: string;
-  authority: number;
-  mutual: boolean;
-  expertTags: string[];
-  experts?: any;
-  djStatus: number;
-  vipType: number;
-  remarkName?: any;
-  authenticationTypes: number;
-  avatarDetail?: any;
-  avatarImgIdStr: string;
-  backgroundImgIdStr: string;
-  anchor: boolean;
-  avatarImgId_str: string;
+  defaultAvatar: boolean
+  province: number
+  authStatus: number
+  followed: boolean
+  avatarUrl: string
+  accountStatus: number
+  gender: number
+  city: number
+  birthday: any
+  userId: number
+  userType: number
+  nickname: string
+  signature: string
+  description: string
+  detailDescription: string
+  avatarImgId: any
+  backgroundImgId: any
+  backgroundUrl: string
+  authority: number
+  mutual: boolean
+  expertTags: string[]
+  experts?: any
+  djStatus: number
+  vipType: number
+  remarkName?: any
+  authenticationTypes: number
+  avatarDetail?: any
+  avatarImgIdStr: string
+  backgroundImgIdStr: string
+  anchor: boolean
+  avatarImgId_str: string
 }
 interface TrackId {
   id: number
@@ -203,241 +202,241 @@ interface Creator {
 }
 
 export interface Account {
-  id: number;
-  userName: string;
-  type: number;
-  status: number;
-  whitelistAuthority: number;
-  createTime: number;
-  tokenVersion: number;
-  ban: number;
-  baoyueVersion: number;
-  donateVersion: number;
-  vipType: number;
-  anonimousUser: boolean;
-  paidFee: boolean;
+  id: number
+  userName: string
+  type: number
+  status: number
+  whitelistAuthority: number
+  createTime: number
+  tokenVersion: number
+  ban: number
+  baoyueVersion: number
+  donateVersion: number
+  vipType: number
+  anonimousUser: boolean
+  paidFee: boolean
 }
 
 export interface Profile {
-  userId: number;
-  userType: number;
-  nickname: string;
-  avatarImgId: number;
-  avatarUrl: string;
-  backgroundImgId: number;
-  backgroundUrl: string;
-  signature: string;
-  createTime: number;
-  userName: string;
-  accountType: number;
-  shortUserName: string;
-  birthday: number;
-  authority: number;
-  gender: number;
-  accountStatus: number;
-  province: number;
-  city: number;
-  authStatus: number;
-  description?: any;
-  detailDescription?: any;
-  defaultAvatar: boolean;
-  expertTags?: any;
-  experts?: any;
-  djStatus: number;
-  locationStatus: number;
-  vipType: number;
-  followed: boolean;
-  mutual: boolean;
-  authenticated: boolean;
-  lastLoginTime: number;
-  lastLoginIP: string;
-  remarkName?: any;
-  viptypeVersion: number;
-  authenticationTypes: number;
-  avatarDetail?: any;
-  anchor: boolean;
+  userId: number
+  userType: number
+  nickname: string
+  avatarImgId: number
+  avatarUrl: string
+  backgroundImgId: number
+  backgroundUrl: string
+  signature: string
+  createTime: number
+  userName: string
+  accountType: number
+  shortUserName: string
+  birthday: number
+  authority: number
+  gender: number
+  accountStatus: number
+  province: number
+  city: number
+  authStatus: number
+  description?: any
+  detailDescription?: any
+  defaultAvatar: boolean
+  expertTags?: any
+  experts?: any
+  djStatus: number
+  locationStatus: number
+  vipType: number
+  followed: boolean
+  mutual: boolean
+  authenticated: boolean
+  lastLoginTime: number
+  lastLoginIP: string
+  remarkName?: any
+  viptypeVersion: number
+  authenticationTypes: number
+  avatarDetail?: any
+  anchor: boolean
 }
 export interface Ar {
-  id: number;
-  name: string;
-  alia: string[];
+  id: number
+  name: string
+  alia: string[]
 }
 
 export interface Al {
-  id: number;
-  name: string;
-  picUrl: string;
-  pic_str: string;
-  pic: any;
+  id: number
+  name: string
+  picUrl: string
+  pic_str: string
+  pic: any
 }
 
 interface MHL {
-  br: number;
-  fid: number;
-  size: number;
-  vd: number;
+  br: number
+  fid: number
+  size: number
+  vd: number
 }
 
 export interface FreeTrialPrivilege {
-  resConsumable: boolean;
-  userConsumable: boolean;
+  resConsumable: boolean
+  userConsumable: boolean
 }
 
 export interface ChargeInfoList {
-  rate: number;
-  chargeUrl?: any;
-  chargeMessage?: any;
-  chargeType: number;
+  rate: number
+  chargeUrl?: any
+  chargeMessage?: any
+  chargeType: number
 }
 
 export interface Privilege {
-  id: number;
-  fee: number;
-  payed: number;
-  st: number;
-  pl: number;
-  dl: number;
-  sp: number;
-  cp: number;
-  subp: number;
-  cs: boolean;
-  maxbr: number;
-  fl: number;
-  toast: boolean;
-  flag: number;
-  preSell: boolean;
-  playMaxbr: number;
-  downloadMaxbr: number;
-  rscl?: any;
-  freeTrialPrivilege: FreeTrialPrivilege;
-  chargeInfoList: ChargeInfoList[];
+  id: number
+  fee: number
+  payed: number
+  st: number
+  pl: number
+  dl: number
+  sp: number
+  cp: number
+  subp: number
+  cs: boolean
+  maxbr: number
+  fl: number
+  toast: boolean
+  flag: number
+  preSell: boolean
+  playMaxbr: number
+  downloadMaxbr: number
+  rscl?: any
+  freeTrialPrivilege: FreeTrialPrivilege
+  chargeInfoList: ChargeInfoList[]
 }
 
 export interface Song {
-  rtUrls: any[];
-  ar: Ar[];
-  al: Al;
-  st: number;
-  noCopyrightRcmd?: any;
-  a?: any;
-  m: MHL;
-  no: number;
-  fee: number;
-  djId: number;
-  mv: number;
-  alia: any[];
-  t: number;
-  v: number;
-  dt: number;
-  h: MHL;
-  l: MHL;
-  rtUrl?: any;
-  ftype: number;
-  rtype: number;
-  rurl?: any;
-  pst: number;
-  pop: number;
-  rt: string;
-  mst: number;
-  cp: number;
-  crbt?: any;
-  cf: string;
-  cd: string;
-  name: string;
-  id: number;
-  privilege: Privilege;
-  playable: boolean;
-  reason: string;
+  rtUrls: any[]
+  ar: Ar[]
+  al: Al
+  st: number
+  noCopyrightRcmd?: any
+  a?: any
+  m: MHL
+  no: number
+  fee: number
+  djId: number
+  mv: number
+  alia: any[]
+  t: number
+  v: number
+  dt: number
+  h: MHL
+  l: MHL
+  rtUrl?: any
+  ftype: number
+  rtype: number
+  rurl?: any
+  pst: number
+  pop: number
+  rt: string
+  mst: number
+  cp: number
+  crbt?: any
+  cf: string
+  cd: string
+  name: string
+  id: number
+  privilege: Privilege
+  playable: boolean
+  reason: string
 }
 
 export interface Artist {
-  img1v1Id: number;
-  topicPerson: number;
-  alias: any[];
-  picId: number;
-  briefDesc: string;
-  musicSize: number;
-  albumSize: number;
-  picUrl: string;
-  img1v1Url: string;
-  followed: boolean;
-  trans: string;
-  name: string;
-  id: number;
-  img1v1Id_str: string;
+  img1v1Id: number
+  topicPerson: number
+  alias: any[]
+  picId: number
+  briefDesc: string
+  musicSize: number
+  albumSize: number
+  picUrl: string
+  img1v1Url: string
+  followed: boolean
+  trans: string
+  name: string
+  id: number
+  img1v1Id_str: string
 }
 
 export interface ResourceInfo {
-  id: number;
-  userId: number;
-  name: string;
-  imgUrl: string;
-  creator?: any;
-  encodedId?: any;
-  subTitle?: any;
-  webUrl?: any;
+  id: number
+  userId: number
+  name: string
+  imgUrl: string
+  creator?: any
+  encodedId?: any
+  subTitle?: any
+  webUrl?: any
 }
 
 export interface CommentThread {
-  id: string;
-  resourceInfo: ResourceInfo;
-  resourceType: number;
-  commentCount: number;
-  likedCount: number;
-  shareCount: number;
-  hotCount: number;
-  latestLikedUsers?: any;
-  resourceOwnerId: number;
-  resourceTitle: string;
-  resourceId: number;
+  id: string
+  resourceInfo: ResourceInfo
+  resourceType: number
+  commentCount: number
+  likedCount: number
+  shareCount: number
+  hotCount: number
+  latestLikedUsers?: any
+  resourceOwnerId: number
+  resourceTitle: string
+  resourceId: number
 }
 
 export interface AlbumInfo {
-  commentThread: CommentThread;
-  latestLikedUsers?: any;
-  liked: boolean;
-  comments?: any;
-  resourceType: number;
-  resourceId: number;
-  commentCount: number;
-  likedCount: number;
-  shareCount: number;
-  threadId: string;
+  commentThread: CommentThread
+  latestLikedUsers?: any
+  liked: boolean
+  comments?: any
+  resourceType: number
+  resourceId: number
+  commentCount: number
+  likedCount: number
+  shareCount: number
+  threadId: string
 }
 
 export interface Album {
-  songs: Song[];
-  paid: boolean;
-  onSale: boolean;
-  mark: number;
-  tags: string;
-  artists: Artist[];
-  alias: any[];
-  copyrightId: number;
-  picId: number;
-  artist: Artist;
-  publishTime: number;
-  company: string;
-  briefDesc: string;
-  picUrl: string;
-  commentThreadId: string;
-  blurPicUrl: string;
-  companyId: number;
-  status: number;
-  subType: string;
-  description: string;
-  pic: number;
-  name: string;
-  id: number;
-  type: string;
-  size: number;
-  picId_str: string;
-  info: AlbumInfo;
+  songs: Song[]
+  paid: boolean
+  onSale: boolean
+  mark: number
+  tags: string
+  artists: Artist[]
+  alias: any[]
+  copyrightId: number
+  picId: number
+  artist: Artist
+  publishTime: number
+  company: string
+  briefDesc: string
+  picUrl: string
+  commentThreadId: string
+  blurPicUrl: string
+  companyId: number
+  status: number
+  subType: string
+  description: string
+  pic: number
+  name: string
+  id: number
+  type: string
+  size: number
+  picId_str: string
+  info: AlbumInfo
 }
 
 export interface Lrc {
-  version: number;
-  lyric: string;
+  version: number
+  lyric: string
 }
 
 export interface PlaylistItem {
@@ -488,9 +487,9 @@ export interface PlaylistItem {
 }
 
 export interface PrivateFM {
-  name: string;
-  id: number;
-  artists: Artist[];
-  album: Album;
-  privilege: Privilege;
+  name: string
+  id: number
+  artists: Artist[]
+  album: Album
+  privilege: Privilege
 }

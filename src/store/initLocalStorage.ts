@@ -10,7 +10,6 @@ const localStorage = {
     appearance: 'auto',
     musicQuality: 320000,
     lyricFontSize: 28,
-    outputDevice: 'default',
     showPlaylistsByAppleMusic: true,
     automaticallyCacheSongs: false,
     cacheLimit: false,

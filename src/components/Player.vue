@@ -26,7 +26,7 @@
             alt="cover"
             @click="goToAlbum"
           >
-          <div class="track-info" :title="audioSource">
+          <div class="track-info">
             <div class="name" @click="goToList">{{ currentTrack.name }}</div>
             <div class="artist">
               <span
@@ -64,12 +64,12 @@
           <button-icon
             class="play"
             :title="$t(player.playing ? 'player.pause' : 'player.play')"
-            @click="player.playOrPause"
+            @click="() => player.playOrPause()"
           >
             <IconPause v-if="player.playing" />
             <IconPlay v-else />
           </button-icon>
-          <button-icon :title="$t('player.next')" @click="player.playNextTrack">
+          <button-icon :title="$t('player.next')" @click="() => player.playNextTrack()">
             <IconNext />
           </button-icon>
         </div>
@@ -145,10 +145,7 @@
   </div>
 </template>
 
-<script>
-import { mapState, mapMutations, mapActions } from 'vuex'
-import '@/assets/css/slider.css'
-
+<script lang="ts">
 import ButtonIcon from '@/components/ButtonIcon.vue'
 import VueSlider from 'vue-slider-component'
 import { resizeImage } from '@/utils/filters'
@@ -166,10 +163,15 @@ import {
   IconVolume,
   IconVolumeMute,
   IconVolumeHalf,
-  IconArrowUp
+  IconArrowUp,
+  IconThumbsDown
 } from '@/components/icons'
+import { useStore } from '@/store'
+import { computed, defineComponent } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { formatTrackTime } from '@/utils/common'
 
-export default {
+export default defineComponent({
   name: 'Player',
   components: {
     ButtonIcon,
@@ -187,72 +189,74 @@ export default {
     IconVolume,
     IconVolumeMute,
     IconVolumeHalf,
-    IconArrowUp
+    IconArrowUp,
+    IconThumbsDown
   },
-  computed: {
-    ...mapState(['player', 'settings', 'data']),
-    currentTrack () {
-      return this.player.currentTrack
-    },
-    volume: {
+  setup () {
+    const { state, commit, dispatch } = useStore()
+    const player = computed(() => state.player)
+    const currentTrack = computed(() => player.value.currentTrack)
+    const playing = computed(() => player.value.playing)
+    const volume = computed({
       get () {
-        return this.player.volume
+        return player.value.volume
       },
-      set (value) {
-        this.player.volume = value
+      set (val: number) {
+        player.value.volume = val
       }
-    },
-    playing () {
-      return this.player.playing
-    },
-    audioSource () {
-      return this.player._howler?._src.includes('kuwo.cn')
-        ? '音源来自酷我音乐'
-        : ''
+    })
+
+    const router = useRouter()
+    const route = useRoute()
+    function goToNextTracksPage () {
+      if (player.value.isPersonalFM) return
+      route.name === 'next'
+        ? router.go(-1)
+        : router.push({ name: 'next' })
     }
-  },
-  methods: {
-    resizeImage,
-    ...mapMutations(['toggleLyrics']),
-    ...mapActions(['likeATrack']),
-    goToNextTracksPage () {
-      if (this.player.isPersonalFM) return
-      this.$route.name === 'next'
-        ? this.$router.go(-1)
-        : this.$router.push({ name: 'next' })
-    },
-    formatTrackTime (value) {
-      if (!value) return ''
-      const min = ~~((value / 60) % 60)
-      const sec = (~~(value % 60)).toString().padStart(2, '0')
-      return `${min}:${sec}`
-    },
-    goToList () {
-      if (this.player.playlistSource.id === this.data.likedSongPlaylistID) {
-        this.$router.push({ path: '/library/liked-songs' })
-      } else if (this.player.playlistSource.type === 'url') {
-        this.$router.push(String(this.player.playlistSource.id))
-      } else if (this.player.playlistSource.type === 'cloudDisk') {
-        this.$router.push({ path: '/library' })
+    function goToList () {
+      const source = player.value.playlistSource
+      if (source.id === state.data.likedSongPlaylistID) {
+        router.push('/library/liked-songs')
+      } else if (source.type === 'url') {
+        router.push(String(source.id))
+      } else if (source.type === 'cloudDisk') {
+        router.push('/library')
       } else {
-        this.$router.push({
-          path:
-            '/' +
-            this.player.playlistSource.type +
-            '/' +
-            this.player.playlistSource.id
-        })
+        const path = `/${source.type}/${source.id}`
+        router.push(path)
       }
-    },
-    goToAlbum () {
-      if (this.player.currentTrack.al.id === 0) return
-      this.$router.push({ path: '/album/' + this.player.currentTrack.al.id })
-    },
-    goToArtist (id) {
-      this.$router.push({ path: '/artist/' + id })
+    }
+    function goToAlbum () {
+      const { id } = player.value.currentTrack.al
+      if (id === 0) return
+      router.push(`/album/${id}`)
+    }
+    function goToArtist (id: number) {
+      router.push(`/artist/${id}`)
+    }
+
+    const toggleLyrics = () => commit('toggleLyrics')
+    const likeATrack = (id: number) => dispatch('likeATrack', id)
+
+    return {
+      player,
+      currentTrack,
+      playing,
+      volume,
+
+      resizeImage,
+      goToNextTracksPage,
+      formatTrackTime,
+      goToList,
+      goToAlbum,
+      goToArtist,
+
+      toggleLyrics,
+      likeATrack
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
