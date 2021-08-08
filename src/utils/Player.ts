@@ -88,25 +88,18 @@ export class Player {
     return this._shuffle
   }
 
-  set shuffle (shuffle) {
+  set shuffle (shuffle: boolean) {
     if (this._isPersonalFM) return
-    if (shuffle !== true && shuffle !== false) {
-      console.warn('shuffle: invalid args, must be Boolean')
-      return
-    }
-    this._shuffle = shuffle
-    if (shuffle) {
-      this._shuffleTheList()
-    }
+    // 对播放列表进行打乱
+    (this._shuffle = !!shuffle) && this._shuffleTheList()
   }
 
   get volume () {
     return this._volume
   }
 
-  set volume (volume) {
-    this._volume = volume
-    Howler.volume(volume)
+  set volume (volume: number) {
+    Howler.volume((this._volume = volume))
   }
 
   get list () {
@@ -172,9 +165,7 @@ export class Player {
   }
 
   set progress (value) {
-    if (this._howler) {
-      this._howler.seek(value)
-    }
+    this._howler?.seek(value)
   }
 
   get isCurrentTrackLiked () {
@@ -184,6 +175,7 @@ export class Player {
   private _setIntervals () {
     // 同步播放进度
     // TODO: 如果 _progress 在别的地方被改变了，这个定时器会覆盖之前改变的值，是bug
+    // 定时保存播放进度 TODO: 应该有个播放时间而不是使用定时器来触发
     setInterval(() => {
       if (!this._howler) return
       this._progress = this._howler.seek() as number
