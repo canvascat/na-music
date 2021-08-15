@@ -1,18 +1,17 @@
 <template>
   <div
     class="track"
+    tabindex="-1"
     :class="trackClass"
     :style="trackStyle"
     :title="track.reason"
-    @mouseover="hover = true"
-    @mouseleave="hover = false"
   >
     <img
       v-if="!isAlbum"
       :src="imgUrl"
-      :class="{ hover: focus }"
-      @click="goToAlbum" alt="album"
-    />
+      alt="album"
+      @click="goToAlbum"
+    >
     <div v-if="showOrderNumber" class="no">
       <button v-show="focus && track.playable && !isPlaying" @click="playTrack">
         <IconPlay style="height: 14px; width: 14px" />
@@ -33,7 +32,7 @@
               :artists="track.ar"
               :exclude="$parent.albumObject.artist.name"
               prefix="-"
-          /></span>
+            /></span>
           <span v-if="isAlbum && track.mark === 1318912" class="explicit-symbol"><IconExplicit /></span>
           <span v-if="isTranslate" :title="translate" class="translate">
             ({{ translate }})
@@ -43,22 +42,20 @@
           <span
             v-if="track.mark === 1318912"
             class="explicit-symbol before-artist"
-            ><IconExplicit /></span>
+          ><IconExplicit /></span>
           <ArtistsInLine :artists="artists" />
         </div>
       </div>
-      <div></div>
     </div>
 
     <div v-if="showAlbumName" class="album">
       <router-link :to="`/album/${album.id}`">{{ album.name }}</router-link>
-      <div></div>
     </div>
 
     <div v-if="showLikeButton" class="actions">
       <button @click="likeThisSong">
-        <IconHeartSolid v-if="isLiked" />
-        <IconHeart v-else-if="focus" />
+        <IconHeartSolid v-if="isLiked" key="1" />
+        <IconHeart v-else key="2" />
       </button>
     </div>
     <div v-if="showTrackTime" class="time">
@@ -87,7 +84,7 @@ export default {
   },
 
   data () {
-    return { hover: false, trackStyle: {} }
+    return { trackStyle: {} }
   },
 
   computed: {
@@ -147,10 +144,7 @@ export default {
       return this.$parent.rightClickedTrack.id === this.track.id
     },
     focus () {
-      return (
-        (this.hover && this.$parent.rightClickedTrack.id === 0) ||
-        this.isMenuOpened
-      )
+      return true
     },
     showLikeButton () {
       return this.type !== 'tracklist' && this.type !== 'cloudDisk'
@@ -255,10 +249,6 @@ button {
     cursor: pointer;
   }
 
-  img.hover {
-    filter: drop-shadow(100px 200px 0 black);
-  }
-
   .title-and-artist {
     flex: 1;
     display: flex;
@@ -333,7 +323,8 @@ button {
   }
 }
 
-.track.focus {
+.track:hover,
+.track:focus {
   transition: all 0.3s;
   background: var(--color-secondary-bg);
 }

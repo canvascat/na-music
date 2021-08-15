@@ -2,13 +2,13 @@
   <div class="track-list">
     <ContextMenu ref="menu">
       <div v-show="type !== 'cloudDisk'" class="item-info">
-        <img :src="resizeImage(rightClickedTrackComputed.al.picUrl, 224)" />
+        <img :src="resizeImage(rightClickedTrackComputed.al.picUrl, 224)">
         <div class="info">
           <div class="title">{{ rightClickedTrackComputed.name }}</div>
           <div class="subtitle">{{ rightClickedTrackComputed.ar[0].name }}</div>
         </div>
       </div>
-      <hr v-show="type !== 'cloudDisk'" />
+      <hr v-show="type !== 'cloudDisk'">
       <div class="item" @click="play">{{ $t('contextMenu.play') }}</div>
       <div class="item" @click="addToQueue">
         {{
@@ -19,33 +19,45 @@
         v-if="extraContextMenuItem.includes('removeTrackFromQueue')"
         class="item"
         @click="removeTrackFromQueue"
-      >从队列删除</div>
-      <hr v-show="type !== 'cloudDisk'" />
+      >
+        从队列删除
+      </div>
+      <hr v-show="type !== 'cloudDisk'">
       <div
         v-show="!isRightClickedTrackLiked && type !== 'cloudDisk'"
         class="item"
         @click="like"
-      >{{ $t('contextMenu.saveToMyLikedSongs') }}</div>
+      >
+        {{ $t('contextMenu.saveToMyLikedSongs') }}
+      </div>
       <div
         v-show="isRightClickedTrackLiked && type !== 'cloudDisk'"
         class="item"
         @click="like"
-      >{{ $t('contextMenu.removeFromMyLikedSongs') }}</div>
+      >
+        {{ $t('contextMenu.removeFromMyLikedSongs') }}
+      </div>
       <div
         v-if="extraContextMenuItem.includes('removeTrackFromPlaylist')"
         class="item"
         @click="removeTrackFromPlaylist"
-      >从歌单中删除</div>
+      >
+        从歌单中删除
+      </div>
       <div
         v-show="type !== 'cloudDisk'"
         class="item"
         @click="addTrackToPlaylist"
-      >{{ $t('contextMenu.addToPlaylist') }}</div>
+      >
+        {{ $t('contextMenu.addToPlaylist') }}
+      </div>
       <div
         v-if="extraContextMenuItem.includes('removeTrackFromCloudDisk')"
         class="item"
         @click="removeTrackFromCloudDisk"
-      >从云盘中删除</div>
+      >
+        从云盘中删除
+      </div>
     </ContextMenu>
 
     <div :style="listStyles">
@@ -62,7 +74,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import { addOrRemoveTrackFromPlaylist } from '@/api/playlist'
 import { cloudDiskTrackDelete } from '@/api/user'
 import { isAccountLoggedIn } from '@/utils/auth'
@@ -154,11 +166,11 @@ export default {
     rightClickedTrackComputed () {
       return this.type === 'cloudDisk'
         ? {
-            id: 0,
-            name: '',
-            ar: [{ name: '' }],
-            al: { picUrl: '' }
-          }
+          id: 0,
+          name: '',
+          ar: [{ name: '' }],
+          al: { picUrl: '' }
+        }
         : this.rightClickedTrack
     }
   },
